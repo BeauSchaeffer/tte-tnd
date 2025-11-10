@@ -1,0 +1,11 @@
+# data
+
+
+# RStudio artifacts
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.Rprofile
+.Renviron
+*.Rproj
