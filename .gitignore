@@ -1,5 +1,7 @@
 # data
-
+data/
+results/
+figures/
 
 # RStudio artifacts
 .Rproj.user/
@@ -8,4 +10,6 @@
 .Ruserdata
 .Rprofile
 .Renviron
-*.Rproj
+
+# other
+scripts/data_transfer.sh
