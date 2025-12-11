@@ -13,3 +13,7 @@ figures/
 
 # other
 scripts/data_transfer.sh
+
+# show folders
+!figures/
+!results/
