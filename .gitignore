@@ -13,7 +13,7 @@ figures/
 
 # other
 scripts/data_transfer.sh
-scripts/data_cleaning.sh
+scripts/data_cleaning.R
 
 # show folders
 !figures/
