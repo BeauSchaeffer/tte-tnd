@@ -2,9 +2,6 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Standard Analysis Pooled
 
-# setwd("~/Desktop/Research/Kaiser/KP_analysis")
-
-
 # Packages ----------------------------------------------------------------
 
 
@@ -18,7 +15,7 @@ library(splines)
 # Data --------------------------------------------------------------------
 
 
-data_Y2 <- read_rds("cleaned_data/data_Y2.rds")
+data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_Y2.rds")
 
 
 # Downsample --------------------------------------------------------------

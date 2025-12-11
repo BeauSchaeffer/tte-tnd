@@ -2,9 +2,6 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Standard Analysis
 
-# setwd("~/Desktop/Research/Kaiser/KP_analysis")
-
-
 # Packages ----------------------------------------------------------------
 
 
@@ -18,7 +15,7 @@ library(ggsurvfit)
 # Data --------------------------------------------------------------------
 
 
-data_Y2 <- read_rds("cleaned_data/data_Y2.rds")
+data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_Y2.rds")
 
 
 # Kaplan Meier ------------------------------------------------------------
@@ -53,7 +50,7 @@ std_Y2_km_itt_p
 
 # png("results/std_Y2_km_itt_p.png", width = 8, height = 6, units = "in", res = 300)
 # print(std_Y2_km_itt_p)
-# dev.off() # 2025-12-10
+# dev.off()
 
 
 # Per-Protocol
@@ -85,7 +82,7 @@ std_Y2_km_pp_p
 
 # png("results/std_Y2_km_pp_p.png", width = 8, height = 6, units = "in", res = 300)
 # print(std_Y2_km_pp_p)
-# dev.off() # 2025-12-10
+# dev.off()
 
 
 # Cumulative Incidence ----------------------------------------------------
@@ -123,7 +120,7 @@ std_Y2_ci_itt_p <- ggcuminc(
 
 std_Y2_ci_itt_p
 
-# ggsave("results/std_Y2_ci_itt_p.png",std_Y2_ci_itt_p) # 2025-12-10
+# ggsave("results/std_Y2_ci_itt_p.png",std_Y2_ci_itt_p)
 
 
 # Per-Protocol
@@ -151,7 +148,7 @@ std_Y2_ci_pp_p <- ggcuminc(
 
 std_Y2_ci_pp_p
 
-# ggsave("results/std_Y2_ci_pp_p.png",std_Y2_ci_pp_p) # 2025-12-10
+# ggsave("results/std_Y2_ci_pp_p.png",std_Y2_ci_pp_p)
 
 
 # Cox Model ---------------------------------------------------------------
@@ -172,13 +169,13 @@ std_Y2_cox_itt <- coxph(
 summary(std_Y2_cox_itt)
 
   #                               exp(coef) exp(-coef) lower .95 upper .95
-  # treatment                     1.0966     0.9119    1.0690    1.1249
-  # flu_vax                       1.2877     0.7766    1.2508    1.3258
+  # treatment                     1.1083     0.9023    1.0804    1.1370
+  # flu_vax                       1.2855     0.7779    1.2485    1.3235
 
 
 std_Y2_cox_itt_tidy <- tidycmprsk::tidy(std_Y2_cox_itt, conf.int = TRUE, exponentiate = TRUE)
 std_Y2_cox_itt_tidy
-# write_rds(std_Y2_cox_itt_tidy, file = "results/std_Y2_cox_itt_tidy.rds") # 2025-12-10
+write_rds(std_Y2_cox_itt_tidy, file = "results/std_Y2_cox_itt_tidy.rds") # 2025-12-11
 
 
 # Per-Protocol
@@ -197,12 +194,12 @@ summary(std_Y2_cox_pp)
 
 
   #                               exp(coef) exp(-coef) lower .95 upper .95
-  # treatment                     1.0576     0.9455    1.0337    1.0822
-  # flu_vax                       1.3510     0.7402    1.3161    1.3868
+  # treatment                     0.9664     1.0348    0.9426    0.9908
+  # flu_vax                       1.3369     0.7480    1.2990    1.3759
 
 std_Y2_cox_pp_tidy <- tidycmprsk::tidy(std_Y2_cox_pp, conf.int = TRUE, exponentiate = TRUE)
 std_Y2_cox_pp_tidy
-# write_rds(std_Y2_cox_pp_tidy, file = "results/std_Y2_cox_pp_tidy.rds") # 2025-12-10
+write_rds(std_Y2_cox_pp_tidy, file = "results/std_Y2_cox_pp_tidy.rds") # 2025-12-11
 
 
 
