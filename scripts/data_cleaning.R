@@ -1,26 +1,19 @@
 ##----- Beau Schaeffer
-##----- Kaiser Causal TTE-TND
+##----- Kaiser TTE-TND
 ##----- Data cleaning
-
-# setwd("~/Desktop/Research/Kaiser/KP_analysis")
-
 
 # Packages ----------------------------------------------------------------
 
-
 library(tidyverse)
+# install.packages("MatchIt")
 library(MatchIt)
 library(data.table)
 
 # Load data ---------------------------------------------------------------
 
-demog <- read_csv("kp_data/kp_transfer_07_01/std_tr_dmg/std_elig_pop_250701.csv")
-vax <- read_csv("kp_data/kp_transfer_07_01/vax_250701.csv")
-#covid_dx <- read_csv("kp_data/kp_transfer_07_01/dx_tests_labs_outcome/covid_dx_250701.csv")
-#tests_dx <- read_csv("kp_data/kp_transfer_07_01/dx_tests_labs_outcome/dx_tests_250701.csv")
-labs <- read_csv("kp_data/kp_transfer_07_01/dx_tests_labs_outcome/labs_250701.csv")
-#outcomes <- read_csv("kp_data/kp_transfer_07_01/dx_tests_labs_outcome/outcomes_250701.csv")
-
+demog <- read_csv("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/std_elig_pop_250701.csv")
+vax <- read_csv("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/vax_250701.csv")
+labs <- read_csv("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/labs_250701.csv")
 
 # Demographic / Patient Information ---------------------------------------
 
