@@ -2,6 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Standard Analysis Pooled
 
+
 # Packages ----------------------------------------------------------------
 
 
@@ -16,45 +17,16 @@ library(splines)
 
 
 data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_Y2.rds")
-
+dat <- data_Y2
 
 # Downsample --------------------------------------------------------------
 
 
-subclass_ids <- data_Y2 |> dplyr::select(subclass) |> unique()
-set.seed(345)
-subclass_ids_subset <- slice_sample(subclass_ids, n=10000)
-dat_downsamp <- data_Y2 |> filter(subclass %in% subclass_ids_subset$subclass) |> droplevels()
-rm(subclass_ids, subclass_ids_subset)
-
-
-# IPTW --------------------------------------------------------------------
-
-  ### 2025-09-10 - forgoing IPTW in favor of G-formula
-
-  # iptw_denom <- geeglm(
-  #   treatment ~ sex_admin + age_years + ndi + bmi + 
-  #     flu_vax + prior_inf + tests_count + race + service_region + 
-  #     last_vax_infect_weeks + charlson_cat_fac,
-  #   data = dat_downsamp,
-  #   id = subclass,
-  #   family = binomial(link = "logit")
-  # )
-  # 
-  # iptw_num <- geeglm(
-  #   treatment ~ 1,
-  #   data = dat_downsamp,
-  #   id = subclass,
-  #   family = binomial(link = "logit")
-  # )
-  # 
-  # dat_downsamp$pred.denom <- predict(iptw_denom, type="response")
-  # dat_downsamp$pred.num <- predict(iptw_num, type="response")
-  # 
-  # dat_downsamp$sw <- ifelse(dat_downsamp$treatment==1,
-  #                           dat_downsamp$pred.num/dat_downsamp$pred.denom,
-  #                      (1-dat_downsamp$pred.num)/(1-dat_downsamp$pred.denom))
-  # summary(dat_downsamp$sw)
+# subclass_ids <- data_Y2 |> dplyr::select(subclass) |> unique()
+# set.seed(345)
+# subclass_ids_subset <- slice_sample(subclass_ids, n=10000)
+# dat_downsamp <- data_Y2 |> filter(subclass %in% subclass_ids_subset$subclass) |> droplevels()
+# rm(subclass_ids, subclass_ids_subset)
 
 
 # ITT long format expansion -----------------------------------------------
@@ -62,44 +34,35 @@ rm(subclass_ids, subclass_ids_subset)
 
   ### calc number of rows needed for each individual
 time_unit <- 1
-dat_downsamp$max_units <- ceiling(dat_downsamp$Y2_itt_t_trunc/time_unit)+1
-  # analysis_data_Y_TWO$max_units <- pmax(1, ceiling(analysis_data_Y_TWO$Y2_itt_t / time_unit))
-  ### above line adjusted from causal lab code to ensure that
-  ### at least 1 row created for each individual
-dat_downsamp.long.itt <- dat_downsamp[rep(1:nrow(dat_downsamp), dat_downsamp$max_units),]
-
-  ### Now, let's create a variable that's represents the start and end time
-  ### corresponding to each row of observation
-
-dat_downsamp.long.itt$time_start <- ave(dat_downsamp.long.itt$fake_mrn, dat_downsamp.long.itt$fake_mrn, FUN=seq_along)
-dat_downsamp.long.itt$time_start <- (dat_downsamp.long.itt$time_start-1)*time_unit
-dat_downsamp.long.itt$time_end <- dat_downsamp.long.itt$time_start+time_unit
-
-  ### Last, we have to modify the Y and C variables so that they are only
-  ### equal to 1 if the event/censoring happened in that time interval
-
-dat_downsamp.long.itt$Y <- ifelse(
-  dat_downsamp.long.itt$Y2_itt_trunc == 1 &
-    dat_downsamp.long.itt$Y2_itt_t_trunc == dat_downsamp.long.itt$time_start,
+  
+### ensure at least 1 row for each individual
+dat$max_units <- ceiling(dat$Y2_itt_t_trunc/time_unit)+1
+dat.long.itt <- dat[rep(1:nrow(dat), dat$max_units),]
+  
+### variable that represents the start and end time corresponding to each row of observation
+dat.long.itt$time_start <- ave(dat.long.itt$fake_mrn, dat.long.itt$fake_mrn, FUN=seq_along)
+dat.long.itt$time_start <- (dat.long.itt$time_start-1)*time_unit
+dat.long.itt$time_end <- dat.long.itt$time_start+time_unit
+  
+### modify the Y and C variables so that they are only equal to 1 if the 
+  ### event/censoring happened in that time interval
+dat.long.itt$Y <- ifelse(
+  dat.long.itt$Y2_itt_trunc == 1 &
+    dat.long.itt$Y2_itt_t_trunc == dat.long.itt$time_start,
   1, 0
 )
 
-dat_downsamp.long.itt$C <- ifelse(
-  dat_downsamp.long.itt$Y2_itt_trunc == 0 &
-    dat_downsamp.long.itt$Y2_itt_t_trunc == dat_downsamp.long.itt$time_start,
+dat.long.itt$C <- ifelse(
+  dat.long.itt$Y2_itt_trunc == 0 &
+    dat.long.itt$Y2_itt_t_trunc == dat.long.itt$time_start,
   1, 0
 )
 
-dat_downsamp.long.itt$Y <- ifelse(dat_downsamp.long.itt$C==1, NA, dat_downsamp.long.itt$Y)
-
-
-# ITT IPCW ----------------------------------------------------------------
-
-
-  ### No IPCW applied to ITT analysis
+dat.long.itt$Y <- ifelse(dat.long.itt$C==1, NA, dat.long.itt$Y)
 
 
 # ITT Pooled Logistic -----------------------------------------------------
+
 
 std_pooled_itt <- speedglm(Y ~ ns(time_end, knots = c(10,20,30))*treatment +
                              # demographic
@@ -108,14 +71,14 @@ std_pooled_itt <- speedglm(Y ~ ns(time_end, knots = c(10,20,30))*treatment +
                              ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks + 
                              # NEC
                              flu_vax,
-                         data=dat_downsamp.long.itt,
+                         data=dat.long.itt,
                          family=binomial())
 
 summary(std_pooled_itt)
 
   ### sanity check
   ### fit same model without interaction terms
-  ### coefficients should be equivalent to Cox (here, below)
+  ### coefficients should be equivalent/similar to Cox (here, below)
 
   # Cox
   # term                       estimate std.error robust.se statistic   p.value conf.low conf.high
@@ -129,7 +92,7 @@ std_pooled_itt_noint <- speedglm(Y ~ ns(time_end, knots = c(10,20,30)) + treatme
                              ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks + 
                              # NEC
                              flu_vax,
-                           data=dat_downsamp.long.itt,
+                           data=dat.long.itt,
                            family=binomial())
 
 std_pooled_itt_noint_tidy <- geepack::tidy(std_pooled_itt_noint, conf.int = TRUE, exponentiate = TRUE)
