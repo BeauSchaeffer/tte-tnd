@@ -11,9 +11,6 @@
 module load R
 
 # Run program
-R CMD BATCH --no-save --no-restore "scripts/standard_analysis_pooled_itt_boot.R"
-
-# Submit as batch job
-# R CMD BATCH --no-save --no-restore \
-  # scripts/standard_analysis_pooled_itt_boot.R \
-  # logs/standard_analysis_pooled_itt_boot.Rout
+R CMD BATCH --no-save --no-restore \
+  scripts/standard_analysis_pooled_itt_boot.R \
+  logs/standard_analysis_pooled_itt_boot.Rout
