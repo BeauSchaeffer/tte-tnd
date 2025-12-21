@@ -4,11 +4,16 @@
 
 # Libraries ---------------------------------------------------------------
 
-if (!requireNamespace("tidyverse", quietly = TRUE)) {install.packages("tidyverse")} library(tidyverse)
-if (!requireNamespace("data.table", quietly = TRUE)) {install.packages("data.table")} library(data.table)
-if (!requireNamespace("speedglm", quietly = TRUE)) {install.packages("speedglm")} library(speedglm)
-if (!requireNamespace("splines", quietly = TRUE)) {install.packages("splines")} library(splines)
-if (!requireNamespace("geepack", quietly = TRUE)) {install.packages("geepack")} library(geepack)
+if (!requireNamespace("tidyverse", quietly = TRUE)) {install.packages("tidyverse")}
+library(tidyverse)
+if (!requireNamespace("data.table", quietly = TRUE)) {install.packages("data.table")}
+library(data.table)
+if (!requireNamespace("speedglm", quietly = TRUE)) {install.packages("speedglm")}
+library(speedglm)
+if (!requireNamespace("splines", quietly = TRUE)) {install.packages("splines")}
+library(splines)
+if (!requireNamespace("geepack", quietly = TRUE)) {install.packages("geepack")}
+library(geepack)
 
 # Data --------------------------------------------------------------------
 
