@@ -19,7 +19,7 @@ res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/
 
 # Boot --------------------------------------------------------------------
 
-num.boot <- 2
+num.boot <- 100
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
