@@ -7,10 +7,12 @@
 #SBATCH -t 0-01:00
 #SBATCH --mem=64000 # in Mb
 
-# Load required software modules
-module load R
+# RStudio Server container + package library
+R_LIB="/n/home07/bschaeffer/R/ifxrstudio/RELEASE_3_20"
+RSTUDIO_IMG="/n/singularity_images/informatics/ifxrstudio/ifxrstudio:RELEASE_3_20.sif"
 
-# Run program
-R CMD BATCH --no-save --no-restore \
-  scripts/standard_analysis_pooled_itt_boot.R \
-  logs/standard_analysis_pooled_itt_boot.Rout
+singularity exec \
+	--cleanenv \
+	--env R_LIBS_USER=${R_LIB} \
+	${RSTUDIO_IMG} \
+	Rscript scripts/standard_analysis_pooled_itt_boot.R
