@@ -10,7 +10,7 @@ library(tidyverse)
 library(data.table)
 library(speedglm)
 library(splines)
-# library(geepack) # called without loading
+library(geepack)
 
 
 # Data --------------------------------------------------------------------
@@ -77,8 +77,7 @@ std_pooled_itt <- speedglm(Y ~ ns(time_end, knots = c(10,20,30))*treatment +
                          family=binomial())
 
 summary(std_pooled_itt)
-# saveRDS(std_pooled_itt,paste0(res_path,"std_pooled_itt.rds")) # 2025-12-17
-# std_pooled_itt <- readRDS(paste0(res_path,"std_pooled_itt.rds"))
+# saveRDS(std_pooled_itt, paste0(res_path,"std_pooled_itt_model.rds")) # 2025-12-21
 
   ### sanity check
   ### fit same model without interaction terms
@@ -101,7 +100,6 @@ std_pooled_itt_noint <- speedglm(Y ~ ns(time_end, knots = c(10,20,30)) + treatme
 
 std_pooled_itt_noint_tidy <- geepack::tidy(std_pooled_itt_noint, conf.int = TRUE, exponentiate = TRUE)
 std_pooled_itt_noint_tidy |> print(n=100)
-# readr::write_rds(std_pooled_itt_noint_tidy, file = "results/std_pooled_itt_noint_tidy.rds") # 2025-12-10
 
     # noint model
     #   term                                     estimate std.error statistic    p.value  conf.low conf.high
@@ -112,7 +110,7 @@ std_pooled_itt_noint_tidy |> print(n=100)
 # ITT Survival and Risk ---------------------------------------------------
 
 
-dat$gmaxt <- 53 # 79
+dat$gmaxt <- 53
 
   ### G formula data setup A=0
 std_itt_A0.long <- dat[rep(1:nrow(dat), dat$gmaxt),]
@@ -166,26 +164,15 @@ std_itt_A1.long$risk <- 1 - std_itt_A1.long$survival
 std_itt_A0.long <- aggregate(risk ~ time_end, data=std_itt_A0.long, FUN=mean)
 std_itt_A1.long <- aggregate(risk ~ time_end, data=std_itt_A1.long, FUN=mean)
 
-# clean and save
-combine_risk_curves <- function(A0_long, A1_long) {
+# save point estimate risk curves in bootstrap-compatible format
+std.itt.risk.pointest <- tibble(
+  sim = 0L,  # 0 = main analysis (bootstraps are 1..B)
+  time_end = std_itt_A0.long$time_end,
+  risk0 = std_itt_A0.long$risk,
+  risk1 = std_itt_A1.long$risk
+)
 
-  A0 <- as.data.table(copy(A0_long))
-  A1 <- as.data.table(copy(A1_long))
-  
-  setnames(A0, "time_end", "week")
-  setnames(A0, "risk", "riskA0")
-  
-  out <- cbind(A0, A1)
-  
-  setnames(out, "risk", "riskA1")
-  
-  out[, time_end := NULL]
-  
-  out[]
-}
-
-std_itt_risks <- combine_risk_curves(std_itt_A0.long,std_itt_A1.long)
-# saveRDS(std_itt_risks, paste0(res_path,"std_itt_risks.rds")) # 2025-12-20
+# saveRDS(std.itt.risk.pointest, paste0(res_path, "std.itt.risk.pointest.rds")) # 2025-12-21
 
   ### Plot for the risk curves:
 
@@ -212,7 +199,7 @@ legend("topleft",
        lty = 1, lwd = 4, cex=1.2,
        bty = "n")
 
-# dev.off() # 2025-12-17
+# dev.off()
 
   ### Plot RR over time
 
