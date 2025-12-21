@@ -1,23 +1,19 @@
 #!/bin/bash
-#SBATCH --job-name=std_itt_boot
-#SBATCH --partition=shared
-#SBATCH --time=01:00:00
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=64G
-#SBATCH --output=/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/logs/std_itt_boot_%j.out
-#SBATCH --error=/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/logs/std_itt_boot_%j.err
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=YOUR_EMAIL@hsph.harvard.edu
+#SBATCH -J std_itt_boot
+#SBATCH -o logs/std_itt_boot_%j.out
+#SBATCH -e logs/std_itt_boot_%j.err
+#SBATCH -p shared
+#SBATCH -c 1
+#SBATCH -t 0-01:00
+#SBATCH --mem=64000 # in Mb
 
-set -euo pipefail
+# Load required software modules
+module load R
 
-# ---- (optional) make sure a logs dir exists ----
-mkdir -p /n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/logs
+# Run program
+R CMD BATCH --no-save --no-restore "scripts/standard_analysis_pooled_itt_boot.R"
 
-# ---- load R (edit to match your cluster) ----
-module purge
-module load R/4.3.2
-
-# ---- run ----
-Rscript --vanilla /n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/scripts/std_itt_bootstrap.R
-
+# Submit as batch job
+# R CMD BATCH --no-save --no-restore \
+  # scripts/standard_analysis_pooled_itt_boot.R \
+  # logs/standard_analysis_pooled_itt_boot.Rout
