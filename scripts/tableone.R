@@ -8,7 +8,8 @@
 
 library(tidyverse)
 library(tableone)
-library(gt)
+library(gridExtra)
+library(ragg)
 
 
 # Data --------------------------------------------------------------------
@@ -93,9 +94,7 @@ tab_mat <- print(
   printToggle = FALSE
 )
 
-tab_df <- as.data.frame(tab_mat)
-
-gt_tab <- gt(tab_df)
-
-gtsave(gt_tab, "table1.png")
+agg_png("figures/table1.png", width = 2000, height = 1600, res = 200)
+grid.table(tab_mat)
+dev.off()
 

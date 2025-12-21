@@ -19,12 +19,14 @@ library(splines)
 data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_Y2.rds")
 dat <- data_Y2
 
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/"
+
 # Downsample --------------------------------------------------------------
 
 
 # subclass_ids <- data_Y2 |> dplyr::select(subclass) |> unique()
 # set.seed(345)
-# subclass_ids_subset <- slice_sample(subclass_ids, n=10000)
+# subclass_ids_subset <- slice_sample(subclass_ids, n=150000) # works with 150000
 # dat_downsamp <- data_Y2 |> filter(subclass %in% subclass_ids_subset$subclass) |> droplevels()
 # rm(subclass_ids, subclass_ids_subset)
 
@@ -75,6 +77,8 @@ std_pooled_itt <- speedglm(Y ~ ns(time_end, knots = c(10,20,30))*treatment +
                          family=binomial())
 
 summary(std_pooled_itt)
+# saveRDS(std_pooled_itt,paste0(res_path,"std_pooled_itt.rds")) # 2025-12-17
+# std_pooled_itt <- readRDS(paste0(res_path,"std_pooled_itt.rds"))
 
   ### sanity check
   ### fit same model without interaction terms
@@ -101,24 +105,24 @@ std_pooled_itt_noint_tidy |> print(n=100)
 
     # noint model
     #   term                                     estimate std.error statistic    p.value  conf.low conf.high
-        #  6 treatment                            1.09       0.0630      1.30  1.94e-  1 0.959     1.23    
-        #   flu_vax                              1.24       0.0711      2.99  2.79e-  3 1.08      1.42  
+    # 6 treatment                            1.11      0.0130       7.86  3.94e- 15 1.08      1.14    
+    # 26 flu_vax                            1.28      0.0148      16.9   4.11e- 64 1.25      1.32    
 
 
 # ITT Survival and Risk ---------------------------------------------------
 
 
-dat_downsamp$gmaxt <- 53 # 79
+dat$gmaxt <- 53 # 79
 
   ### G formula data setup A=0
-std_itt_A0.long <- dat_downsamp[rep(1:nrow(dat_downsamp), dat_downsamp$gmaxt),]
+std_itt_A0.long <- dat[rep(1:nrow(dat), dat$gmaxt),]
 std_itt_A0.long$time_start <- ave(std_itt_A0.long$fake_mrn, std_itt_A0.long$fake_mrn, FUN=seq_along)
 std_itt_A0.long$time_start <- (std_itt_A0.long$time_start-1)*time_unit
 std_itt_A0.long$time_end <- std_itt_A0.long$time_start+time_unit
 std_itt_A0.long$treatment <- 0
 
   ### G formula data setup A=1
-std_itt_A1.long <- dat_downsamp[rep(1:nrow(dat_downsamp), dat_downsamp$gmaxt),]
+std_itt_A1.long <- dat[rep(1:nrow(dat), dat$gmaxt),]
 std_itt_A1.long$time_start <- ave(std_itt_A1.long$fake_mrn, std_itt_A1.long$fake_mrn, FUN=seq_along)
 std_itt_A1.long$time_start <- (std_itt_A1.long$time_start-1)*time_unit
 std_itt_A1.long$time_end <- std_itt_A1.long$time_start+time_unit
@@ -162,9 +166,30 @@ std_itt_A1.long$risk <- 1 - std_itt_A1.long$survival
 std_itt_A0.long <- aggregate(risk ~ time_end, data=std_itt_A0.long, FUN=mean)
 std_itt_A1.long <- aggregate(risk ~ time_end, data=std_itt_A1.long, FUN=mean)
 
+# clean and save
+combine_risk_curves <- function(A0_long, A1_long) {
+
+  A0 <- as.data.table(copy(A0_long))
+  A1 <- as.data.table(copy(A1_long))
+  
+  setnames(A0, "time_end", "week")
+  setnames(A0, "risk", "riskA0")
+  
+  out <- cbind(A0, A1)
+  
+  setnames(out, "risk", "riskA1")
+  
+  out[, time_end := NULL]
+  
+  out[]
+}
+
+std_itt_risks <- combine_risk_curves(std_itt_A0.long,std_itt_A1.long)
+# saveRDS(std_itt_risks, paste0(res_path,"std_itt_risks.rds")) # 2025-12-20
+
   ### Plot for the risk curves:
 
-png("results/std_Y2_risks_itt_p.png", width = 2400, height = 1800, res=300)
+# png(paste0(res_path,"std_Y2_risks_itt_p.png"), width = 2400, height = 1800, res=300)
 
 par(mar = c(5.1, 5.5, 4.1, 2.1))
 plot(NULL,
@@ -187,7 +212,7 @@ legend("topleft",
        lty = 1, lwd = 4, cex=1.2,
        bty = "n")
 
-dev.off() # 2025-12-10
+# dev.off() # 2025-12-17
 
   ### Plot RR over time
 
