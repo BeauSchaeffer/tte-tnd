@@ -1,0 +1,244 @@
+── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:lubridate’:
+
+    hour, isoweek, mday, minute, month, quarter, second, wday, week,
+    yday, year
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+The following object is masked from ‘package:purrr’:
+
+    transpose
+
+Loading required package: Matrix
+
+Attaching package: ‘Matrix’
+
+The following objects are masked from ‘package:tidyr’:
+
+    expand, pack, unpack
+
+Loading required package: MASS
+
+Attaching package: ‘MASS’
+
+The following object is masked from ‘package:dplyr’:
+
+    select
+
+Loading required package: biglm
+Loading required package: DBI
+Starting bootstrap 1 (seed=65001045)
+Finished bootstrap 1 in 5.67 minutes
+Starting bootstrap 2 (seed=10070042)
+Finished bootstrap 2 in 5.53 minutes
+Starting bootstrap 3 (seed=72131746)
+Finished bootstrap 3 in 5.61 minutes
+Starting bootstrap 4 (seed=2949777)
+Finished bootstrap 4 in 5.47 minutes
+Starting bootstrap 5 (seed=63752021)
+Finished bootstrap 5 in 5.58 minutes
+Starting bootstrap 6 (seed=7035256)
+Finished bootstrap 6 in 5.43 minutes
+Starting bootstrap 7 (seed=10604002)
+Finished bootstrap 7 in 5.58 minutes
+Starting bootstrap 8 (seed=80933202)
+Finished bootstrap 8 in 5.29 minutes
+Starting bootstrap 9 (seed=47430409)
+Finished bootstrap 9 in 5.67 minutes
+Starting bootstrap 10 (seed=14469807)
+Finished bootstrap 10 in 5.46 minutes
+Starting bootstrap 11 (seed=22597382)
+Finished bootstrap 11 in 5.26 minutes
+Starting bootstrap 12 (seed=5520472)
+Finished bootstrap 12 in 5.4 minutes
+Starting bootstrap 13 (seed=51284578)
+Finished bootstrap 13 in 5.25 minutes
+Starting bootstrap 14 (seed=43943990)
+Finished bootstrap 14 in 5.2 minutes
+Starting bootstrap 15 (seed=52879880)
+Finished bootstrap 15 in 5.18 minutes
+Starting bootstrap 16 (seed=94686291)
+Finished bootstrap 16 in 5.19 minutes
+Starting bootstrap 17 (seed=92041793)
+Finished bootstrap 17 in 5.29 minutes
+Starting bootstrap 18 (seed=41292011)
+Finished bootstrap 18 in 4.97 minutes
+Starting bootstrap 19 (seed=92002676)
+Finished bootstrap 19 in 5.09 minutes
+Starting bootstrap 20 (seed=39805623)
+Finished bootstrap 20 in 5.18 minutes
+Starting bootstrap 21 (seed=52939880)
+Finished bootstrap 21 in 4.96 minutes
+Starting bootstrap 22 (seed=24919757)
+Finished bootstrap 22 in 5.06 minutes
+Starting bootstrap 23 (seed=68379425)
+Finished bootstrap 23 in 4.9 minutes
+Starting bootstrap 24 (seed=49280163)
+Finished bootstrap 24 in 5.13 minutes
+Starting bootstrap 25 (seed=74191913)
+Finished bootstrap 25 in 5.08 minutes
+Starting bootstrap 26 (seed=22596910)
+Finished bootstrap 26 in 5.13 minutes
+Starting bootstrap 27 (seed=80878992)
+Finished bootstrap 27 in 5.23 minutes
+Starting bootstrap 28 (seed=73299068)
+Finished bootstrap 28 in 5.32 minutes
+Starting bootstrap 29 (seed=82911033)
+Finished bootstrap 29 in 5.22 minutes
+Starting bootstrap 30 (seed=63962525)
+Finished bootstrap 30 in 5.1 minutes
+Starting bootstrap 31 (seed=82428028)
+Finished bootstrap 31 in 5.22 minutes
+Starting bootstrap 32 (seed=49861492)
+Finished bootstrap 32 in 5.13 minutes
+Starting bootstrap 33 (seed=92019256)
+Finished bootstrap 33 in 4.99 minutes
+Starting bootstrap 34 (seed=89411853)
+Finished bootstrap 34 in 5.21 minutes
+Starting bootstrap 35 (seed=41087898)
+Finished bootstrap 35 in 5.16 minutes
+Starting bootstrap 36 (seed=73531149)
+Finished bootstrap 36 in 5.22 minutes
+Starting bootstrap 37 (seed=9677466)
+Finished bootstrap 37 in 5.13 minutes
+Starting bootstrap 38 (seed=24320959)
+Finished bootstrap 38 in 5.07 minutes
+Starting bootstrap 39 (seed=4294859)
+Finished bootstrap 39 in 5.19 minutes
+Starting bootstrap 40 (seed=84064618)
+Finished bootstrap 40 in 5.18 minutes
+Starting bootstrap 41 (seed=36317419)
+Finished bootstrap 41 in 5.23 minutes
+Starting bootstrap 42 (seed=30902708)
+Finished bootstrap 42 in 5.51 minutes
+Starting bootstrap 43 (seed=13363961)
+Finished bootstrap 43 in 5.83 minutes
+Starting bootstrap 44 (seed=23691142)
+Finished bootstrap 44 in 5.4 minutes
+Starting bootstrap 45 (seed=35042646)
+Finished bootstrap 45 in 5.5 minutes
+Starting bootstrap 46 (seed=29679925)
+Finished bootstrap 46 in 5.56 minutes
+Starting bootstrap 47 (seed=77845299)
+Finished bootstrap 47 in 5.76 minutes
+Starting bootstrap 48 (seed=2508569)
+Finished bootstrap 48 in 5.55 minutes
+Starting bootstrap 49 (seed=95317106)
+Finished bootstrap 49 in 5.62 minutes
+Starting bootstrap 50 (seed=46927378)
+Finished bootstrap 50 in 5.69 minutes
+Starting bootstrap 51 (seed=15109557)
+Finished bootstrap 51 in 5.56 minutes
+Starting bootstrap 52 (seed=76932057)
+Finished bootstrap 52 in 5.8 minutes
+Starting bootstrap 53 (seed=76090558)
+Finished bootstrap 53 in 5.83 minutes
+Starting bootstrap 54 (seed=76051876)
+Finished bootstrap 54 in 5.47 minutes
+Starting bootstrap 55 (seed=28310627)
+Finished bootstrap 55 in 5.55 minutes
+Starting bootstrap 56 (seed=26994276)
+Finished bootstrap 56 in 5.47 minutes
+Starting bootstrap 57 (seed=65033724)
+Finished bootstrap 57 in 5.46 minutes
+Starting bootstrap 58 (seed=2273590)
+Finished bootstrap 58 in 5.56 minutes
+Starting bootstrap 59 (seed=16410096)
+Finished bootstrap 59 in 5.22 minutes
+Starting bootstrap 60 (seed=61001674)
+Finished bootstrap 60 in 5.17 minutes
+Starting bootstrap 61 (seed=73264214)
+Finished bootstrap 61 in 5.06 minutes
+Starting bootstrap 62 (seed=54604036)
+Finished bootstrap 62 in 4.94 minutes
+Starting bootstrap 63 (seed=52838420)
+Finished bootstrap 63 in 5.12 minutes
+Starting bootstrap 64 (seed=77473284)
+Finished bootstrap 64 in 5.03 minutes
+Starting bootstrap 65 (seed=12954967)
+Finished bootstrap 65 in 5.02 minutes
+Starting bootstrap 66 (seed=91545384)
+Finished bootstrap 66 in 5.14 minutes
+Starting bootstrap 67 (seed=3869252)
+Finished bootstrap 67 in 5.14 minutes
+Starting bootstrap 68 (seed=68026639)
+Finished bootstrap 68 in 5.03 minutes
+Starting bootstrap 69 (seed=70191310)
+Finished bootstrap 69 in 5.12 minutes
+Starting bootstrap 70 (seed=44541072)
+Finished bootstrap 70 in 4.92 minutes
+Starting bootstrap 71 (seed=30751268)
+Finished bootstrap 71 in 5.11 minutes
+Starting bootstrap 72 (seed=54087300)
+Finished bootstrap 72 in 5.07 minutes
+Starting bootstrap 73 (seed=659048)
+Finished bootstrap 73 in 5.14 minutes
+Starting bootstrap 74 (seed=5737323)
+Finished bootstrap 74 in 5.2 minutes
+Starting bootstrap 75 (seed=22973852)
+Finished bootstrap 75 in 5.09 minutes
+Starting bootstrap 76 (seed=78944828)
+Finished bootstrap 76 in 5.11 minutes
+Starting bootstrap 77 (seed=80842490)
+Finished bootstrap 77 in 5.21 minutes
+Starting bootstrap 78 (seed=37163917)
+Finished bootstrap 78 in 5.09 minutes
+Starting bootstrap 79 (seed=8637971)
+Finished bootstrap 79 in 5.06 minutes
+Starting bootstrap 80 (seed=39691567)
+Finished bootstrap 80 in 5.32 minutes
+Starting bootstrap 81 (seed=12267440)
+Finished bootstrap 81 in 5.33 minutes
+Starting bootstrap 82 (seed=25897205)
+Finished bootstrap 82 in 5.28 minutes
+Starting bootstrap 83 (seed=2832335)
+Finished bootstrap 83 in 5.25 minutes
+Starting bootstrap 84 (seed=20253829)
+Finished bootstrap 84 in 5.22 minutes
+Starting bootstrap 85 (seed=30993851)
+Finished bootstrap 85 in 5.13 minutes
+Starting bootstrap 86 (seed=84843595)
+Finished bootstrap 86 in 5.17 minutes
+Starting bootstrap 87 (seed=96923272)
+Finished bootstrap 87 in 5.13 minutes
+Starting bootstrap 88 (seed=93271740)
+Finished bootstrap 88 in 5.23 minutes
+Starting bootstrap 89 (seed=16901540)
+Finished bootstrap 89 in 5.27 minutes
+Starting bootstrap 90 (seed=78771200)
+Finished bootstrap 90 in 5.1 minutes
+Starting bootstrap 91 (seed=58226976)
+Finished bootstrap 91 in 5.15 minutes
+Starting bootstrap 92 (seed=85163621)
+Finished bootstrap 92 in 5.1 minutes
+Starting bootstrap 93 (seed=33519190)
+Finished bootstrap 93 in 5.13 minutes
+Starting bootstrap 94 (seed=51832328)
+Finished bootstrap 94 in 5.15 minutes
+Starting bootstrap 95 (seed=89436004)
+Finished bootstrap 95 in 5.35 minutes
+Starting bootstrap 96 (seed=8246629)
+Finished bootstrap 96 in 5.39 minutes
+Starting bootstrap 97 (seed=70053302)
+Finished bootstrap 97 in 5.17 minutes
+Starting bootstrap 98 (seed=1539156)
+Finished bootstrap 98 in 5.2 minutes
+Starting bootstrap 99 (seed=44837761)
+Finished bootstrap 99 in 5.2 minutes
+Starting bootstrap 100 (seed=65234771)
+Finished bootstrap 100 in 5.27 minutes
