@@ -2,6 +2,7 @@
 data/
 results/
 figures/
+logs/
 
 # RStudio artifacts
 .Rproj.user/
