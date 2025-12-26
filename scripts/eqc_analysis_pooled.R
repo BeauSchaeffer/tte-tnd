@@ -11,7 +11,7 @@ library(tidyverse)
 library(data.table)
 library(speedglm)
 library(splines)
-# library(geepack) # called without loading
+library(geepack)
 
 # Data --------------------------------------------------------------------
 

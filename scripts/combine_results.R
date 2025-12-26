@@ -27,6 +27,7 @@ eqc.itt.cox.pointest <- readRDS(paste0(res_path, "eqc.itt.cox.pointest.rds"))
 
 
 
+
 # Boot CI function --------------------------------------------------------
 
 boot.ci <- function(point.est, boot.long, alpha = 0.05){
