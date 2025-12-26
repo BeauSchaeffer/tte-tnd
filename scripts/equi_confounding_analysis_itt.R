@@ -1,6 +1,6 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
-##----- Equi Confounding Analysis
+##----- Equi Confounding Analysis ITT
 
 # Packages ----------------------------------------------------------------
 
@@ -62,22 +62,23 @@ eqc_itt_fit2 <- coxph(
 )
 
 eqc.itt.cox.pointest <- c(
-  exp(eqc_itt_fit2$coefficients["treatment"]) / exp(eqc_itt_fit1$coefficients["treatment"]),
-  exp(eqc_itt_fit2$coefficients["flu_vax"]) / exp(eqc_itt_fit1$coefficients["flu_vax"])
+  treatHR= unname( exp(eqc_itt_fit2$coefficients["treatment"]) / exp(eqc_itt_fit1$coefficients["treatment"]) ),
+  fluvaxHR=unname( exp(eqc_itt_fit2$coefficients["flu_vax"]) / exp(eqc_itt_fit1$coefficients["flu_vax"]) )
   )
+
 saveRDS(eqc.itt.cox.pointest, paste0(res_path,"eqc.itt.cox.pointest.rds")) # 2025-12-26
 
 
 # Bootstrap CIs for ITT ---------------------------------------------------
 
 
-num.boot <- 2
+num.boot <- 100
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
 
 setkey(data_Y3, subclass)
-subclasses <- unique(data_Y3$subclass)
+subclasses <- data_Y3[, unique(subclass)]
 n_sub <- length(subclasses)
 
 
@@ -137,55 +138,7 @@ boot.results <- lapply(1:num.boot, function(i){
 })
 
 boot.long <- bind_rows(lapply(boot.results, tibble::as_tibble_row))
-saveRDS(boot.long, paste0(res_path, "eqc.itt.boot.long.rds"))
-
-
-
-
-# # Per-Protocol
-# 
-# 
-# eqc_pp_fit1 <- coxph(
-#   Surv(Y3_pp_t_trunc, Y3_pp_factor == "Test Negative") ~ treatment +
-#     # demog
-#     sex_admin + age_years + bmi + race + charlson_cat_fac +
-#     # other
-#     ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
-#     # NEC
-#     flu_vax + 
-#     cluster(subclass),
-#   data = data_Y3
-# )
-# 
-# 
-# eqc_pp_fit2 <- coxph(
-#   Surv(Y3_pp_t_trunc, Y3_pp_factor == "Test Positive") ~ treatment +
-#     # demog
-#     sex_admin + age_years + bmi + race + charlson_cat_fac +
-#     # other
-#     ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
-#     # NEC
-#     flu_vax + 
-#     cluster(subclass),
-#   data = data_Y3
-# )
-# 
-# eqc_Y3_cox_pp_tidy <- tibble::tibble(
-#   term = c("treatment", "flu_vax"),
-#   estimate = c(
-#     exp(eqc_pp_fit2$coefficients[1]) / exp(eqc_pp_fit1$coefficients[1]),
-#                exp(eqc_pp_fit2$coefficients[6]) / exp(eqc_pp_fit1$coefficients[6])
-#     ),
-#   std.error = c(NA,NA),
-#   statistic = c(NA,NA),
-#   p.value = c(NA,NA),
-#   conf.low = c(NA,NA),
-#   conf.high = c(NA,NA),
-# )
-# 
-# eqc_Y3_cox_pp_tidy
-# # write_rds(eqc_Y3_cox_pp_tidy, file = "results/eqc_Y3_cox_pp_tidy.rds") # 2025-12-10
-
+saveRDS(boot.long, paste0(res_path, "eqc.itt.cox.boot.long.rds"))
 
 
 
