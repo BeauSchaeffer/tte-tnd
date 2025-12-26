@@ -44,19 +44,12 @@ tnd_flu_coef <- tnd_fit$coefficients["flu_vax"] |> unname()
 tnd_flu_se <- summary(tnd_fit)$coefficients["flu_vax", "Std.err"]
 
 
-tnd.pointest <- cbind(
-  treatment=exp(tnd_treatment_coef),
-  treatment_lo=exp(tnd_treatment_coef - 1.96*tnd_treatment_se),
-  treatment_hi=exp(tnd_treatment_coef + 1.96*tnd_treatment_se),
-  
-  flu_vax=exp(tnd_flu_coef),
-  flu_vax_lo=exp(tnd_flu_coef - 1.96*tnd_flu_se),
-  flu_vax_hi=exp(tnd_flu_coef + 1.96*tnd_flu_se),
-)
+tnd.pointest <- data.frame(
+  term = c("treatment", "flu_vax"),
+  OR   = c(exp(tnd_treatment_coef), exp(tnd_flu_coef)),
+  LCL  = c(exp(tnd_treatment_coef - 1.96*tnd_treatment_se),
+           exp(tnd_flu_coef - 1.96*tnd_flu_se)),
+  UCL  = c(exp(tnd_treatment_coef + 1.96*tnd_treatment_se),
+           exp(tnd_flu_coef + 1.96*tnd_flu_se)))
 
-saveRDS(eqc.itt.cox.pointest, paste0(res_path,"eqc.itt.cox.pointest.rds")) # 2025-12-26
-
-tnd_tidy <- tidy(tnd_fit, conf.int = TRUE, exponentiate = TRUE)
-
-tnd_tidy |> print(n=100)
-# write_rds(tnd_tidy, file = "results/tnd_tidy.rds") # 2025-12-10
+saveRDS(tnd.pointest, paste0(res_path,"tnd.pointest.rds")) # 2025-12-26
