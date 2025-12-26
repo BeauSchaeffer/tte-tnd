@@ -10,9 +10,21 @@ library(tidyverse)
 
 res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/"
 
-std.itt.boot.long <- readRDS(paste0(res_path, "std.itt.boot.long.rds"))
+# STD Cox
+std.itt.cox.pointest <- readRDS(paste0(res_path,"std.itt.cox.pointest.rds"))
 
+# STD Pooled
+std.itt.boot.long <- readRDS(paste0(res_path, "std.itt.boot.long.rds"))
 std.itt.risk.pointest <- readRDS(paste0(res_path, "std.itt.risk.pointest.rds"))
+
+# TND
+tnd.pointest <- readRDS(paste0(res_path,"tnd.pointest.rds"))
+
+# EQC Cox
+eqc.itt.cox.pointest <- readRDS(paste0(res_path, "eqc.itt.cox.pointest.rds"))
+
+# EQC Pooled
+
 
 
 # Boot CI function --------------------------------------------------------
