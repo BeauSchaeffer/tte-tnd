@@ -16,3 +16,6 @@ singularity exec \
 	--env R_LIBS_USER=${R_LIB} \
 	${RSTUDIO_IMG} \
 	Rscript scripts/equi_confounding_analysis.R
+
+# run with
+# sbatch scripts/eqc_itt_cox_with_boot.sbatch
