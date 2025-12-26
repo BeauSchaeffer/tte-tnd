@@ -11,6 +11,7 @@ library(survival)
 library(ggsurvfit)
 library(riskRegression)
 library(geepack)
+library(data.table)
 
 
 # Data --------------------------------------------------------------------
@@ -61,10 +62,10 @@ eqc_itt_fit2 <- coxph(
 )
 
 eqc.itt.cox.pointest <- c(
-  exp(eqc_itt_fit2$coefficients[1]) / exp(eqc_itt_fit1$coefficients[1]),
-  exp(eqc_itt_fit2$coefficients[21]) / exp(eqc_itt_fit1$coefficients[21])
+  exp(eqc_itt_fit2$coefficients["treatment"]) / exp(eqc_itt_fit1$coefficients["treatment"]),
+  exp(eqc_itt_fit2$coefficients["flu_vax"]) / exp(eqc_itt_fit1$coefficients["flu_vax"])
   )
-# saveRDS(eqc.itt.cox.pointest, paste0(res_path,"eqc.itt.cox.pointest.rds")) # 2025-12-23
+saveRDS(eqc.itt.cox.pointest, paste0(res_path,"eqc.itt.cox.pointest.rds")) # 2025-12-26
 
 
 # Bootstrap CIs for ITT ---------------------------------------------------
@@ -75,8 +76,8 @@ num.boot <- 2
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
 
-by_sub <- split(data_Y3, data_Y3$subclass)
-subclasses <- names(by_sub)
+setkey(data_Y3, subclass)
+subclasses <- unique(data_Y3$subclass)
 n_sub <- length(subclasses)
 
 
@@ -91,17 +92,12 @@ boot.results <- lapply(1:num.boot, function(i){
   # select matched pairs
   samp_sub <- sample(subclasses, size = n_sub, replace = TRUE)
   
-  # build boot dataset: include all rows from each sampled subclass
-  # and assign a fresh subclass ID so duplicates are distinct clusters
-  
-  
-  ### RESUME HERE. inefficient.
-  
-  dat.boot <- bind_rows(lapply(seq_along(samp_sub), function(j) {
-    tmp <- by_sub[[samp_sub[j]]]
-    tmp$subclass_boot <- paste0(samp_sub[j],".",j)  # new cluster id
-    tmp
-  }))
+  # build boot dataset efficiently via one join:
+  # map draw index j -> sampled subclass, then join to replicate all rows per subclass
+  map <- data.table(j = seq_along(samp_sub), subclass = samp_sub)
+  dat.boot <- data_Y3[map, on = "subclass", allow.cartesian = TRUE]
+  # new cluster id per draw
+  dat.boot[, subclass_boot := paste0(subclass, ".", j)] 
   
   # run test neg model
   eqc_itt_fit1 <- coxph(
@@ -134,15 +130,14 @@ boot.results <- lapply(1:num.boot, function(i){
   
   return(c(
     sim=i,
-    treatHR=exp(eqc_itt_fit2$coefficients["treatment"]) / exp(eqc_itt_fit1$coefficients["treatment"]),
-    fluvaxHR=exp(eqc_itt_fit2$coefficients["flu_vax"]) / exp(eqc_itt_fit1$coefficients["flu_vax"])
+    treatHR=unname(exp(eqc_itt_fit2$coefficients["treatment"])) / unname(exp(eqc_itt_fit1$coefficients["treatment"])),
+    fluvaxHR=unname(exp(eqc_itt_fit2$coefficients["flu_vax"])) / unname(exp(eqc_itt_fit1$coefficients["flu_vax"]))
   ))
   
 })
 
-boot.mat <- do.call(rbind, boot.results)
-
-
+boot.long <- bind_rows(lapply(boot.results, tibble::as_tibble_row))
+saveRDS(boot.long, paste0(res_path, "eqc.itt.boot.long.rds"))
 
 
 
@@ -192,21 +187,6 @@ boot.mat <- do.call(rbind, boot.results)
 # # write_rds(eqc_Y3_cox_pp_tidy, file = "results/eqc_Y3_cox_pp_tidy.rds") # 2025-12-10
 
 
-# TND Comparison ----------------------------------------------------------
 
-
-tnd_fit <- geeglm(
-  Y3_itt_factor == "Test Positive" ~ treatment + sex_admin + age_years + ndi +
-    bmi + flu_vax + prior_inf + tests_count +
-    race + service_region + last_vax_infect_weeks + charlson_cat_fac,
-  data = subset(data_Y3, Y3_itt_factor != "Censor"),
-  id = subclass,
-  family = binomial(link = "logit")
-)
-
-tnd_tidy <- tidy(tnd_fit, conf.int = TRUE, exponentiate = TRUE)
-
-tnd_tidy |> print(n=100)
-# write_rds(tnd_tidy, file = "results/tnd_tidy.rds") # 2025-12-10
 
 
