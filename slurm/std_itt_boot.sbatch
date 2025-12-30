@@ -4,7 +4,7 @@
 #SBATCH -e logs/std_itt_boot_%j.err
 #SBATCH -p shared
 #SBATCH -c 1
-#SBATCH -t 0-12:00
+#SBATCH -t 0-14:00
 #SBATCH --mem=64000 # in Mb
 
 # RStudio Server container + package library
@@ -16,3 +16,6 @@ singularity exec \
 	--env R_LIBS_USER=${R_LIB} \
 	${RSTUDIO_IMG} \
 	Rscript scripts/standard_analysis_pooled_itt_boot.R
+
+# run with
+# sbatch slurm/std_itt_boot.sbatch
