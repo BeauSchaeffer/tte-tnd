@@ -17,7 +17,7 @@ res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/
 
   std.itt.cox.pointest <- readRDS(paste0(res_path,"std.itt.cox.pointest.rds"))
 
-# STD Pooled - need to rerun with paired sampling
+# STD Pooled - rerunning with paired sampling
 
   # std_pooled_itt_model <- readRDS(paste0(res_path, "std_pooled_itt_model.rds"))
   std.itt.risk.pointest <- readRDS(paste0(res_path, "std.itt.risk.pointest.rds"))
