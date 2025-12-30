@@ -4,33 +4,44 @@
 
 # Packages ----------------------------------------------------------------
 
+
 library(tidyverse)
+
 
 # Data --------------------------------------------------------------------
 
+
 res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/"
 
-# STD Cox
-std.itt.cox.pointest <- readRDS(paste0(res_path,"std.itt.cox.pointest.rds"))
+# STD Cox - complete
 
-# STD Pooled
-std.itt.boot.long <- readRDS(paste0(res_path, "std.itt.boot.long.rds"))
-std.itt.risk.pointest <- readRDS(paste0(res_path, "std.itt.risk.pointest.rds"))
+  std.itt.cox.pointest <- readRDS(paste0(res_path,"std.itt.cox.pointest.rds"))
 
-# TND
-tnd.pointest <- readRDS(paste0(res_path,"tnd.pointest.rds"))
+# STD Pooled - need to rerun with paired sampling
 
-# EQC Cox
-eqc.itt.cox.pointest <- readRDS(paste0(res_path, "eqc.itt.cox.pointest.rds"))
+  # std_pooled_itt_model <- readRDS(paste0(res_path, "std_pooled_itt_model.rds"))
+  std.itt.risk.pointest <- readRDS(paste0(res_path, "std.itt.risk.pointest.rds"))
+  std.itt.boot.long <- readRDS(paste0(res_path, "std.itt.boot.long.rds"))
 
-# EQC Pooled
+# TND - complete
 
+  tnd.pointest <- readRDS(paste0(res_path,"tnd.pointest.rds"))
 
+# EQC Cox - complete
 
+  eqc.itt.cox.pointest <- readRDS(paste0(res_path, "eqc.itt.cox.pointest.rds"))
+  eqc.itt.cox.boot.long <- readRDS(paste0(res_path, "eqc.itt.cox.boot.long.rds"))
 
-# Boot CI function --------------------------------------------------------
+# EQC Pooled - incomplete
+  
+# PCI Cox - incomplete
+  
+# PCI Pooled - incomplete
+  
+  
+# Boot CI functions -------------------------------------------------------
 
-boot.ci <- function(point.est, boot.long, alpha = 0.05){
+pooled.boot.ci <- function(point.est, boot.long, alpha = 0.05){
   
   boot.ci <- boot.long |>
     group_by(time_end) |>
@@ -48,6 +59,26 @@ boot.ci <- function(point.est, boot.long, alpha = 0.05){
     relocate(time_end, risk0, risk0_lo, risk0_hi, risk1, risk1_lo, risk1_hi)
   
   return(boot.point.ci)
+}
+  
+cox.boot.ci <- function(point.est, boot.long, alpha = 0.05){
+  
+  boot.ci <- boot.long |> 
+    summarise(
+      treatHR_lo = quantile(treatHR, probs = alpha/2, na.rm = TRUE),
+      treatHR_hi = quantile(treatHR, probs = 1 - alpha/2, na.rm = TRUE),
+      fluvaxHR_lo = quantile(fluvaxHR, probs = alpha/2, na.rm = TRUE),
+      fluvaxHR_hi = quantile(fluvaxHR, probs = 1 - alpha/2, na.rm = TRUE)
+    )
+  
+  point.df <- data.frame(
+    treatHR = unname(eqc.itt.cox.pointest["treatHR"]),
+    fluvaxHR = unname(eqc.itt.cox.pointest["fluvaxHR"])
+  )
+  
+  bind_cols(point.df, boot.ci) |> 
+    relocate(treatHR, treatHR_lo, treatHR_hi, fluvaxHR, fluvaxHR_lo, fluvaxHR_hi)
+  
 }
 
 # Plotting function -------------------------------------------------------
@@ -137,11 +168,17 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 
 # STD ITT -----------------------------------------------------------------
 
-std.itt.risks.ci <- boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
+std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
 # saveRDS(std_itt_risks_ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2025-12-23
 
 plot.risk.with.boot.ci(std_itt_risks_ci, title.sub  = "Standard TTE (ITT)")
 
+
+# EQC ITT -----------------------------------------------------------------
+
+
+eqc.itt.HRs.ci <- cox.boot.ci(eqc.itt.cox.pointest, eqc.itt.cox.boot.long)
+# saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds")) # 2025-12-30
 
 
 
