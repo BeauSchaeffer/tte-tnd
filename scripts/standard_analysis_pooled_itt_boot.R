@@ -8,7 +8,6 @@ library(tidyverse)
 library(data.table)
 library(speedglm)
 library(splines)
-library(geepack)
 
 # Data --------------------------------------------------------------------
 
@@ -24,21 +23,33 @@ num.boot <- 100
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
 
+setDT(dat)
+setkey(dat, subclass)
+subclasses <- dat[, unique(subclass)]
+n_sub <- length(subclasses)
+
 boot.results <- lapply(1:num.boot, function(i){
   
   t0 <- Sys.time()
   
   set.seed(seed[i])
+
+  message(
+    "Starting STD ITT pooled bootstrap ", i,
+    " (seed=", seed[i], ") at ",
+    format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+  )
   
-  message("Starting bootstrap ", i, " (seed=", seed[i], ")")
+  # select matched pairs
+  samp_sub <- sample(subclasses, size = n_sub, replace = TRUE)
   
-  # select row indices
-  sample.row <- sample(nrow(dat), size=nrow(dat), replace=T)
-  
-  # pull selected rows
-  dat.boot <- dat[sample.row,]  
-  dat.boot$bootid <- seq(1:nrow(dat.boot))
-  
+  # build boot dataset efficiently via one join:
+  # map draw index j -> sampled subclass, then join to replicate all rows per subclass
+  map <- data.table(j = seq_along(samp_sub), subclass = samp_sub)
+  dat.boot <- dat[map, on = "subclass", allow.cartesian = TRUE]
+  # new cluster id per draw
+  dat.boot[, bootid := j]
+
   # long format data
   time_unit <- 1
   
