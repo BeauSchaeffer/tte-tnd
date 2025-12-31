@@ -47,8 +47,11 @@ boot.results <- lapply(1:num.boot, function(i){
   # map draw index j -> sampled subclass, then join to replicate all rows per subclass
   map <- data.table(j = seq_along(samp_sub), subclass = samp_sub)
   dat.boot <- dat[map, on = "subclass", allow.cartesian = TRUE]
-  # new cluster id per draw
+  # new cluster/matched pair id per draw
   dat.boot[, bootid := j]
+  # new individual id per draw
+  # use data.table special group index variable
+  dat.boot[, bootid_mrn := .GRP, by = .(bootid, fake_mrn)]
 
   # long format data
   time_unit <- 1
@@ -56,9 +59,12 @@ boot.results <- lapply(1:num.boot, function(i){
   dat.boot$max_units <- ceiling(dat.boot$Y2_itt_t_trunc/time_unit)+1
   dat.long.boot.itt <- dat.boot[rep(1:nrow(dat.boot), dat.boot$max_units),]
   
-  dat.long.boot.itt$time_start <- ave(dat.long.boot.itt$bootid, dat.long.boot.itt$bootid, FUN=seq_along)
+  dat.long.boot.itt$time_start <- ave(dat.long.boot.itt$bootid_mrn, dat.long.boot.itt$bootid_mrn, FUN=seq_along)
   dat.long.boot.itt$time_start <- (dat.long.boot.itt$time_start-1)*time_unit
   dat.long.boot.itt$time_end <- dat.long.boot.itt$time_start+time_unit
+  
+  # recommended add
+  # dat.long.boot.itt <- dat.long.boot.itt[order(dat.long.boot.itt$bootid_mrn, dat.long.boot.itt$time_end),]
   
   dat.long.boot.itt$Y <- ifelse(
     dat.long.boot.itt$Y2_itt_trunc == 1 &
@@ -90,13 +96,13 @@ boot.results <- lapply(1:num.boot, function(i){
   dat.boot$gmaxt <- 53
   
   std_itt_A0.long <- dat.boot[rep(1:nrow(dat.boot), dat.boot$gmaxt),]
-  std_itt_A0.long$time_start <- ave(std_itt_A0.long$bootid, std_itt_A0.long$bootid, FUN=seq_along)
+  std_itt_A0.long$time_start <- ave(std_itt_A0.long$bootid_mrn, std_itt_A0.long$bootid_mrn, FUN=seq_along)
   std_itt_A0.long$time_start <- (std_itt_A0.long$time_start-1)*time_unit
   std_itt_A0.long$time_end <- std_itt_A0.long$time_start+time_unit
   std_itt_A0.long$treatment <- 0
   
   std_itt_A1.long <- dat.boot[rep(1:nrow(dat.boot), dat.boot$gmaxt),]
-  std_itt_A1.long$time_start <- ave(std_itt_A1.long$bootid, std_itt_A1.long$bootid, FUN=seq_along)
+  std_itt_A1.long$time_start <- ave(std_itt_A1.long$bootid_mrn, std_itt_A1.long$bootid_mrn, FUN=seq_along)
   std_itt_A1.long$time_start <- (std_itt_A1.long$time_start-1)*time_unit
   std_itt_A1.long$time_end <- std_itt_A1.long$time_start+time_unit
   std_itt_A1.long$treatment <- 1
@@ -107,11 +113,11 @@ boot.results <- lapply(1:num.boot, function(i){
   std_itt_A0.long$pnoevent <- 1 - std_itt_A0.long$hazard
   std_itt_A1.long$pnoevent <- 1 - std_itt_A1.long$hazard
   
-  std_itt_A0.long <- std_itt_A0.long[order(std_itt_A0.long$bootid, std_itt_A0.long$time_end),]
-  std_itt_A1.long <- std_itt_A1.long[order(std_itt_A1.long$bootid, std_itt_A1.long$time_end),]
+  std_itt_A0.long <- std_itt_A0.long[order(std_itt_A0.long$bootid_mrn, std_itt_A0.long$time_end),]
+  std_itt_A1.long <- std_itt_A1.long[order(std_itt_A1.long$bootid_mrn, std_itt_A1.long$time_end),]
   
-  std_itt_A0.long$survival <- ave(std_itt_A0.long$pnoevent, std_itt_A0.long$bootid, FUN=cumprod)
-  std_itt_A1.long$survival <- ave(std_itt_A1.long$pnoevent, std_itt_A1.long$bootid, FUN=cumprod)
+  std_itt_A0.long$survival <- ave(std_itt_A0.long$pnoevent, std_itt_A0.long$bootid_mrn, FUN=cumprod)
+  std_itt_A1.long$survival <- ave(std_itt_A1.long$pnoevent, std_itt_A1.long$bootid_mrn, FUN=cumprod)
   
   std_itt_A0.long$risk <- 1 - std_itt_A0.long$survival
   std_itt_A1.long$risk <- 1 - std_itt_A1.long$survival
