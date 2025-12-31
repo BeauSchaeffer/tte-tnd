@@ -16,6 +16,9 @@ logs/
 scripts/data_transfer.sh
 scripts/data_cleaning.R
 
+# notebook
+notebook.md
+
 # show folders
 !figures/
 !results/
