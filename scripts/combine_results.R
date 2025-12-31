@@ -169,9 +169,9 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 # STD ITT -----------------------------------------------------------------
 
 std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
-# saveRDS(std_itt_risks_ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2025-12-23
+# saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2025-12-23
 
-plot.risk.with.boot.ci(std_itt_risks_ci, title.sub  = "Standard TTE (ITT)")
+plot.risk.with.boot.ci(std.itt.risks.ci, title.sub  = "Standard TTE (ITT)")
 
 
 # EQC ITT -----------------------------------------------------------------
