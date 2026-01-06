@@ -1,0 +1,1 @@
+rsync -avh --progress bschaeffer@login.rc.fas.harvard.edu:/n/netscratch/hanage_lab/Lab/bschaeffer/tte-tnd /Users/beauschaeffer/Desktop/Research/tte_tnd
