@@ -203,7 +203,9 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
 # saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2025-12-23
 
+# png("figures_draft/std.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(std.itt.risks.ci, title.sub  = "Standard TTE (ITT)")
+# dev.off()
 
 
 # EQC ITT -----------------------------------------------------------------
@@ -213,9 +215,11 @@ eqc.itt.HRs.ci <- cox.boot.ci(eqc.itt.cox.pointest, eqc.itt.cox.boot.long)
 # saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds")) # 2025-12-30
 
 eqc.itt.risks.ci <- pooled.boot.ci(point.est = eqc.itt.risk.pointest, boot.long = eqc.itt.boot.long)
-# saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds")) # 
+# saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds")) # 2026-01-06
 
+# png("figures_draft/eqc.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(eqc.itt.risks.ci, title.sub  = "Equi-confounding (ITT)")
+# dev.off()
 
 
 
