@@ -16,7 +16,7 @@ logs/
 # other
 scripts/data_transfer.sh
 scripts/data_cleaning.R
-.DS_store
+.DS_Store
 
 # notebook
 notebook.md
