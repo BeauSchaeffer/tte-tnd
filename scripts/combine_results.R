@@ -13,26 +13,29 @@ library(tidyverse)
 
 res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/"
 
-# STD Cox - complete
+# STD Cox
 
   std.itt.cox.pointest <- readRDS(paste0(res_path,"std.itt.cox.pointest.rds"))
 
-# STD Pooled - rerunning with paired sampling
+# STD Pooled
 
   # std_pooled_itt_model <- readRDS(paste0(res_path, "std_pooled_itt_model.rds"))
   std.itt.risk.pointest <- readRDS(paste0(res_path, "std.itt.risk.pointest.rds"))
   std.itt.boot.long <- readRDS(paste0(res_path, "std.itt.boot.long.rds"))
 
-# TND - complete
+# TND
 
   tnd.pointest <- readRDS(paste0(res_path,"tnd.pointest.rds"))
 
-# EQC Cox - complete
+# EQC Cox
 
   eqc.itt.cox.pointest <- readRDS(paste0(res_path, "eqc.itt.cox.pointest.rds"))
   eqc.itt.cox.boot.long <- readRDS(paste0(res_path, "eqc.itt.cox.boot.long.rds"))
 
-# EQC Pooled - incomplete
+# EQC Pooled
+  
+  eqc.itt.risk.pointest <- readRDS(paste0(res_path, "eqc.itt.risk.pointest.rds"))
+  eqc.itt.boot.long <- readRDS(paste0(res_path, "eqc.itt.boot.long.rds"))
   
 # PCI Cox - incomplete
   
@@ -41,26 +44,54 @@ res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/
   
 # Boot CI functions -------------------------------------------------------
 
+# pooled.boot.ci <- function(point.est, boot.long, alpha = 0.05){
+#   
+#   boot.ci <- boot.long |>
+#     group_by(time_end) |>
+#     summarise(
+#       risk0_lo = quantile(risk0, probs = alpha/2, na.rm = TRUE),
+#       risk0_hi = quantile(risk0, probs = 1 - alpha/2, na.rm = TRUE),
+#       risk1_lo = quantile(risk1, probs = alpha/2, na.rm = TRUE),
+#       risk1_hi = quantile(risk1, probs = 1 - alpha/2, na.rm = TRUE),
+#       .groups = "drop"
+#     )
+#   
+#   boot.point.ci <- boot.ci |>
+#     left_join(point.est, by = "time_end") |>
+#     select(-sim) |>
+#     relocate(time_end, risk0, risk0_lo, risk0_hi, risk1, risk1_lo, risk1_hi)
+#   
+#   return(boot.point.ci)
+# }
+  
 pooled.boot.ci <- function(point.est, boot.long, alpha = 0.05){
-  
-  boot.ci <- boot.long |>
-    group_by(time_end) |>
-    summarise(
-      risk0_lo = quantile(risk0, probs = alpha/2, na.rm = TRUE),
-      risk0_hi = quantile(risk0, probs = 1 - alpha/2, na.rm = TRUE),
-      risk1_lo = quantile(risk1, probs = alpha/2, na.rm = TRUE),
-      risk1_hi = quantile(risk1, probs = 1 - alpha/2, na.rm = TRUE),
-      .groups = "drop"
-    )
-  
-  boot.point.ci <- boot.ci |>
-    left_join(point.est, by = "time_end") |>
-    select(-sim) |>
-    relocate(time_end, risk0, risk0_lo, risk0_hi, risk1, risk1_lo, risk1_hi)
-  
-  return(boot.point.ci)
+    
+    # decide which column to treat as "risk0"
+    risk0_var <- if ("risk0corr" %in% names(boot.long)) "risk0corr" else "risk0"
+    
+    boot.ci <- boot.long |>
+      group_by(time_end) |>
+      summarise(
+        risk0_lo = quantile(.data[[risk0_var]], probs = alpha/2, na.rm = TRUE),
+        risk0_hi = quantile(.data[[risk0_var]], probs = 1 - alpha/2, na.rm = TRUE),
+        risk1_lo = quantile(risk1, probs = alpha/2, na.rm = TRUE),
+        risk1_hi = quantile(risk1, probs = 1 - alpha/2, na.rm = TRUE),
+        .groups = "drop"
+      )
+    
+    # ensure point estimate uses the same risk0 definition
+    point.est.use <- point.est |>
+      mutate(risk0 = if (risk0_var == "risk0corr") risk0corr else risk0)
+    
+    boot.point.ci <- boot.ci |>
+      left_join(point.est.use, by = "time_end") |>
+      select(-sim, -any_of("risk0corr")) |>
+      relocate(time_end, risk0, risk0_lo, risk0_hi, risk1, risk1_lo, risk1_hi)
+    
+    return(boot.point.ci)
 }
   
+
 cox.boot.ci <- function(point.est, boot.long, alpha = 0.05){
   
   boot.ci <- boot.long |> 
@@ -168,6 +199,7 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 
 # STD ITT -----------------------------------------------------------------
 
+
 std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
 # saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2025-12-23
 
@@ -180,8 +212,10 @@ plot.risk.with.boot.ci(std.itt.risks.ci, title.sub  = "Standard TTE (ITT)")
 eqc.itt.HRs.ci <- cox.boot.ci(eqc.itt.cox.pointest, eqc.itt.cox.boot.long)
 # saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds")) # 2025-12-30
 
+eqc.itt.risks.ci <- pooled.boot.ci(point.est = eqc.itt.risk.pointest, boot.long = eqc.itt.boot.long)
+# saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds")) # 
 
-
+plot.risk.with.boot.ci(eqc.itt.risks.ci, title.sub  = "Equi-confounding (ITT)")
 
 
 

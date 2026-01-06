@@ -15,10 +15,7 @@ logs/
 # other
 scripts/data_transfer.sh
 scripts/data_cleaning.R
+.DS_store
 
 # notebook
 notebook.md
-
-# show folders
-!figures/
-!results/
