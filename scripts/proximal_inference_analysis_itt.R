@@ -1,9 +1,8 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
-##----- Proximal Inference Analysis
+##----- Proximal Inference ITT Analysis
 
-# setwd("~/Desktop/Research/Kaiser/KP_analysis")
-
+## in progress
 
 # Packages ----------------------------------------------------------------
 
