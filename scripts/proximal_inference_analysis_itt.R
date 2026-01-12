@@ -2,7 +2,6 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Proximal Inference ITT Analysis
 
-## in progress
 
 # Packages ----------------------------------------------------------------
 

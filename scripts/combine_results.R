@@ -37,32 +37,16 @@ res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/
   eqc.itt.risk.pointest <- readRDS(paste0(res_path, "eqc.itt.risk.pointest.rds"))
   eqc.itt.boot.long <- readRDS(paste0(res_path, "eqc.itt.boot.long.rds"))
   
-# PCI Cox - incomplete
+# PCI Cox
+  
+  pci.itt.cox.pointest <- readRDS(paste0(res_path, "pci.itt.cox.pointest.rds"))
+  pci.itt.cox.boot.long <- readRDS(paste0(res_path, "pci.itt.cox.boot.long.rds"))
   
 # PCI Pooled - incomplete
   
   
 # Boot CI functions -------------------------------------------------------
 
-# pooled.boot.ci <- function(point.est, boot.long, alpha = 0.05){
-#   
-#   boot.ci <- boot.long |>
-#     group_by(time_end) |>
-#     summarise(
-#       risk0_lo = quantile(risk0, probs = alpha/2, na.rm = TRUE),
-#       risk0_hi = quantile(risk0, probs = 1 - alpha/2, na.rm = TRUE),
-#       risk1_lo = quantile(risk1, probs = alpha/2, na.rm = TRUE),
-#       risk1_hi = quantile(risk1, probs = 1 - alpha/2, na.rm = TRUE),
-#       .groups = "drop"
-#     )
-#   
-#   boot.point.ci <- boot.ci |>
-#     left_join(point.est, by = "time_end") |>
-#     select(-sim) |>
-#     relocate(time_end, risk0, risk0_lo, risk0_hi, risk1, risk1_lo, risk1_hi)
-#   
-#   return(boot.point.ci)
-# }
   
 pooled.boot.ci <- function(point.est, boot.long, alpha = 0.05){
     
@@ -90,27 +74,48 @@ pooled.boot.ci <- function(point.est, boot.long, alpha = 0.05){
     
     return(boot.point.ci)
 }
-  
 
-cox.boot.ci <- function(point.est, boot.long, alpha = 0.05){
-  
-  boot.ci <- boot.long |> 
+eqc.cox.boot.ci <- function(point.est, boot.long, alpha = 0.05){
+
+  boot.ci <- boot.long |>
     summarise(
       treatHR_lo = quantile(treatHR, probs = alpha/2, na.rm = TRUE),
       treatHR_hi = quantile(treatHR, probs = 1 - alpha/2, na.rm = TRUE),
       fluvaxHR_lo = quantile(fluvaxHR, probs = alpha/2, na.rm = TRUE),
       fluvaxHR_hi = quantile(fluvaxHR, probs = 1 - alpha/2, na.rm = TRUE)
     )
-  
+
   point.df <- data.frame(
     treatHR = unname(eqc.itt.cox.pointest["treatHR"]),
     fluvaxHR = unname(eqc.itt.cox.pointest["fluvaxHR"])
   )
-  
-  bind_cols(point.df, boot.ci) |> 
+
+  bind_cols(point.df, boot.ci) |>
     relocate(treatHR, treatHR_lo, treatHR_hi, fluvaxHR, fluvaxHR_lo, fluvaxHR_hi)
+
+}
+
+pci.cox.boot.ci <- function(point.est, boot.long, alpha = 0.05){
+  
+  boot.ci <- boot.long |>
+    summarise(
+      treatHR_lo = quantile(treatHR, probs = alpha/2, na.rm = TRUE),
+      treatHR_hi = quantile(treatHR, probs = 1 - alpha/2, na.rm = TRUE)
+    )
+  
+  treatHR <- point.est |>
+    filter(term == "treatment") |>
+    pull(estimate) |>
+    first()
+  
+  point.df <- data.frame(treatHR = treatHR)
+  
+  
+  bind_cols(point.df, boot.ci) |>
+    relocate(treatHR, treatHR_lo, treatHR_hi)
   
 }
+
 
 # Plotting function -------------------------------------------------------
 
@@ -211,7 +216,7 @@ plot.risk.with.boot.ci(std.itt.risks.ci, title.sub  = "Standard TTE (ITT)")
 # EQC ITT -----------------------------------------------------------------
 
 
-eqc.itt.HRs.ci <- cox.boot.ci(eqc.itt.cox.pointest, eqc.itt.cox.boot.long)
+eqc.itt.HRs.ci <- eqc.cox.boot.ci(eqc.itt.cox.pointest, eqc.itt.cox.boot.long)
 # saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds")) # 2025-12-30
 
 eqc.itt.risks.ci <- pooled.boot.ci(point.est = eqc.itt.risk.pointest, boot.long = eqc.itt.boot.long)
@@ -220,6 +225,13 @@ eqc.itt.risks.ci <- pooled.boot.ci(point.est = eqc.itt.risk.pointest, boot.long 
 # png("figures_draft/eqc.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(eqc.itt.risks.ci, title.sub  = "Equi-confounding (ITT)")
 # dev.off()
+
+
+# PCI ITT -----------------------------------------------------------------
+
+pci.itt.HRs.ci <- pci.cox.boot.ci(pci.itt.cox.pointest, pci.itt.cox.boot.long)
+# saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds")) # 2026-01-12
+
 
 
 
