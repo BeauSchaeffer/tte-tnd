@@ -74,7 +74,7 @@ saveRDS(pci.itt.cox.pointest, paste0(res_path,"pci.itt.cox.pointest.rds")) # 202
 
 # Bootstrap CIs for ITT ---------------------------------------------------
 
-num.boot <- 2
+num.boot <- 100
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
@@ -144,7 +144,7 @@ boot.results <- lapply(1:num.boot, function(i){
 })
 
 boot.long <- bind_rows(lapply(boot.results, tibble::as_tibble_row))
-# saveRDS(boot.long, paste0(res_path, "pci.itt.cox.boot.long.rds"))
+saveRDS(boot.long, paste0(res_path, "pci.itt.cox.boot.long.rds"))
 
 
 
