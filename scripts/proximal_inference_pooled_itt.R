@@ -75,8 +75,10 @@ dat.long.itt$Y_neg <- ifelse(dat.long.itt$C==1, NA, dat.long.itt$Y_neg)
 # ITT Pooled Logistic -----------------------------------------------------
 
   ### time interacting with all variables, note ns()*()
-  ### mem pressure ~54-58
-  ### crashed, will need to request more than 64gb
+  ### mem pressure ~54-58 GB
+  ### crashed, will need to request more than 64 GB
+  ### 100 GB took longer than 30 min
+  ### 150 GB ...
 
 prox_pooled_itt_s1 <- glm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatment +
                              # demographic
