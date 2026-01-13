@@ -75,12 +75,10 @@ dat.long.itt$Y_neg <- ifelse(dat.long.itt$C==1, NA, dat.long.itt$Y_neg)
 # ITT Pooled Logistic -----------------------------------------------------
 
   ### time interacting with all variables, note ns()*()
-  ### mem pressure ~54-58 GB
-  ### crashed, will need to request more than 64 GB
-  ### 100 GB took longer than 30 min
-  ### 150 GB ...
+  ### mem pressure peaks around 75 GB
+  ### 100 GB with speedglm - works in a few mins
 
-prox_pooled_itt_s1 <- glm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatment +
+prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatment +
                              # demographic
                              sex_admin + age_years + bmi + race + charlson_cat_fac +
                              # other
@@ -92,7 +90,7 @@ prox_pooled_itt_s1 <- glm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatment +
 
 dat.long.itt$p_itt <- predict(prox_pooled_itt_s1, newdata = dat.long.itt)
 
-prox_pooled_itt_s2 <- glm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
                             # demographic
                             sex_admin + age_years + bmi + race + charlson_cat_fac +
                             # other
@@ -103,7 +101,7 @@ prox_pooled_itt_s2 <- glm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
                           data=dat.long.itt,
                           family=binomial())
 
-prox_pooled_itt_obs <- glm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
                              # demographic
                              sex_admin + age_years + bmi + race + charlson_cat_fac +
                              # other
@@ -128,7 +126,7 @@ prox_itt_A0.long$treatment_obs <- prox_itt_A0.long$treatment
 prox_itt_A0.long$treatment <- 0
 
 ### G formula data setup A=1
-prox_itt_A1.long <- dat_downsamp[rep(1:nrow(dat_downsamp), dat_downsamp$gmaxt),]
+prox_itt_A1.long <- dat[rep(1:nrow(dat), dat$gmaxt),]
 prox_itt_A1.long$time_start <- ave(prox_itt_A1.long$fake_mrn, prox_itt_A1.long$fake_mrn, FUN=seq_along)
 prox_itt_A1.long$time_start <- (prox_itt_A1.long$time_start-1)*time_unit
 prox_itt_A1.long$time_end <- prox_itt_A1.long$time_start+time_unit
