@@ -138,6 +138,7 @@ prox_itt_A0.long$p_itt <- predict(prox_pooled_itt_s1, newdata=prox_itt_A0.long, 
 prox_itt_A1.long$p_itt <- predict(prox_pooled_itt_s1, newdata=prox_itt_A1.long, type="link") 
 
 ### predicted hazards testing NEGATIVE stage 1 model
+  ### used later to generate pnoevent_neg and then surv_prod
 prox_itt_A0.long$hazard_neg <- predict(prox_pooled_itt_s1, newdata=prox_itt_A0.long, type="response") 
 prox_itt_A1.long$hazard_neg <- predict(prox_pooled_itt_s1, newdata=prox_itt_A1.long, type="response")
 
@@ -147,10 +148,13 @@ prox_itt_A1.long$hazard_neg <- predict(prox_pooled_itt_s1, newdata=prox_itt_A1.l
 # prox_itt_A1.long$hazard_pos <- predict(prox_pooled_itt_s2, newdata=prox_itt_A1.long, type="response")
 
 ### predicted hazards testing POSITIVE from observed model
+  ### needed for switching function below
 prox_itt_A0.long$hazard_pos_obs <- predict(prox_pooled_itt_obs, newdata=prox_itt_A0.long, type="response")
 prox_itt_A1.long$hazard_pos_obs <- predict(prox_pooled_itt_obs, newdata=prox_itt_A1.long, type="response")
 
-### new section
+
+  ### referent data frames
+  ### treatment contrasts at time t holding everything else fixed
 
 df_ref_A1 <- data.frame(time_end=seq(1,53,1),
                         treatment=1,
@@ -191,24 +195,24 @@ prox_itt_A1.long <- left_join(prox_itt_A1.long, time_df, by="time_end")
 
 ### switching function
 
-### removing treatment from treated
+  ### removing treatment from treated
 prox_itt_A0.long$hazard_pos <- prox_itt_A0.long$hazard_pos_obs * exp(-prox_itt_A0.long$logHR * prox_itt_A0.long$treatment_obs)
 ### adding treated to untreated
 prox_itt_A1.long$hazard_pos <- prox_itt_A1.long$hazard_pos_obs * exp(prox_itt_A1.long$logHR * (1-prox_itt_A1.long$treatment_obs))
 
-### calculate (1 - hazard POSITIVE)
+  ### calculate (1 - hazard POSITIVE)
 prox_itt_A0.long$pnoevent_pos <- 1 - prox_itt_A0.long$hazard_pos
 prox_itt_A1.long$pnoevent_pos <- 1 - prox_itt_A1.long$hazard_pos
 
-### calculate (1 - hazard NEGATIVE)
+  ### calculate (1 - hazard NEGATIVE)
 prox_itt_A0.long$pnoevent_neg <- 1 - prox_itt_A0.long$hazard_neg
 prox_itt_A1.long$pnoevent_neg <- 1 - prox_itt_A1.long$hazard_neg
 
-### sort the data by ID, time
+  ### sort the data by ID, time
 prox_itt_A0.long <- prox_itt_A0.long[order(prox_itt_A0.long$fake_mrn, prox_itt_A0.long$time_end),] 
 prox_itt_A1.long <- prox_itt_A1.long[order(prox_itt_A1.long$fake_mrn, prox_itt_A1.long$time_end),]
 
-### lag (1 - hazard POSITIVE)
+  ### lag (1 - hazard POSITIVE)
 prox_itt_A0.long <- prox_itt_A0.long |> 
   arrange(fake_mrn, time_end) |> 
   group_by(fake_mrn) |> 
@@ -221,7 +225,7 @@ prox_itt_A1.long <- prox_itt_A1.long |>
   mutate(pnoevent_pos_lag = lag(pnoevent_pos, n=1, default=1)) |> 
   ungroup()
 
-### lag (1 - hazard NEGATIVE)
+  ### lag (1 - hazard NEGATIVE)
 prox_itt_A0.long <- prox_itt_A0.long |> 
   arrange(fake_mrn, time_end) |> 
   group_by(fake_mrn) |> 
@@ -233,7 +237,6 @@ prox_itt_A1.long <- prox_itt_A1.long |>
   group_by(fake_mrn) |> 
   mutate(pnoevent_neg_lag = lag(pnoevent_neg, n=1, default=1)) |> 
   ungroup()
-
 
 
 ### AJ estimator
@@ -252,8 +255,6 @@ prox_itt_A1.long$risk_pos <- ave(prox_itt_A1.long$risk_prod, prox_itt_A1.long$fa
 
 prox_itt_A0.long.res <- aggregate(risk_pos ~ time_end, data=prox_itt_A0.long, FUN=mean)
 prox_itt_A1.long.res <- aggregate(risk_pos ~ time_end, data=prox_itt_A1.long, FUN=mean)
-
-### AJ estimator
 
 
 
@@ -304,98 +305,6 @@ prox_itt_A1.long.res <- aggregate(risk_pos ~ time_end, data=prox_itt_A1.long, FU
 # # ### calculate the average risk at each time point
 # # prox_itt_A0.long.res <- aggregate(risk ~ time_end, data=prox_itt_A0.long, FUN=mean)
 # # prox_itt_A1.long.res <- aggregate(risk ~ time_end, data=prox_itt_A1.long, FUN=mean)
-
-
-### plot the risk curves
-
-# png("results/prox_Y3_risks_itt_p.png", width = 2400, height = 1800, res=300)
-
-par(mar = c(5.1, 5.5, 4.1, 2.1))
-plot(NULL,
-     xlim = range(c(0, prox_itt_A0.long.res$time_end, prox_itt_A1.long.res$time_end)),
-     ylim = range(c(0, 0.10)),
-     xlab="Weeks",
-     ylab="Risk",
-     main="Risk Curves",
-     cex.axis = 1.5,
-     cex.lab = 1.5,
-     cex.main=1.4
-)
-mtext("Proximal Causal Inference (ITT)", side = 3, line = 0.5, font = 3, cex=1.2)
-grid()
-lines(c(0, prox_itt_A0.long.res$time_end), c(0, prox_itt_A0.long.res$risk_pos), col='#006663', lty=1, lwd=4)
-lines(c(0, prox_itt_A1.long.res$time_end), c(0, prox_itt_A1.long.res$risk_pos), col='#FF6B1A', lty=1, lwd=4)
-legend("topleft",
-       legend = c("No Booster", "Booster"),
-       col = c("#006663", "#FF6B1A"),
-       lty = 1, lwd = 4, bty = "n", cex=1.2)
-
-# dev.off() # 2025-12-10
-
-# rm(prox_itt_A0.long.res, prox_itt_A1.long.res, prox_itt_A0.long, prox_itt_A1.long)
-
-### Plot RR over time
-
-setDT(prox_itt_A0.long.res)
-setDT(prox_itt_A1.long.res)
-
-prox_RR_itt <- data.table(
-  Week = 1:53,
-  RR = sapply(1:53, function(wk) {
-    num_pos <- prox_itt_A1.long.res[time_end == wk, risk_pos]
-    denom_pos <- prox_itt_A0.long.res[time_end == wk, risk_pos]
-    return(
-      as.numeric(num_pos) / as.numeric(denom_pos)
-    )
-  })
-)
-
-# write_rds(prox_RR_itt, file = "results/prox_RR_itt.rds") # 2025-12-10
-
-png("results/prox_Y3_RR_itt_p.png", width = 2400, height = 1800, res=300)
-
-par(mar = c(5.1, 5.5, 4.1, 2.1))
-plot(NULL,
-     xlim = range(c(0, prox_RR_itt$Week)),
-     ylim = range(c(0.0, 1.2)),
-     xlab = "Weeks",
-     ylab = "Risk Ratio (RR)",
-     main = "Risk Ratio Over Time",
-     cex.axis = 1.5,
-     cex.lab = 1.5,
-     cex.main=1.4)
-lines(prox_RR_itt$Week, prox_RR_itt$RR, col='black', lty=1, lwd=4)
-mtext("Proximal Causal Inference (ITT)", side = 3, line = 0.5, font = 3, cex=1.2)
-grid()
-abline(h = 1, col = "black", lty = 1, lwd = 0.5)
-
-# dev.off() # 2025-12-10
-
-### Plot EQC and PCI together
-
-# plot(NULL,
-#      xlim = range(c(0, eqc_itt_A0.long.res$time_end, eqc_itt_A1.long.res$time_end)),
-#      ylim = range(c(0, 0.15)),
-#      xlab="Weeks",
-#      ylab="Risk",
-#      main="Risk Curves"
-# )
-# mtext("Combined PCI EQC", side = 3, line = 0.5, font = 3)
-# lines(c(0, eqc_itt_A0.long.res$time_end), c(0, eqc_itt_A0.long.res$risk_pos), col='gray', lty=2)
-# lines(c(0, eqc_itt_A1.long.res$time_end), c(0, eqc_itt_A1.long.res$risk_pos), col='#FF6B1A', lty=2)
-# lines(c(0, eqc_itt_A0.long.res.c$time_end), c(0, eqc_itt_A0.long.res.c$risk_pos_c), col='#006663', lty=2)
-# lines(c(0, prox_itt_A0.long.res$time_end), c(0, prox_itt_A0.long.res$risk_pos), col='#006663', lty=1)
-# lines(c(0, prox_itt_A1.long.res$time_end), c(0, prox_itt_A1.long.res$risk_pos), col='#FF6B1A', lty=1)
-# legend("topleft",
-#        legend = c("No Booster", "Booster"),
-#        col = c("#006663", "#FF6B1A"),
-#        lty = 1, lwd = 2, bty = "n")
-# legend("topright",
-#        legend = c("PCI", "EQC"),
-#        lty = c(1, 2), lwd = 2, bty = "n")
-
-
-
 
 
 
