@@ -25,7 +25,7 @@ res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/
 # Boot --------------------------------------------------------------------
 
 
-num.boot <- 100
+num.boot <- 1
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
@@ -273,7 +273,8 @@ boot.results <- lapply(1:num.boot, function(i){
                risk1 = prox_itt_A1.long.res$risk_pos))
 })
 
-
+boot.long <- bind_rows(lapply(boot.results, as.data.frame))
+# saveRDS(boot.long, paste0(res_path, "pci.itt.boot.long.rds"))
 
 
 
