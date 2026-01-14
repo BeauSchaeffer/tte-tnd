@@ -87,6 +87,7 @@ prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatm
                              flu_vax),
                            data=dat.long.itt,
                            family=binomial())
+# saveRDS(prox_pooled_itt_s1, paste0(res_path,"prox_pooled_itt_s1.rds")) # 2026-01-14
 
 dat.long.itt$p_itt <- predict(prox_pooled_itt_s1, newdata = dat.long.itt)
 
@@ -100,6 +101,7 @@ prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatme
                             # no NEC
                           data=dat.long.itt,
                           family=binomial())
+# saveRDS(prox_pooled_itt_s2, paste0(res_path,"prox_pooled_itt_s2.rds")) # 2026-01-14
 
 prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
                              # demographic
@@ -110,7 +112,7 @@ prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatm
                              flu_vax,
                            data=dat.long.itt,
                            family=binomial())
-
+# saveRDS(prox_pooled_itt_obs, paste0(res_path,"prox_pooled_itt_obs.rds")) # 2026-01-14
 
 
 # ITT Survival and Risk ---------------------------------------------------
@@ -133,12 +135,11 @@ prox_itt_A1.long$time_end <- prox_itt_A1.long$time_start+time_unit
 prox_itt_A1.long$treatment_obs <- prox_itt_A1.long$treatment
 prox_itt_A1.long$treatment <- 1
 
-### predictions from stage 1 model
+### stage 1 linear predictor under each intervention
 prox_itt_A0.long$p_itt <- predict(prox_pooled_itt_s1, newdata=prox_itt_A0.long, type="link") 
 prox_itt_A1.long$p_itt <- predict(prox_pooled_itt_s1, newdata=prox_itt_A1.long, type="link") 
 
-### predicted hazards testing NEGATIVE stage 1 model
-  ### used later to generate pnoevent_neg and then surv_prod
+### predicted hazards testing NEGATIVE from stage 1 model under each intervention
 prox_itt_A0.long$hazard_neg <- predict(prox_pooled_itt_s1, newdata=prox_itt_A0.long, type="response") 
 prox_itt_A1.long$hazard_neg <- predict(prox_pooled_itt_s1, newdata=prox_itt_A1.long, type="response")
 
@@ -147,14 +148,11 @@ prox_itt_A1.long$hazard_neg <- predict(prox_pooled_itt_s1, newdata=prox_itt_A1.l
 # prox_itt_A0.long$hazard_pos <- predict(prox_pooled_itt_s2, newdata=prox_itt_A0.long, type="response")
 # prox_itt_A1.long$hazard_pos <- predict(prox_pooled_itt_s2, newdata=prox_itt_A1.long, type="response")
 
-### predicted hazards testing POSITIVE from observed model
-  ### needed for switching function below
+### predicted hazards testing POSITIVE from observed model under each intervention
 prox_itt_A0.long$hazard_pos_obs <- predict(prox_pooled_itt_obs, newdata=prox_itt_A0.long, type="response")
 prox_itt_A1.long$hazard_pos_obs <- predict(prox_pooled_itt_obs, newdata=prox_itt_A1.long, type="response")
 
-
-  ### referent data frames
-  ### treatment contrasts at time t holding everything else fixed
+### referent data frames for extracting stage 2 treatment contrasts at each time t
 
 df_ref_A1 <- data.frame(time_end=seq(1,53,1),
                         treatment=1,
@@ -197,8 +195,10 @@ prox_itt_A1.long <- left_join(prox_itt_A1.long, time_df, by="time_end")
 
   ### removing treatment from treated
 prox_itt_A0.long$hazard_pos <- prox_itt_A0.long$hazard_pos_obs * exp(-prox_itt_A0.long$logHR * prox_itt_A0.long$treatment_obs)
-### adding treated to untreated
+  ### adding treated to untreated
 prox_itt_A1.long$hazard_pos <- prox_itt_A1.long$hazard_pos_obs * exp(prox_itt_A1.long$logHR * (1-prox_itt_A1.long$treatment_obs))
+
+### compute survival and cumulative incidence
 
   ### calculate (1 - hazard POSITIVE)
 prox_itt_A0.long$pnoevent_pos <- 1 - prox_itt_A0.long$hazard_pos
@@ -239,7 +239,7 @@ prox_itt_A1.long <- prox_itt_A1.long |>
   ungroup()
 
 
-### AJ estimator
+### Aalen–Johansen estimator
 
 prox_itt_A0.long$surv_prod <- prox_itt_A0.long$pnoevent_neg * prox_itt_A0.long$pnoevent_pos_lag 
 prox_itt_A1.long$surv_prod <- prox_itt_A1.long$pnoevent_neg * prox_itt_A1.long$pnoevent_pos_lag
@@ -256,9 +256,18 @@ prox_itt_A1.long$risk_pos <- ave(prox_itt_A1.long$risk_prod, prox_itt_A1.long$fa
 prox_itt_A0.long.res <- aggregate(risk_pos ~ time_end, data=prox_itt_A0.long, FUN=mean)
 prox_itt_A1.long.res <- aggregate(risk_pos ~ time_end, data=prox_itt_A1.long, FUN=mean)
 
+### save point estimate risk curves in bootstrap-compatible format
+pci.itt.risk.pointest <- tibble(
+  sim = 0L,  # 0 = main analysis (bootstraps are 1..B)
+  time_end = prox_itt_A0.long.res$time_end,
+  risk0 = prox_itt_A0.long.res$risk_pos,
+  risk1 = prox_itt_A1.long.res$risk_pos
+)
+
+saveRDS(pci.itt.risk.pointest, paste0(res_path, "pci.itt.risk.pointest.rds")) # 2025-01-14
 
 
-# ### Other estimator
+# ### Alternative estimator
 # 
 # ### product at each time (P(no event neg) * lag P(no event pos))
 # prox_itt_A0.long$surv_prod_lag <- prox_itt_A0.long$pnoevent_neg_lag * prox_itt_A0.long$pnoevent_pos_lag # updated w lag neg
