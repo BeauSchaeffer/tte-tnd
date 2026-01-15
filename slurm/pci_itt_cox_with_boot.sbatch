@@ -18,4 +18,4 @@ singularity exec \
 	Rscript scripts/proximal_inference_analysis_itt.R
 
 # run with
-# sbatch slurm/pci_itt_cox_with_boot.sbatch
+# sbatch slurm/pci_itt_cox_with_boot.sbatch 
