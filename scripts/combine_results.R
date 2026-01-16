@@ -42,7 +42,32 @@ res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/
   pci.itt.cox.pointest <- readRDS(paste0(res_path, "pci.itt.cox.pointest.rds"))
   pci.itt.cox.boot.long <- readRDS(paste0(res_path, "pci.itt.cox.boot.long.rds"))
   
-# PCI Pooled - incomplete
+# PCI Pooled
+  pci.itt.risk.pointest <- readRDS(paste0(res_path, "pci.itt.risk.pointest.rds"))
+  
+  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/pci_boot_reps"
+  
+  pci_rep_files <- list.files(
+    pci_rep_path,
+    pattern = "^pci_itt_boot_rep_\\d{3}\\.rds$",
+    full.names = TRUE
+  )
+  
+  pci.itt.boot.long <- pci_rep_files |>
+    lapply(readRDS) |>
+    lapply(\(m) as.data.frame(m)) |>
+    bind_rows() |>
+    as_tibble() |>
+    mutate(
+      sim = as.integer(sim),
+      time_end = as.integer(time_end),
+      risk0 = as.numeric(risk0),
+      risk1 = as.numeric(risk1)
+    ) |>
+    arrange(sim, time_end)
+  
+  saveRDS(pci.itt.boot.long, file.path(res_path, "pci.itt.boot.long.rds")) # 2025-01-16
+  
   
   
 # Boot CI functions -------------------------------------------------------
@@ -231,6 +256,13 @@ plot.risk.with.boot.ci(eqc.itt.risks.ci, title.sub  = "Equi-confounding (ITT)")
 
 pci.itt.HRs.ci <- pci.cox.boot.ci(pci.itt.cox.pointest, pci.itt.cox.boot.long)
 # saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds")) # 2026-01-12
+
+pci.itt.risks.ci <- pooled.boot.ci(point.est = pci.itt.risk.pointest, boot.long = pci.itt.boot.long)
+# saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds")) # 2026-01-16
+
+# png("figures_draft/pci.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
+plot.risk.with.boot.ci(pci.itt.risks.ci, title.sub  = "Proximal inference (ITT)")
+# dev.off()
 
 
 
