@@ -194,8 +194,12 @@ prox_itt_A1.long <- left_join(prox_itt_A1.long, time_df, by="time_end")
 ### switching function
 
   ### removing treatment from treated
+  ### take hazard from untreated, remove treatment from treated
+  ### negative log HR to remove
 prox_itt_A0.long$hazard_pos <- prox_itt_A0.long$hazard_pos_obs * exp(-prox_itt_A0.long$logHR * prox_itt_A0.long$treatment_obs)
   ### adding treated to untreated
+  ### take hazard from treated, add treatment to untreated
+  ### positive log HR to add
 prox_itt_A1.long$hazard_pos <- prox_itt_A1.long$hazard_pos_obs * exp(prox_itt_A1.long$logHR * (1-prox_itt_A1.long$treatment_obs))
 
 ### compute survival and cumulative incidence
