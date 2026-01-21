@@ -145,71 +145,57 @@ knitr::kable(
 
 # Pooled estimates table --------------------------------------------------
 
-horizons <- c(4, 24, 52)
+horizons <- c(2, 8, 16, 24, 52)
 
-make_risk_summary <- function(df, approach, horizons) {
+make_pooled_risk_table <- function(df, approach, horizons) {
   df %>%
     filter(time_end %in% horizons) %>%
+    mutate(
+      `Risk A=0 (95\\% CI)` = sprintf("%.4f (%.4f--%.4f)", risk0, risk0_lo, risk0_hi),
+      `Risk A=1 (95\\% CI)` = sprintf("%.4f (%.4f--%.4f)", risk1, risk1_lo, risk1_hi),
+      RR = risk1 / risk0,
+      RD = risk1 - risk0
+    ) %>%
     transmute(
-      approach = approach,
-      time_end,
-      `Risk (no booster)` = sprintf("%.4f (%.4f–%.4f)", risk0, risk0_lo, risk0_hi),
-      `Risk (booster)` = sprintf("%.4f (%.4f–%.4f)", risk1, risk1_lo, risk1_hi),
-      `Risk Ratio (booster / no booster)` = sprintf(
-        "%.4f", risk1/risk0
-      )
+      `t (week)` = time_end,
+      `Risk A=0 (95\\% CI)`,
+      `Risk A=1 (95\\% CI)`,
+      RR = sprintf("%.3f", RR),
+      RD = sprintf("%.4f", RD)
     )
 }
 
-risk_long <- bind_rows(
-  make_risk_summary(std.itt.risks.ci, "STD", horizons),
-  make_risk_summary(eqc.itt.risks.ci, "EQC", horizons),
-  make_risk_summary(pci.itt.risks.ci, "PCI", horizons)
-)
-
-risk_wide <- risk_long %>%
-  pivot_longer(
-    cols = c(`Risk (no booster)`, `Risk (booster)`, `Risk Ratio (booster / no booster)`),
-    names_to = "metric",
-    values_to = "value"
-  ) %>%
-  mutate(col = paste0(metric, " @ t=", time_end)) %>%
-  select(approach, col, value) %>%
-  pivot_wider(names_from = col, values_from = value) %>%
-  arrange(approach)
+std_risk_tbl <- make_pooled_risk_table(std.itt.risks.ci, "STD", horizons)
+eqc_risk_tbl <- make_pooled_risk_table(eqc.itt.risks.ci, "EQC", horizons)
+pci_risk_tbl <- make_pooled_risk_table(pci.itt.risks.ci, "PCI", horizons)
 
 knitr::kable(
-  risk_wide,
+  std_risk_tbl,
   format = "latex",
   booktabs = TRUE,
-  caption = "Pooled logistic estimated cumulative risks by approach and time horizon",
-  align = c("l", rep("c", ncol(risk_wide) - 1))
+  caption = "Pooled logistic cumulative risks by time horizon (STD)"
 )
 
-risk_wide2 <- risk_long %>%
-  rename(
-    `No Booster` = `Risk (no booster)`,
-    `Booster` = `Risk (booster)`,
-    RR = `Risk Ratio (booster / no booster)`
-  ) %>%
-  pivot_longer(cols = c(`No Booster`, Booster, RR),
-               names_to = "metric", values_to = "value") %>%
-  mutate(col = paste0(metric, " t=", time_end)) %>%
-  select(approach, col, value) %>%
-  pivot_wider(names_from = col, values_from = value) %>%
-  arrange(approach)
-
 knitr::kable(
-  risk_wide2,
+  eqc_risk_tbl,
   format = "latex",
   booktabs = TRUE,
-  caption = "Pooled logistic cumulative risk (95\\% CI) and risk difference by approach and time horizon",
-  align = c("l", rep("c", ncol(risk_wide2) - 1))
+  caption = "Pooled logistic cumulative risks by time horizon (EQC)"
 )
 
 knitr::kable(
-  risk_wide2,
-  align = c("l", rep("c", ncol(risk_wide2) - 1))
+  pci_risk_tbl,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Pooled logistic cumulative risks by time horizon (PCI)"
 )
+
+
+
+
+
+
+
+
 
 
