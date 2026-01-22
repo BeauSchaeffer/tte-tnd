@@ -6,6 +6,7 @@
 
 
 library(tidyverse)
+library(kableExtra)
 
 
 # Data --------------------------------------------------------------------
@@ -100,69 +101,79 @@ pci_tbl <- pci.itt.HRs.ci |>
     ci_high  = treatHR_hi
   )
 
-draft_table <- bind_rows(std_tbl, tnd_tbl, eqc_tbl, pci_tbl) %>%
+draft_table <- bind_rows(std_tbl, tnd_tbl, eqc_tbl, pci_tbl) |> 
+  mutate(ve = (1-effect)*100,
+         ve_low = (1-ci_high)*100,
+         ve_high = (1-ci_low)*100) |> 
   mutate(
-    effect.ci = sprintf("%.2f (%.2f–%.2f)", effect, ci_low, ci_high)
-  ) %>%
-  select(approach, exposure, effect.ci)
+    effect.ci = sprintf("%.2f (%.2f, %.2f)", effect, ci_low, ci_high),
+    ve.ci = sprintf("%.2f (%.2f, %.2f)", ve, ve_low, ve_high)
+  ) |> 
+  select(approach, exposure, effect.ci, ve.ci)
 
 draft_table
 
-wide_table <- draft_table |> 
+wide_table <- draft_table |>
+  
+  pivot_longer(
+    cols = c(effect.ci, ve.ci),
+    names_to = "metric",
+    values_to = "value"
+  ) |>
+
   mutate(
-    exposure = case_when(
-      exposure %in% c("Flu vax", "Flu vaccine") ~ "Flu vaccine",
-      TRUE ~ exposure
-    )
-  ) |> 
+    metric = recode(metric,
+                    "effect.ci" = "HR",
+                    "ve.ci"     = "VE (%)"
+    ),
+    metric = factor(metric, levels = c("HR", "VE (%)"))
+  ) |>
+  
   pivot_wider(
-    names_from  = exposure,
-    values_from = effect.ci
+    names_from  = c(exposure, metric),
+    values_from = value,
+    names_sep   = "_"
+  ) |>
+  
+  select(
+    approach,
+    Treatment_HR, `Treatment_VE (%)`,
+    `Flu vax_HR`, `Flu vax_VE (%)`
   )
 
 wide_table
 
-knitr::kable(
-  wide_table,
-  col.names = c(
-    "Approach",
-    "Treatment (95% CI)",
-    "Flu vaccine (95% CI)"
-  ),
-  align = c("l", "c", "c"))
 
-knitr::kable(
-  wide_table,
-  format = "latex",
-  booktabs = TRUE,
-  col.names = c(
-    "Approach",
-    "Treatment (95\\% CI)",
-    "Flu vaccine (95\\% CI)"
-  ),
-  align = c("l", "c", "c"))
+wide_table |>
+  kbl(
+    format = "latex",
+    caption   = "Cox results",
+    label     = "cox_res",
+    booktabs = TRUE,
+    align = "lcccc",
+    col.names = c("Approach", "HR", "VE (%)", "HR", "VE (%)")
+  ) |>
+  add_header_above(c(" " = 1, "Treatment" = 2, "Flu vaccine" = 2)) |>
+  kable_styling(full_width = FALSE)
 
 
 # Pooled estimates table --------------------------------------------------
 
-horizons <- c(2, 8, 16, 24, 52)
+# horizons <- c(1, 8, 24, 40, 52)
+horizons <- seq(1,52,1)
 
 make_pooled_risk_table <- function(df, approach, horizons) {
-  df %>%
+  df |> 
     filter(time_end %in% horizons) %>%
     mutate(
-      `Risk A=0 (95\\% CI)` = sprintf("%.4f (%.4f--%.4f)", risk0, risk0_lo, risk0_hi),
-      `Risk A=1 (95\\% CI)` = sprintf("%.4f (%.4f--%.4f)", risk1, risk1_lo, risk1_hi),
-      RR = risk1 / risk0,
-      RD = risk1 - risk0
-    ) %>%
+      `Risk Ratio (95\\% CI)` = sprintf("%.2f (%.2f, %.2f)", rr, rr_lo, rr_hi),
+      `Risk Difference (95\\% CI)` = sprintf("%.4f (%.4f, %.4f)", rd, rd_lo, rd_hi),
+    ) |> 
     transmute(
-      `t (week)` = time_end,
-      `Risk A=0 (95\\% CI)`,
-      `Risk A=1 (95\\% CI)`,
-      RR = sprintf("%.3f", RR),
-      RD = sprintf("%.4f", RD)
-    )
+      `Time (weeks)` = time_end,
+      `Risk Ratio (95\\% CI)`,
+      `Risk Difference (95\\% CI)`
+      )
 }
 
 std_risk_tbl <- make_pooled_risk_table(std.itt.risks.ci, "STD", horizons)
@@ -173,21 +184,27 @@ knitr::kable(
   std_risk_tbl,
   format = "latex",
   booktabs = TRUE,
-  caption = "Pooled logistic cumulative risks by time horizon (STD)"
+  caption = "Pooled logistic results by week (STD)",
+  label = "std_rr_rd",
+  escape = F
 )
 
 knitr::kable(
   eqc_risk_tbl,
   format = "latex",
   booktabs = TRUE,
-  caption = "Pooled logistic cumulative risks by time horizon (EQC)"
+  caption = "Pooled logistic results by week (EQC)",
+  label = "eqc_rr_rd",
+  escape = F
 )
 
 knitr::kable(
   pci_risk_tbl,
   format = "latex",
   booktabs = TRUE,
-  caption = "Pooled logistic cumulative risks by time horizon (PCI)"
+  caption = "Pooled logistic results by week (PCI)",
+  label = "pci_rr_rd",
+  escape = F
 )
 
 
