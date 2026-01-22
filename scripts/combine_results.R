@@ -85,20 +85,38 @@ pooled.boot.ci <- function(point.est, boot.long, alpha = 0.05){
         risk0_hi = quantile(.data[[risk0_var]], probs = 1 - alpha/2, na.rm = TRUE),
         risk1_lo = quantile(risk1, probs = alpha/2, na.rm = TRUE),
         risk1_hi = quantile(risk1, probs = 1 - alpha/2, na.rm = TRUE),
+        
+        # derived measures computed per bootstrap draw, then quantiled
+        rd_lo   = quantile(risk1 - .data[[risk0_var]], probs = alpha/2, na.rm = TRUE),
+        rd_hi   = quantile(risk1 - .data[[risk0_var]], probs = 1 - alpha/2, na.rm = TRUE),
+        rr_lo   = quantile(risk1 / .data[[risk0_var]], probs = alpha/2, na.rm = TRUE),
+        rr_hi   = quantile(risk1 / .data[[risk0_var]], probs = 1 - alpha/2, na.rm = TRUE),
+        
         .groups = "drop"
       )
     
     # ensure point estimate uses the same risk0 definition
     point.est.use <- point.est |>
-      mutate(risk0 = if (risk0_var == "risk0corr") risk0corr else risk0)
+      mutate(risk0 = if (risk0_var == "risk0corr") risk0corr else risk0) |> 
+      mutate(
+        rd = risk1 - risk0,
+        rr = risk1 / risk0
+        )
     
     boot.point.ci <- boot.ci |>
       left_join(point.est.use, by = "time_end") |>
-      select(-sim, -any_of("risk0corr")) |>
-      relocate(time_end, risk0, risk0_lo, risk0_hi, risk1, risk1_lo, risk1_hi)
+      select(-sim, -dplyr::any_of("risk0corr")) |>
+      relocate(
+        time_end,
+        risk0, risk0_lo, risk0_hi,
+        risk1, risk1_lo, risk1_hi,
+        rd, rd_lo, rd_hi,
+        rr, rr_lo, rr_hi
+      )
     
     return(boot.point.ci)
 }
+
 
 eqc.cox.boot.ci <- function(point.est, boot.long, alpha = 0.05){
 
