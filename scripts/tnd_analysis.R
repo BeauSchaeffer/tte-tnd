@@ -64,43 +64,12 @@ eqc_Y3_cif_itt <- cuminc(
   data = data_Y3
 )
 
-eqc_Y3_ci_itt_p <- ggcuminc(
-  eqc_Y3_cif_itt,
-  aes(color = group, linetype = outcome),
-  outcome = c("Test Negative", "Test Positive"),
-  linewidth = 0.5) +
-  labs(
-    x = "Time",
-    y = "Cumulative incidence",
-    title = "Cumulative incidence",
-    subtitle = "Intention to Treat",
-    color = "Treatment",
-    linetype = "Outcome"
-  ) +
-  add_confidence_interval() +
-  scale_color_manual(
-    values = c("0" = "#006663", "1" = "#FF6B1A"),
-    labels = c("0" = "No Booster", "1" = "Booster")
-  ) +
-  scale_fill_manual(
-    values = c("0" = "#006663", "1" = "#FF6B1A"),
-    guide = "none"
-  ) +
-  scale_linetype_manual(
-    values = c("Test Negative" = "dashed", "Test Positive" = "solid")
-  ) +
-  ylim(0, 0.20)
 
-
-eqc_Y3_ci_itt_p
-
-
-### base R
-
+png("figures_draft/tnd.testbehav.plot.png", width = 2400, height=1800, res=300)
 par(mar = c(5.1, 5.5, 4.1, 2.1))
 plot(NULL,
      xlim = range(c(0, eqc_Y3_cif_itt$tidy$time)),
-     ylim = range(c(0, 0.1)),
+     ylim = range(c(0, 0.15)),
      xlab="Weeks",
      ylab="Risk",
      main="Nonparametric Risk Curves",
@@ -108,15 +77,29 @@ plot(NULL,
      cex.lab = 1.5,
      cex.main=1.4
 )
-# mtext("Standard TTE (ITT)", side = 3, line = 0.5, font = 3, cex=1.2)
+mtext("Testing Behavior", side = 3, line = 0.5, font = 3, cex=1.2)
 grid()
-lines(c(0, eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]), 
-      c(0, eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]),
+lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]), 
+      c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]),
       col='#006663', lty=1, lwd=4)
-# lines(c(0, std_itt_A1.long$time_end), c(0, std_itt_A1.long$risk), col='#FF6B1A', lty=1, lwd=4)
-# legend("topleft",
-#        legend = c("No Booster", "Booster"),
-#        col = c('#006663', '#FF6B1A'),
-#        lty = 1, lwd = 4, cex=1.2,
-#        bty = "n")
+lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]), 
+      c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]),
+      col='#FF6B1A', lty=1, lwd=4)
+lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]), 
+      c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]),
+      col='#006663', lty=2, lwd=4)
+lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==1]), 
+      c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==1]),
+      col='#FF6B1A', lty=2, lwd=4)
+legend("topleft",
+       legend = c("No Booster", "Booster"),
+       col = c('#006663', '#FF6B1A'),
+       lty = 1, lwd = 2, cex=1.2,
+       bty = "n")
+legend("topright",
+       legend = c("Test Positive", "Test Negative"),
+       col = 'black',
+       lty = c(1,2), lwd = 2, cex=1.2,
+       bty = "n")
+dev.off()
 
