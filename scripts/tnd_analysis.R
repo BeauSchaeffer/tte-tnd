@@ -81,16 +81,16 @@ mtext("Testing Behavior", side = 3, line = 0.5, font = 3, cex=1.2)
 grid()
 lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]), 
       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]),
-      col='#006663', lty=1, lwd=4)
+      col='#006663', lty=1, lwd=2)
 lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]), 
       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]),
-      col='#FF6B1A', lty=1, lwd=4)
+      col='#FF6B1A', lty=1, lwd=2)
 lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]), 
       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]),
-      col='#006663', lty=2, lwd=4)
+      col='#006663', lty=2, lwd=2)
 lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==1]), 
       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==1]),
-      col='#FF6B1A', lty=2, lwd=4)
+      col='#FF6B1A', lty=2, lwd=2)
 legend("topleft",
        legend = c("No Booster", "Booster"),
        col = c('#006663', '#FF6B1A'),
