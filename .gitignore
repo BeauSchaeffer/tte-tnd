@@ -13,6 +13,10 @@ logs/
 .Rprofile
 .Renviron
 
+# per protocol scripts
+scripts/equi_confounding_analysis_pp.R
+scripts/equi_confounding_pooled_pp.R
+
 # other
 scripts/data_transfer.sh
 scripts/data_cleaning.R
