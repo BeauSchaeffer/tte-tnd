@@ -12,6 +12,7 @@ logs/
 .Ruserdata
 .Rprofile
 .Renviron
+tte-tnd.Rproj
 
 # per protocol scripts
 scripts/equi_confounding_analysis_pp.R
