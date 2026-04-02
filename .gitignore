@@ -21,7 +21,7 @@ scripts/equi_confounding_pooled_pp.R
 # other
 scripts/data_transfer.sh
 !scripts/data_cleaning.R
-scripts/data_cleaning_weekmatch.R
+!scripts/data_cleaning_weekmatch.R
 scripts/checks.R
 .DS_Store
 
