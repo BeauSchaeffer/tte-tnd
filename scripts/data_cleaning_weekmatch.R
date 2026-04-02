@@ -694,13 +694,13 @@ data_Y3 <- data_Y3 |>
 
 ### first converting to data.table
 
-setDT(data_Y2)
-setDT(data_Y3)
-
-write_csv(data_Y2, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.csv")
-write_rds(data_Y2, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.rds")
-write_csv(data_Y3, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.csv")
-write_rds(data_Y3, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
+# setDT(data_Y2)
+# setDT(data_Y3)
+# 
+# write_csv(data_Y2, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.csv")
+# write_rds(data_Y2, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.rds")
+# write_csv(data_Y3, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.csv")
+# write_rds(data_Y3, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
 
 ### last written 2026-03-02 at 1501 (new week match procedure)
 
