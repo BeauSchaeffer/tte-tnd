@@ -17,7 +17,7 @@ library(data.table)
 # Data --------------------------------------------------------------------
 
 
-data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_Y3.rds")
+data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
 
 data_Y3 <- data_Y3 |> 
   mutate(Y3_itt_factor = case_when(
@@ -28,7 +28,7 @@ data_Y3 <- data_Y3 |>
   mutate(Y3_itt_factor = factor(Y3_itt_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
 
 
 # Cox Model ---------------------------------------------------------------
@@ -66,7 +66,7 @@ eqc.itt.cox.pointest <- c(
   fluvaxHR=unname( exp(eqc_itt_fit2$coefficients["flu_vax"]) / exp(eqc_itt_fit1$coefficients["flu_vax"]) )
   )
 
-saveRDS(eqc.itt.cox.pointest, paste0(res_path,"eqc.itt.cox.pointest.rds")) # 2025-12-26
+saveRDS(eqc.itt.cox.pointest, paste0(res_path,"eqc.itt.cox.pointest.rds")) # 2026-04-03
 
 
 # Bootstrap CIs for ITT ---------------------------------------------------
