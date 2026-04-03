@@ -78,34 +78,24 @@ std_pooled_itt <- speedglm(Y ~ ns(time_end, knots = c(10,20,30))*treatment +
                          family=binomial())
 
 summary(std_pooled_itt)
-# saveRDS(std_pooled_itt, paste0(res_path,"std_pooled_itt_model.rds")) # 2025-12-21
+# saveRDS(std_pooled_itt, paste0(res_path,"std_pooled_itt_model.rds")) # 2026-03-03
 
   ### sanity check
   ### fit same model without interaction terms
-  ### coefficients should be equivalent/similar to Cox (here, below)
+  ### coefficients should be equivalent/similar to Cox
 
-  # Cox
-  # term                       estimate std.error robust.se statistic   p.value conf.low conf.high
-  # 1 treatment                     1.11   0.0130    0.0130       7.89  3.07e- 15    1.08      1.14 
-  # 21 flu_vax                       1.29   0.0148    0.0149      16.9   9.00e- 64    1.25      1.32
-
-std_pooled_itt_noint <- speedglm(Y ~ ns(time_end, knots = c(10,20,30)) + treatment +
-                             # demographic
-                             sex_admin + age_years + bmi + race + charlson_cat_fac +
-                             # other
-                             ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks + 
-                             # NEC
-                             flu_vax,
-                           data=dat.long.itt,
-                           family=binomial())
-
-std_pooled_itt_noint_tidy <- geepack::tidy(std_pooled_itt_noint, conf.int = TRUE, exponentiate = TRUE)
-std_pooled_itt_noint_tidy |> print(n=100)
-
-    # noint model
-    #   term                                     estimate std.error statistic    p.value  conf.low conf.high
-    # 6 treatment                            1.11      0.0130       7.86  3.94e- 15 1.08      1.14    
-    # 26 flu_vax                            1.28      0.0148      16.9   4.11e- 64 1.25      1.32    
+# std_pooled_itt_noint <- speedglm(Y ~ ns(time_end, knots = c(10,20,30)) + treatment +
+#                              # demographic
+#                              sex_admin + age_years + bmi + race + charlson_cat_fac +
+#                              # other
+#                              ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks + 
+#                              # NEC
+#                              flu_vax,
+#                            data=dat.long.itt,
+#                            family=binomial())
+# 
+# std_pooled_itt_noint_tidy <- geepack::tidy(std_pooled_itt_noint, conf.int = TRUE, exponentiate = TRUE)
+# std_pooled_itt_noint_tidy |> print(n=100)
 
 
 # ITT Survival and Risk ---------------------------------------------------
@@ -173,7 +163,7 @@ std.itt.risk.pointest <- tibble(
   risk1 = std_itt_A1.long$risk
 )
 
-# saveRDS(std.itt.risk.pointest, paste0(res_path, "std.itt.risk.pointest.rds")) # 2025-12-21
+# saveRDS(std.itt.risk.pointest, paste0(res_path, "std.itt.risk.pointest.rds")) # 2026-04-03
 
   ### Plot for the risk curves:
 

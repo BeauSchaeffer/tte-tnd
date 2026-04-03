@@ -41,7 +41,7 @@ summary(std_Y2_cox_itt)
 
 std_Y2_cox_itt_tidy <- tidycmprsk::tidy(std_Y2_cox_itt, conf.int = TRUE, exponentiate = TRUE)
 std_Y2_cox_itt_tidy
-saveRDS(std_Y2_cox_itt_tidy, paste0(res_path,"std.itt.cox.pointest.rds")) # 2025-12-26
+saveRDS(std_Y2_cox_itt_tidy, paste0(res_path,"std.itt.cox.pointest.rds")) # 2026-03-03
 
 
 # # Per-Protocol
