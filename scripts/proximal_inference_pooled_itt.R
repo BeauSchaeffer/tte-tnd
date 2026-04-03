@@ -15,11 +15,11 @@ library(splines)
 # Data --------------------------------------------------------------------
 
 
-data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_Y3.rds")
+data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
 
 
 # Downsample --------------------------------------------------------------
@@ -268,7 +268,7 @@ pci.itt.risk.pointest <- tibble(
   risk1 = prox_itt_A1.long.res$risk_pos
 )
 
-saveRDS(pci.itt.risk.pointest, paste0(res_path, "pci.itt.risk.pointest.rds")) # 2025-01-14
+saveRDS(pci.itt.risk.pointest, paste0(res_path, "pci.itt.risk.pointest.rds")) # 2026-04-03
 
 
 # ### Alternative estimator
