@@ -2,6 +2,25 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Standard Analysis
 
+# Packages ----------------------------------------------------------------
+
+
+library(tidyverse)
+library(tidycmprsk)
+library(survival)
+library(ggsurvfit)
+library(riskRegression)
+library(geepack)
+library(data.table)
+
+# Data --------------------------------------------------------------------
+
+
+# data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_Y2.rds")
+data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.rds")
+
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
+
 
 # Cox Model ---------------------------------------------------------------
 
