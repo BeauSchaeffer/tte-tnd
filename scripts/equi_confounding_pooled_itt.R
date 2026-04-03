@@ -15,11 +15,11 @@ library(splines)
 # Data --------------------------------------------------------------------
 
 
-data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_Y3.rds")
+data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
 
 
 # Downsample --------------------------------------------------------------
@@ -85,7 +85,7 @@ eqc_pooled_itt_fit1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*treatm
                                 data=dat.long.itt,
                                 family=binomial())
 
-# saveRDS(eqc_pooled_itt_fit1, paste0(res_path,"eqc_pooled_itt_fit1.rds")) # 2025-12-30
+saveRDS(eqc_pooled_itt_fit1, paste0(res_path,"eqc_pooled_itt_fit1.rds")) # 2026-04-03
 
 
 
@@ -99,7 +99,7 @@ eqc_pooled_itt_fit2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatm
                                 data=dat.long.itt,
                                 family=binomial())
 
-# saveRDS(eqc_pooled_itt_fit2, paste0(res_path,"eqc_pooled_itt_fit2.rds")) # 2025-12-30
+saveRDS(eqc_pooled_itt_fit2, paste0(res_path,"eqc_pooled_itt_fit2.rds")) # 2026-04-03
 
 
 # ITT Survival and Risk ---------------------------------------------------
@@ -200,7 +200,7 @@ eqc.itt.risk.pointest <- tibble(
   risk1 = eqc_itt_A1.long.res$risk_pos
 )
 
-saveRDS(eqc.itt.risk.pointest, paste0(res_path, "eqc.itt.risk.pointest.rds")) # 2025-12-30
+saveRDS(eqc.itt.risk.pointest, paste0(res_path, "eqc.itt.risk.pointest.rds")) # 2026-04-03
 
 
 
