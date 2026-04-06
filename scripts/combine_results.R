@@ -11,7 +11,7 @@ library(tidyverse)
 # Data --------------------------------------------------------------------
 
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
 
 # STD Cox
 
