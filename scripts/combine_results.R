@@ -45,7 +45,7 @@ res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_
 # PCI Pooled
   pci.itt.risk.pointest <- readRDS(paste0(res_path, "pci.itt.risk.pointest.rds"))
   
-  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/pci_boot_reps"
+  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/pci_boot_reps/"
   
   pci_rep_files <- list.files(
     pci_rep_path,
@@ -66,7 +66,7 @@ res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_
     ) |>
     arrange(sim, time_end)
   
-  # saveRDS(pci.itt.boot.long, file.path(res_path, "pci.itt.boot.long.rds")) # 2025-01-16
+  # saveRDS(pci.itt.boot.long, file.path(res_path, "pci.itt.boot.long.rds")) # 2026-04-06
   
   
   
@@ -249,9 +249,8 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 
 
 std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
-# saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2025-01-22
-
-# png("figures_draft/std.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
+# saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2026-04-06
+# png("figures_draft_wm/std.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(std.itt.risks.ci, title.sub  = "Standard TTE (ITT)")
 # dev.off()
 
@@ -260,12 +259,12 @@ plot.risk.with.boot.ci(std.itt.risks.ci, title.sub  = "Standard TTE (ITT)")
 
 
 eqc.itt.HRs.ci <- eqc.cox.boot.ci(eqc.itt.cox.pointest, eqc.itt.cox.boot.long)
-# saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds")) # 2025-12-30
+# saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds")) # 2026-04-06
 
 eqc.itt.risks.ci <- pooled.boot.ci(point.est = eqc.itt.risk.pointest, boot.long = eqc.itt.boot.long)
-# saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds")) # 2026-01-22
+# saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds")) # 2026-04-06
 
-# png("figures_draft/eqc.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
+# png("figures_draft_wm/eqc.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(eqc.itt.risks.ci, title.sub  = "Equi-confounding (ITT)")
 # dev.off()
 
@@ -273,12 +272,12 @@ plot.risk.with.boot.ci(eqc.itt.risks.ci, title.sub  = "Equi-confounding (ITT)")
 # PCI ITT draft plot ------------------------------------------------------
 
 pci.itt.HRs.ci <- pci.cox.boot.ci(pci.itt.cox.pointest, pci.itt.cox.boot.long)
-# saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds")) # 2026-01-12
+saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds")) # 2026-04-06
 
 pci.itt.risks.ci <- pooled.boot.ci(point.est = pci.itt.risk.pointest, boot.long = pci.itt.boot.long)
-# saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds")) # 2026-01-22
+# saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds")) # 2026-04-06
 
-# png("figures_draft/pci.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
+# png("figures_draft_wm/pci.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(pci.itt.risks.ci, title.sub  = "Proximal inference (ITT)")
 # dev.off()
 
