@@ -3,6 +3,7 @@ data/
 results/
 figures/
 figures_draft/
+figures_draft_wm/
 logs/
 
 # RStudio artifacts
