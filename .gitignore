@@ -24,6 +24,7 @@ scripts/data_transfer.sh
 !scripts/data_cleaning.R
 !scripts/data_cleaning_weekmatch.R
 scripts/checks.R
+scripts/match_diag.R
 .DS_Store
 
 # notebook
