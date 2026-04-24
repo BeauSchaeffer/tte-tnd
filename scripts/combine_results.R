@@ -272,7 +272,7 @@ plot.risk.with.boot.ci(eqc.itt.risks.ci, title.sub  = "Equi-confounding (ITT)")
 # PCI ITT draft plot ------------------------------------------------------
 
 pci.itt.HRs.ci <- pci.cox.boot.ci(pci.itt.cox.pointest, pci.itt.cox.boot.long)
-saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds")) # 2026-04-06
+# saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds")) # 2026-04-06
 
 pci.itt.risks.ci <- pooled.boot.ci(point.est = pci.itt.risk.pointest, boot.long = pci.itt.boot.long)
 # saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds")) # 2026-04-06
