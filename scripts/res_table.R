@@ -12,7 +12,7 @@ library(kableExtra)
 # Data --------------------------------------------------------------------
 
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
 
 # STD Cox
 std.itt.cox.pointest <- readRDS(paste0(res_path,"std.itt.cox.pointest.rds"))
