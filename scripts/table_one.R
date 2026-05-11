@@ -117,5 +117,3 @@ kbl_str_overall <- as.character(kbl_out_overall)
 kbl_str_overall <- gsub("<0.001", "$<$0.001", kbl_str_overall, fixed = TRUE)
 
 cat(kbl_str_overall)
-
-# did not push 05/10 changes
