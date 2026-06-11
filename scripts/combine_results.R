@@ -283,7 +283,80 @@ plot.risk.with.boot.ci(pci.itt.risks.ci, title.main  = "Proximal inference Appro
 # dev.off() # 2026-06-11
 
 
+# STE and test behavior multipanel plot -----------------------------------
 
+library(tidycmprsk)
+
+data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
+
+data_Y3 <- data_Y3 |> 
+  mutate(Y3_itt_factor = case_when(
+    Y3_itt_trunc==0 ~ "Censor",
+    Y3_itt_trunc==1 ~ "Test Negative",
+    Y3_itt_trunc==2 ~ "Test Positive"
+  )) |> 
+  mutate(Y3_itt_factor = factor(Y3_itt_factor, levels = c("Censor", "Test Negative", "Test Positive")),
+         subclass=as.character(subclass))
+
+eqc_Y3_cif_itt <- cuminc(
+  Surv(Y3_itt_t_trunc, Y3_itt_factor) ~ treatment,
+  data = data_Y3
+)
+
+
+png("figures_draft_wm/multi.ste.testbehav.plot.png", width = 2400, height=1800, res=300)
+par(mar = c(5.1, 4.1, 4.1, 2.1))
+layout(matrix(1:2, nrow = 2))
+
+## --- Panel 1: test pos risk curves under ste design  ---
+
+plot.risk.with.boot.ci(
+  std.itt.risks.ci,
+  title.main = "Measured Covariate Adjustment Approach",
+  title.sub  = NULL
+)
+mtext("A", side=3, adj=0, line=2, cex=1.5, font=1)
+
+## --- Panel 2: test negative risk curves ---
+
+par(mar = c(5.1, 5.5, 4.1, 2.1))
+plot(NULL,
+     xlim = range(c(0, eqc_Y3_cif_itt$tidy$time)),
+     ylim = range(c(0, 0.15)),
+     xlab="Weeks",
+     ylab="Risk",
+     main="Health-seeking Behavior",
+     cex.axis = 1.5,
+     cex.lab = 1.5,
+     cex.main=1.4,
+     font.main = 1
+)
+# mtext("Testing Behavior", side = 3, line = 0.5, font = 3, cex=1.2)
+grid()
+# lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]),
+#       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]),
+#       col='#006663', lty=1, lwd=2)
+# lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]),
+#       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]),
+#       col='#FF6B1A', lty=1, lwd=2)
+lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]),
+      c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]),
+      col='#006663', lty=2, lwd=2)
+lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==1]),
+      c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==1]),
+      col='#FF6B1A', lty=2, lwd=2)
+# legend("topleft",
+#        legend = c("No Booster", "Booster"),
+#        col = c('#006663', '#FF6B1A'),
+#        lty = 1, lwd = 4, cex=1.2,
+#        bty = "n")
+# legend("topright",
+#        legend = c("Test Positive", "Test Negative"),
+#        col = 'black',
+#        lty = c(1,2), lwd = 2, cex=1.2,
+#        bty = "n")
+mtext("B", side=3, adj=0, line=2, cex=1.5, font=1)
+dev.off() # 2026-06-11
 
 
 

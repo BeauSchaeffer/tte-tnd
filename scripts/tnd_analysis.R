@@ -72,7 +72,7 @@ eqc_Y3_cif_itt <- cuminc(
 )
 
 
-png("figures_draft_wm/tnd.testbehav.plot.png", width = 2400, height=1800, res=300)
+# png("figures_draft_wm/tnd.testbehav.plot.png", width = 2400, height=1800, res=300)
 par(mar = c(5.1, 5.5, 4.1, 2.1))
 plot(NULL,
      xlim = range(c(0, eqc_Y3_cif_itt$tidy$time)),
@@ -108,5 +108,5 @@ legend("topright",
        col = 'black',
        lty = c(1,2), lwd = 2, cex=1.2,
        bty = "n")
-dev.off()
+# dev.off()
 
