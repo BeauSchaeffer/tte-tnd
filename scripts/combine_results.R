@@ -302,9 +302,10 @@ eqc_Y3_cif_itt <- cuminc(
   Surv(Y3_itt_t_trunc, Y3_itt_factor) ~ treatment,
   data = data_Y3
 )
+names(eqc_Y3_cif_itt$tidy)
 
 
-png("figures_draft_wm/multi.ste.testbehav.plot.png", width = 2400, height=1800, res=300)
+png("figures_draft_wm/multi.ste.testbehav.plot.png", width = 2400, height=4000, res=300)
 par(mar = c(5.1, 4.1, 4.1, 2.1))
 layout(matrix(1:2, nrow = 2))
 
@@ -333,12 +334,26 @@ plot(NULL,
 )
 # mtext("Testing Behavior", side = 3, line = 0.5, font = 3, cex=1.2)
 grid()
+tn0 <- eqc_Y3_cif_itt$tidy[eqc_Y3_cif_itt$tidy$outcome == "Test Negative" & eqc_Y3_cif_itt$tidy$strata == 0, ]
+tn1 <- eqc_Y3_cif_itt$tidy[eqc_Y3_cif_itt$tidy$outcome == "Test Negative" & eqc_Y3_cif_itt$tidy$strata == 1, ]
 # lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]),
 #       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]),
 #       col='#006663', lty=1, lwd=2)
 # lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]),
 #       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]),
 #       col='#FF6B1A', lty=1, lwd=2)
+polygon(
+  x = c(tn0$time, rev(tn0$time)),
+  y = c(tn0$conf.low, rev(tn0$conf.high)),
+  col = adjustcolor('#006663', alpha.f = 0.25),
+  border = NA
+)
+polygon(
+  x = c(tn1$time, rev(tn1$time)),
+  y = c(tn1$conf.low, rev(tn1$conf.high)),
+  col = adjustcolor('#FF6B1A', alpha.f = 0.25),
+  border = NA
+)
 lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]),
       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]),
       col='#006663', lty=2, lwd=2)
