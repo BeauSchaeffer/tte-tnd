@@ -204,7 +204,8 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
        main = title.main,
        cex.axis = cex.axis,
        cex.lab  = cex.lab,
-       cex.main = cex.main)
+       cex.main = cex.main,
+       font.main = 1)
   
   if (!is.null(title.sub) && nzchar(title.sub)) {
     mtext(title.sub, side = 3, line = 0.5, font = 3, cex = cex.sub)
@@ -251,8 +252,8 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
 # saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2026-04-06
 # png("figures_draft_wm/std.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
-plot.risk.with.boot.ci(std.itt.risks.ci, title.sub  = "Standard TTE (ITT)")
-# dev.off()
+plot.risk.with.boot.ci(std.itt.risks.ci, title.main  = "Measured Covariate Adjustment Approach", title.sub = NULL)
+# dev.off() # 2026-06-11
 
 
 # EQC ITT draft plot ------------------------------------------------------
@@ -265,8 +266,8 @@ eqc.itt.risks.ci <- pooled.boot.ci(point.est = eqc.itt.risk.pointest, boot.long 
 # saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds")) # 2026-04-06
 
 # png("figures_draft_wm/eqc.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
-plot.risk.with.boot.ci(eqc.itt.risks.ci, title.sub  = "Equi-confounding (ITT)")
-# dev.off()
+plot.risk.with.boot.ci(eqc.itt.risks.ci, title.main  = "Equi-confounding Approach", title.sub = NULL)
+# dev.off() # 2026-06-11
 
 
 # PCI ITT draft plot ------------------------------------------------------
@@ -278,8 +279,8 @@ pci.itt.risks.ci <- pooled.boot.ci(point.est = pci.itt.risk.pointest, boot.long 
 # saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds")) # 2026-04-06
 
 # png("figures_draft_wm/pci.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
-plot.risk.with.boot.ci(pci.itt.risks.ci, title.sub  = "Proximal inference (ITT)")
-# dev.off()
+plot.risk.with.boot.ci(pci.itt.risks.ci, title.main  = "Proximal inference Approach", title.sub = NULL)
+# dev.off() # 2026-06-11
 
 
 
