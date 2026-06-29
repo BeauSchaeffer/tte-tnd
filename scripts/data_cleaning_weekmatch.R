@@ -589,15 +589,18 @@ analysis_data_matched_adj <- analysis_data_matched |>
     Y_TWO_time_pp_adj   = pmin(Y_TWO_time_pp, control_vax_cens) - index_time,
     Y_THREE_time_pp_adj = pmin(Y_THREE_time_pp, control_vax_cens) - index_time,
     
-    # If vaccination capped the time, any event that was beyond it becomes censored
-    # Detection: vaccination happened before the original event/cens time
-    Y_TWO_pp = if_else(
-      treatment == 0 & !is.na(treatment_time) & treatment_time < Y_TWO_time_pp,
-      0L, Y_TWO  # censor: event occurred after vaccination
+    # If PP time was bound by deviation/admin censoring before the event,
+    # censor the event. Covers BOTH arms (treated P+3, control P+2),
+    # inside or outside enrollment window.
+    Y_TWO_pp = case_when(
+      Y_TWO == 1L & Y_TWO_time_pp < Y_TWO_time_itt ~ 0L,
+      treatment == 0 & !is.na(treatment_time) & treatment_time < Y_TWO_time_pp ~ 0L,
+      TRUE ~ Y_TWO
     ),
-    Y_THREE_pp = if_else(
-      treatment == 0 & !is.na(treatment_time) & treatment_time < Y_THREE_time_pp,
-      0L, Y_THREE  # censor: event occurred after vaccination
+    Y_THREE_pp = case_when(
+      Y_THREE != 0L & Y_THREE_time_pp < Y_THREE_time_itt ~ 0L,
+      treatment == 0 & !is.na(treatment_time) & treatment_time < Y_THREE_time_pp ~ 0L,
+      TRUE ~ Y_THREE
     )
     
   ) |>
@@ -610,8 +613,8 @@ analysis_data_matched_adj <- analysis_data_matched |>
 # analysis_data_matched_adj |> filter(Y_THREE_time_pp_adj < 0) |> nrow() # 0
 # 
 # # How many future-vaccinated controls had their events censored?
-# analysis_data_matched_adj |> filter(treatment == 0, Y_TWO != Y_TWO_pp) |> nrow() # 2386
-# analysis_data_matched_adj |> filter(treatment == 0, Y_THREE != Y_THREE_pp) |> nrow() # 7089
+# analysis_data_matched_adj |> filter(treatment == 0, Y_TWO != Y_TWO_pp) |> nrow() # 3341
+# analysis_data_matched_adj |> filter(treatment == 0, Y_THREE != Y_THREE_pp) |> nrow() # 10180
 
 ##* Handle remaining negative/zero adjusted times 
 ##* This should be rare given risk-set eligibility filters.
@@ -703,6 +706,7 @@ data_Y3 <- data_Y3 |>
 # write_rds(data_Y3, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
 
 ### last written 2026-03-02 at 1501 (new week match procedure)
+### last written 2026-06-29 at 1704 (small pp bug)
 
 
 # Clean Up Environment ----------------------------------------------------
