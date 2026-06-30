@@ -19,7 +19,7 @@ library(data.table)
 
 data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.rds")
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_ppp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
 
 
 # Cox Model ---------------------------------------------------------------
@@ -27,7 +27,7 @@ res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_
 
 # Per-Protocol
 
-std_Y2_cox_ppp <- coxph(
+std_Y2_cox_pp <- coxph(
   Surv(Y2_pp_t_trunc, Y2_pp_trunc) ~ treatment + 
     sex_admin + age_years + bmi + race + charlson_cat_fac +
     # other
@@ -37,11 +37,11 @@ std_Y2_cox_ppp <- coxph(
     cluster(subclass),
   data = data_Y2)
 
-summary(std_Y2_cox_ppp)
+summary(std_Y2_cox_pp)
 
-std_Y2_cox_ppp_tidy <- tidycmprsk::tidy(std_Y2_cox_ppp, conf.int = TRUE, exponentiate = TRUE)
-std_Y2_cox_ppp_tidy
-saveRDS(std_Y2_cox_ppp_tidy, paste0(res_path,"std.ppp.cox.pointest.rds")) # 2026-06-30
+std_Y2_cox_pp_tidy <- tidycmprsk::tidy(std_Y2_cox_pp, conf.int = TRUE, exponentiate = TRUE)
+std_Y2_cox_pp_tidy
+saveRDS(std_Y2_cox_pp_tidy, paste0(res_path,"std.pp.cox.pointest.rds")) # 2026-06-30
 
 
 
