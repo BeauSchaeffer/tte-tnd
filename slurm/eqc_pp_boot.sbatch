@@ -15,7 +15,7 @@ singularity exec \
 	--cleanenv \
 	--env R_LIBS_USER=${R_LIB} \
 	${RSTUDIO_IMG} \
-	Rscript scripts/equi_confounding_pooled_pp_boot.R
+	Rscript scripts/per_prot_nocw/equi_confounding_pooled_pp_boot.R
 
 # run with
 # sbatch slurm/eqc_pp_boot.sbatch
