@@ -22,39 +22,39 @@ std.pp.cox.pointest <- readRDS(paste0(res_path,"std.pp.cox.pointest.rds"))
 
 # std_pooled_pp_model <- readRDS(paste0(res_path, "std_pooled_pp_model.rds"))
 std.pp.risk.pointest <- readRDS(paste0(res_path, "std.pp.risk.pointest.rds"))
-std.pp.boot.long <- readRDS(paste0(res_path, "std.pp.boot.long.rds"))
+std.pp.boot.long <- readRDS(paste0(res_path, "std.pp.boot.long.rds")) ##### still running
 
 # TND
 
-tnd.pointest <- readRDS(paste0(res_path,"tnd.pointest.rds"))
+tnd.pp.pointest <- readRDS(paste0(res_path,"tnd.pp.pointest.rds"))
 
 # EQC Cox
 
-eqc.itt.cox.pointest <- readRDS(paste0(res_path, "eqc.itt.cox.pointest.rds"))
-eqc.itt.cox.boot.long <- readRDS(paste0(res_path, "eqc.itt.cox.boot.long.rds"))
+eqc.pp.cox.pointest <- readRDS(paste0(res_path, "eqc.pp.cox.pointest.rds"))
+eqc.pp.cox.boot.long <- readRDS(paste0(res_path, "eqc.pp.cox.boot.long.rds"))
 
 # EQC Pooled
 
-eqc.itt.risk.pointest <- readRDS(paste0(res_path, "eqc.itt.risk.pointest.rds"))
-eqc.itt.boot.long <- readRDS(paste0(res_path, "eqc.itt.boot.long.rds"))
+eqc.pp.risk.pointest <- readRDS(paste0(res_path, "eqc.pp.risk.pointest.rds"))
+eqc.pp.boot.long <- readRDS(paste0(res_path, "eqc.pp.boot.long.rds"))
 
 # PCI Cox
 
-pci.itt.cox.pointest <- readRDS(paste0(res_path, "pci.itt.cox.pointest.rds"))
-pci.itt.cox.boot.long <- readRDS(paste0(res_path, "pci.itt.cox.boot.long.rds"))
+pci.pp.cox.pointest <- readRDS(paste0(res_path, "pci.pp.cox.pointest.rds"))
+pci.pp.cox.boot.long <- readRDS(paste0(res_path, "pci.pp.cox.boot.long.rds"))
 
 # PCI Pooled
-pci.itt.risk.pointest <- readRDS(paste0(res_path, "pci.itt.risk.pointest.rds"))
+pci.pp.risk.pointest <- readRDS(paste0(res_path, "pci.pp.risk.pointest.rds"))
 
-pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/pci_boot_reps/"
+pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/pci_boot_reps/"
 
 pci_rep_files <- list.files(
   pci_rep_path,
-  pattern = "^pci_itt_boot_rep_\\d{3}\\.rds$",
+  pattern = "^pci_pp_boot_rep_\\d{3}\\.rds$",
   full.names = TRUE
 )
 
-pci.itt.boot.long <- pci_rep_files |>
+pci.pp.boot.long <- pci_rep_files |>
   lapply(readRDS) |>
   lapply(\(m) as.data.frame(m)) |>
   bind_rows() |>
@@ -67,7 +67,7 @@ pci.itt.boot.long <- pci_rep_files |>
   ) |>
   arrange(sim, time_end)
 
-# saveRDS(pci.itt.boot.long, file.path(res_path, "pci.itt.boot.long.rds")) # 2026-04-06
+# saveRDS(pci.pp.boot.long, file.path(res_path, "pci.pp.boot.long.rds")) # 2026-07-02
 
 
 
@@ -130,8 +130,8 @@ eqc.cox.boot.ci <- function(point.est, boot.long, alpha = 0.05){
     )
   
   point.df <- data.frame(
-    treatHR = unname(eqc.itt.cox.pointest["treatHR"]),
-    fluvaxHR = unname(eqc.itt.cox.pointest["fluvaxHR"])
+    treatHR = unname(eqc.pp.cox.pointest["treatHR"]),
+    fluvaxHR = unname(eqc.pp.cox.pointest["fluvaxHR"])
   )
   
   bind_cols(point.df, boot.ci) |>
@@ -247,66 +247,66 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 }
 
 
-# STD ITT draft plot ------------------------------------------------------
+# STD PP draft plot ------------------------------------------------------ ##### still running
 
 
-std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
-# saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2026-04-06
-# png("figures_draft_wm/std.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
-plot.risk.with.boot.ci(std.itt.risks.ci, title.main  = "Measured Covariate Adjustment Approach", title.sub = NULL)
-# dev.off() # 2026-06-11
+std.pp.risks.ci <- pooled.boot.ci(point.est = std.pp.risk.pointest, boot.long = std.pp.boot.long)
+# saveRDS(std.pp.risks.ci, paste0(res_path, "std.pp.risks.ci.rds")) # 2026-XX-XX
+# png("figures_draft_wm/std.pp.risks.ci.plot.png", width = 2400, height=1800, res=300)
+plot.risk.with.boot.ci(std.pp.risks.ci, title.main  = "Measured Covariate Adjustment Approach", title.sub = NULL)
+# dev.off() # 2026-XX-XX
 
 
-# EQC ITT draft plot ------------------------------------------------------
+# EQC PP draft plot ------------------------------------------------------
 
 
-eqc.itt.HRs.ci <- eqc.cox.boot.ci(eqc.itt.cox.pointest, eqc.itt.cox.boot.long)
-# saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds")) # 2026-04-06
+eqc.pp.HRs.ci <- eqc.cox.boot.ci(eqc.pp.cox.pointest, eqc.pp.cox.boot.long)
+# saveRDS(eqc.pp.HRs.ci, paste0(res_path, "eqc.pp.HRs.ci.rds")) # 2026-07-02
 
-eqc.itt.risks.ci <- pooled.boot.ci(point.est = eqc.itt.risk.pointest, boot.long = eqc.itt.boot.long)
-# saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds")) # 2026-04-06
+eqc.pp.risks.ci <- pooled.boot.ci(point.est = eqc.pp.risk.pointest, boot.long = eqc.pp.boot.long)
+# saveRDS(eqc.pp.risks.ci, paste0(res_path, "eqc.pp.risks.ci.rds")) # 2026-07-02
 
-# png("figures_draft_wm/eqc.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
-plot.risk.with.boot.ci(eqc.itt.risks.ci, title.main  = "Equi-confounding Approach", title.sub = NULL)
-# dev.off() # 2026-06-11
-
-
-# PCI ITT draft plot ------------------------------------------------------
-
-pci.itt.HRs.ci <- pci.cox.boot.ci(pci.itt.cox.pointest, pci.itt.cox.boot.long)
-# saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds")) # 2026-04-06
-
-pci.itt.risks.ci <- pooled.boot.ci(point.est = pci.itt.risk.pointest, boot.long = pci.itt.boot.long)
-# saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds")) # 2026-04-06
-
-# png("figures_draft_wm/pci.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
-plot.risk.with.boot.ci(pci.itt.risks.ci, title.main  = "Proximal inference Approach", title.sub = NULL)
-# dev.off() # 2026-06-11
+# png("figures_draft_wm/eqc.pp.risks.ci.plot.png", width = 2400, height=1800, res=300)
+plot.risk.with.boot.ci(eqc.pp.risks.ci, title.main  = "Equi-confounding Approach", title.sub = NULL)
+# dev.off() # 2026-07-02
 
 
-# STE and test behavior multipanel plot -----------------------------------
+# PCI PP draft plot ------------------------------------------------------
+
+pci.pp.HRs.ci <- pci.cox.boot.ci(pci.pp.cox.pointest, pci.pp.cox.boot.long)
+# saveRDS(pci.pp.HRs.ci, paste0(res_path, "pci.pp.HRs.ci.rds")) # 2026-07-02
+
+pci.pp.risks.ci <- pooled.boot.ci(point.est = pci.pp.risk.pointest, boot.long = pci.pp.boot.long)
+# saveRDS(pci.pp.risks.ci, paste0(res_path, "pci.pp.risks.ci.rds")) # 2026-07-02
+
+# png("figures_draft_wm/pci.pp.risks.ci.plot.png", width = 2400, height=1800, res=300)
+plot.risk.with.boot.ci(pci.pp.risks.ci, title.main  = "Proximal inference Approach", title.sub = NULL)
+# dev.off() # 2026-07-02
+
+
+# STE and test behavior multipanel plot ----------------------------------- ##### still running
 
 library(tidycmprsk)
 
 data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
 
 data_Y3 <- data_Y3 |> 
-  mutate(Y3_itt_factor = case_when(
-    Y3_itt_trunc==0 ~ "Censor",
-    Y3_itt_trunc==1 ~ "Test Negative",
-    Y3_itt_trunc==2 ~ "Test Positive"
+  mutate(Y3_pp_factor = case_when(
+    Y3_pp_trunc==0 ~ "Censor",
+    Y3_pp_trunc==1 ~ "Test Negative",
+    Y3_pp_trunc==2 ~ "Test Positive"
   )) |> 
-  mutate(Y3_itt_factor = factor(Y3_itt_factor, levels = c("Censor", "Test Negative", "Test Positive")),
+  mutate(Y3_pp_factor = factor(Y3_pp_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-eqc_Y3_cif_itt <- cuminc(
-  Surv(Y3_itt_t_trunc, Y3_itt_factor) ~ treatment,
+eqc_Y3_cif_pp <- cuminc(
+  Surv(Y3_pp_t_trunc, Y3_pp_factor) ~ treatment,
   data = data_Y3
 )
-names(eqc_Y3_cif_itt$tidy)
+names(eqc_Y3_cif_pp$tidy)
 
 
-png("figures_draft_wm/multi.ste.testbehav.plot.png", width = 2400, height=4000, res=300)
+png("figures_draft_wm/multi.ste.pp.testbehav.plot.png", width = 2400, height=4000, res=300)
 par(mar = c(5.1, 4.1, 4.1, 2.1))
 layout(matrix(1:2, nrow = 2))
 
