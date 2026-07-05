@@ -46,29 +46,30 @@ pci.pp.cox.boot.long <- readRDS(paste0(res_path, "pci.pp.cox.boot.long.rds"))
 # PCI Pooled
 pci.pp.risk.pointest <- readRDS(paste0(res_path, "pci.pp.risk.pointest.rds"))
 
-pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/pci_boot_reps/"
-
-pci_rep_files <- list.files(
-  pci_rep_path,
-  pattern = "^pci_pp_boot_rep_\\d{3}\\.rds$",
-  full.names = TRUE
-)
-
-pci.pp.boot.long <- pci_rep_files |>
-  lapply(readRDS) |>
-  lapply(\(m) as.data.frame(m)) |>
-  bind_rows() |>
-  as_tibble() |>
-  mutate(
-    sim = as.integer(sim),
-    time_end = as.integer(time_end),
-    risk0 = as.numeric(risk0),
-    risk1 = as.numeric(risk1)
-  ) |>
-  arrange(sim, time_end)
+# pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/pci_boot_reps/"
+# 
+# pci_rep_files <- list.files(
+#   pci_rep_path,
+#   pattern = "^pci_pp_boot_rep_\\d{3}\\.rds$",
+#   full.names = TRUE
+# )
+# 
+# pci.pp.boot.long <- pci_rep_files |>
+#   lapply(readRDS) |>
+#   lapply(\(m) as.data.frame(m)) |>
+#   bind_rows() |>
+#   as_tibble() |>
+#   mutate(
+#     sim = as.integer(sim),
+#     time_end = as.integer(time_end),
+#     risk0 = as.numeric(risk0),
+#     risk1 = as.numeric(risk1)
+#   ) |>
+#   arrange(sim, time_end)
 
 # saveRDS(pci.pp.boot.long, file.path(res_path, "pci.pp.boot.long.rds")) # 2026-07-02
 
+pci.pp.boot.long <- readRDS(paste0(res_path, "pci.pp.boot.long.rds"))
 
 
 # Boot CI functions -------------------------------------------------------
@@ -247,14 +248,14 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 }
 
 
-# STD PP draft plot ------------------------------------------------------ ##### still running
+# STD PP draft plot ------------------------------------------------------
 
 
 std.pp.risks.ci <- pooled.boot.ci(point.est = std.pp.risk.pointest, boot.long = std.pp.boot.long)
-# saveRDS(std.pp.risks.ci, paste0(res_path, "std.pp.risks.ci.rds")) # 2026-XX-XX
+# saveRDS(std.pp.risks.ci, paste0(res_path, "std.pp.risks.ci.rds")) # 2026-07-05
 # png("figures_draft_wm/std.pp.risks.ci.plot.png", width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(std.pp.risks.ci, title.main  = "Measured Covariate Adjustment Approach", title.sub = NULL)
-# dev.off() # 2026-XX-XX
+# dev.off() # 2026-07-05
 
 
 # EQC PP draft plot ------------------------------------------------------
@@ -284,7 +285,7 @@ plot.risk.with.boot.ci(pci.pp.risks.ci, title.main  = "Proximal inference Approa
 # dev.off() # 2026-07-02
 
 
-# STE and test behavior multipanel plot ----------------------------------- ##### still running
+# STE and test behavior multipanel plot -----------------------------------
 
 library(tidycmprsk)
 
@@ -313,7 +314,7 @@ layout(matrix(1:2, nrow = 2))
 ## --- Panel 1: test pos risk curves under ste design  ---
 
 plot.risk.with.boot.ci(
-  std.itt.risks.ci,
+  std.pp.risks.ci,
   title.main = "Measured Covariate Adjustment Approach",
   title.sub  = NULL
 )
@@ -323,7 +324,7 @@ mtext("A", side=3, adj=0, line=2, cex=1.5, font=1)
 
 par(mar = c(5.1, 5.5, 4.1, 2.1))
 plot(NULL,
-     xlim = range(c(0, eqc_Y3_cif_itt$tidy$time)),
+     xlim = range(c(0, eqc_Y3_cif_pp$tidy$time)),
      ylim = range(c(0, 0.15)),
      xlab="Weeks",
      ylab="Risk",
@@ -335,13 +336,13 @@ plot(NULL,
 )
 # mtext("Testing Behavior", side = 3, line = 0.5, font = 3, cex=1.2)
 grid()
-tn0 <- eqc_Y3_cif_itt$tidy[eqc_Y3_cif_itt$tidy$outcome == "Test Negative" & eqc_Y3_cif_itt$tidy$strata == 0, ]
-tn1 <- eqc_Y3_cif_itt$tidy[eqc_Y3_cif_itt$tidy$outcome == "Test Negative" & eqc_Y3_cif_itt$tidy$strata == 1, ]
-# lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]),
-#       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==0]),
+tn0 <- eqc_Y3_cif_pp$tidy[eqc_Y3_cif_pp$tidy$outcome == "Test Negative" & eqc_Y3_cif_pp$tidy$strata == 0, ]
+tn1 <- eqc_Y3_cif_pp$tidy[eqc_Y3_cif_pp$tidy$outcome == "Test Negative" & eqc_Y3_cif_pp$tidy$strata == 1, ]
+# lines(c(eqc_Y3_cif_pp$tidy$time[eqc_Y3_cif_pp$tidy$outcome=="Test Positive" & eqc_Y3_cif_pp$tidy$strata==0]),
+#       c(eqc_Y3_cif_pp$tidy$estimate[eqc_Y3_cif_pp$tidy$outcome=="Test Positive" & eqc_Y3_cif_pp$tidy$strata==0]),
 #       col='#006663', lty=1, lwd=2)
-# lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]),
-#       c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Positive" & eqc_Y3_cif_itt$tidy$strata==1]),
+# lines(c(eqc_Y3_cif_pp$tidy$time[eqc_Y3_cif_pp$tidy$outcome=="Test Positive" & eqc_Y3_cif_pp$tidy$strata==1]),
+#       c(eqc_Y3_cif_pp$tidy$estimate[eqc_Y3_cif_pp$tidy$outcome=="Test Positive" & eqc_Y3_cif_pp$tidy$strata==1]),
 #       col='#FF6B1A', lty=1, lwd=2)
 polygon(
   x = c(tn0$time, rev(tn0$time)),
@@ -355,11 +356,11 @@ polygon(
   col = adjustcolor('#FF6B1A', alpha.f = 0.25),
   border = NA
 )
-lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]),
-      c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==0]),
+lines(c(eqc_Y3_cif_pp$tidy$time[eqc_Y3_cif_pp$tidy$outcome=="Test Negative" & eqc_Y3_cif_pp$tidy$strata==0]),
+      c(eqc_Y3_cif_pp$tidy$estimate[eqc_Y3_cif_pp$tidy$outcome=="Test Negative" & eqc_Y3_cif_pp$tidy$strata==0]),
       col='#006663', lty=2, lwd=2)
-lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==1]),
-      c(eqc_Y3_cif_itt$tidy$estimate[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & eqc_Y3_cif_itt$tidy$strata==1]),
+lines(c(eqc_Y3_cif_pp$tidy$time[eqc_Y3_cif_pp$tidy$outcome=="Test Negative" & eqc_Y3_cif_pp$tidy$strata==1]),
+      c(eqc_Y3_cif_pp$tidy$estimate[eqc_Y3_cif_pp$tidy$outcome=="Test Negative" & eqc_Y3_cif_pp$tidy$strata==1]),
       col='#FF6B1A', lty=2, lwd=2)
 # legend("topleft",
 #        legend = c("No Booster", "Booster"),
@@ -372,7 +373,7 @@ lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & 
 #        lty = c(1,2), lwd = 2, cex=1.2,
 #        bty = "n")
 mtext("B", side=3, adj=0, line=2, cex=1.5, font=1)
-dev.off() # 2026-06-11
+dev.off() # 2026-07-05
 
 
 
