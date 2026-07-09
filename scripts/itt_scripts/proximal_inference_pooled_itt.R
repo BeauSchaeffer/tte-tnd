@@ -19,7 +19,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/"
 
 
 # Downsample --------------------------------------------------------------
@@ -78,7 +78,7 @@ dat.long.itt$Y_neg <- ifelse(dat.long.itt$C==1, NA, dat.long.itt$Y_neg)
   ### mem pressure peaks around 75 GB
   ### 100 GB with speedglm - works in a few mins
 
-prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatment +
+prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*(treatment +
                              # demographic
                              sex_admin + age_years + bmi + race + charlson_cat_fac +
                              # other
@@ -87,11 +87,11 @@ prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatm
                              flu_vax),
                            data=dat.long.itt,
                            family=binomial())
-# saveRDS(prox_pooled_itt_s1, paste0(res_path,"prox_pooled_itt_s1.rds")) # 2026-04-03
+saveRDS(prox_pooled_itt_s1, paste0(res_path,"prox_pooled_itt_s1.rds"))
 
 dat.long.itt$p_itt <- predict(prox_pooled_itt_s1, newdata = dat.long.itt)
 
-prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                             # demographic
                             sex_admin + age_years + bmi + race + charlson_cat_fac +
                             # other
@@ -101,9 +101,9 @@ prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatme
                             # no NEC
                           data=dat.long.itt,
                           family=binomial())
-# saveRDS(prox_pooled_itt_s2, paste0(res_path,"prox_pooled_itt_s2.rds")) # 2026-04-03
+saveRDS(prox_pooled_itt_s2, paste0(res_path,"prox_pooled_itt_s2.rds"))
 
-prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                              # demographic
                              sex_admin + age_years + bmi + race + charlson_cat_fac +
                              # other
@@ -112,7 +112,7 @@ prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatm
                              flu_vax,
                            data=dat.long.itt,
                            family=binomial())
-# saveRDS(prox_pooled_itt_obs, paste0(res_path,"prox_pooled_itt_obs.rds")) # 2026-04-03
+saveRDS(prox_pooled_itt_obs, paste0(res_path,"prox_pooled_itt_obs.rds"))
 
 
 # ITT Survival and Risk ---------------------------------------------------
@@ -268,7 +268,7 @@ pci.itt.risk.pointest <- tibble(
   risk1 = prox_itt_A1.long.res$risk_pos
 )
 
-saveRDS(pci.itt.risk.pointest, paste0(res_path, "pci.itt.risk.pointest.rds")) # 2026-04-03
+saveRDS(pci.itt.risk.pointest, paste0(res_path, "pci.itt.risk.pointest.rds"))
 
 
 # ### Alternative estimator
