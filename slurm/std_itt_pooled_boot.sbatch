@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J std_itt_boot
-#SBATCH -o logs/std_itt_boot_%j.out
-#SBATCH -e logs/std_itt_boot_%j.err
+#SBATCH -J std_itt_pooled_boot
+#SBATCH -o logs/std_itt_pooled_boot_%j.out
+#SBATCH -e logs/std_itt_pooled_boot_%j.err
 #SBATCH -p shared
 #SBATCH -c 1
 #SBATCH -t 0-12:00
@@ -15,7 +15,7 @@ singularity exec \
 	--cleanenv \
 	--env R_LIBS_USER=${R_LIB} \
 	${RSTUDIO_IMG} \
-	Rscript scripts/standard_analysis_pooled_itt_boot.R
+	Rscript scripts/itt_scripts/standard_analysis_pooled_itt_boot.R
 
 # run with
-# sbatch slurm/std_itt_boot.sbatch
+# sbatch slurm/std_itt_pooled_boot.sbatch
