@@ -77,7 +77,6 @@ std_pooled_itt <- speedglm(Y ~ ns(time_end, knots = c(10,20,30,40,50))*treatment
                          data=dat.long.itt,
                          family=binomial())
 
-summary(std_pooled_itt)
 saveRDS(std_pooled_itt, paste0(res_path,"std_pooled_itt_model.rds"))
 
   ### sanity check
