@@ -1,7 +1,7 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
 ##----- Equi-Confounding Analysis Pooled
-
+##----- last updated 2026-07-09
 
 # Packages ----------------------------------------------------------------
 
@@ -19,7 +19,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/"
 
 
 # Downsample --------------------------------------------------------------
@@ -75,7 +75,7 @@ dat.long.itt$Y_neg <- ifelse(dat.long.itt$C==1, NA, dat.long.itt$Y_neg)
 # ITT Pooled Logistic -----------------------------------------------------
 
 
-eqc_pooled_itt_fit1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*treatment +
+eqc_pooled_itt_fit1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                   # demographic
                                   sex_admin + age_years + bmi + race + charlson_cat_fac +
                                   # other
@@ -89,7 +89,7 @@ saveRDS(eqc_pooled_itt_fit1, paste0(res_path,"eqc_pooled_itt_fit1.rds")) # 2026-
 
 
 
-eqc_pooled_itt_fit2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+eqc_pooled_itt_fit2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                   # demographic
                                   sex_admin + age_years + bmi + race + charlson_cat_fac +
                                   # other
@@ -200,7 +200,7 @@ eqc.itt.risk.pointest <- tibble(
   risk1 = eqc_itt_A1.long.res$risk_pos
 )
 
-saveRDS(eqc.itt.risk.pointest, paste0(res_path, "eqc.itt.risk.pointest.rds")) # 2026-04-03
+saveRDS(eqc.itt.risk.pointest, paste0(res_path, "eqc.itt.risk.pointest.rds"))
 
 
 
