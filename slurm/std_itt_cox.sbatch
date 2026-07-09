@@ -15,7 +15,7 @@ singularity exec \
 	--cleanenv \
 	--env R_LIBS_USER=${R_LIB} \
 	${RSTUDIO_IMG} \
-	Rscript scripts/standard_analysis.R
+	Rscript scripts/standard_analysis_itt.R
 
 # run with
 # sbatch slurm/std_itt_cox.sbatch
