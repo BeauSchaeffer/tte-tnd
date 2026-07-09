@@ -15,7 +15,7 @@ singularity exec \
 	--cleanenv \
 	--env R_LIBS_USER=${R_LIB} \
 	${RSTUDIO_IMG} \
-	Rscript scripts/proximal_inference_analysis_itt.R
+	Rscript scripts/itt_scripts/proximal_inference_analysis_itt.R
 
 # run with
 # sbatch slurm/pci_itt_cox_with_boot.sbatch 
