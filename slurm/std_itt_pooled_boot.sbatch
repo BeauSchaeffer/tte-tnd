@@ -4,7 +4,7 @@
 #SBATCH -e logs/std_itt_pooled_boot_%j.err
 #SBATCH -p shared
 #SBATCH -c 1
-#SBATCH -t 0-12:00
+#SBATCH -t 0-7:00
 #SBATCH --mem=64000 # in Mb
 
 # RStudio Server container + package library
