@@ -29,7 +29,7 @@ dir.create(res_path, showWarnings = FALSE, recursive = TRUE)
 args <- commandArgs(trailingOnly = TRUE)
 i <- as.integer(args[1])
 
-num.boot <- 100
+num.boot <- 50
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
