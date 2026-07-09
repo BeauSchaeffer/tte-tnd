@@ -20,7 +20,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/pci_boot_reps"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/pci_boot_reps"
 dir.create(res_path, showWarnings = FALSE, recursive = TRUE)
 
 
@@ -96,7 +96,7 @@ dat.long.boot.itt$Y_pos <- ifelse(dat.long.boot.itt$C==1, NA, dat.long.boot.itt$
 dat.long.boot.itt$Y_neg <- ifelse(dat.long.boot.itt$C==1, NA, dat.long.boot.itt$Y_neg)
 
 # fit stage 1
-prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatment +
+prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*(treatment +
                                                                         # demographic
                                                                         sex_admin + age_years + bmi + race + charlson_cat_fac +
                                                                         # other
@@ -110,7 +110,7 @@ prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatm
 dat.long.boot.itt$p_itt <- predict(prox_pooled_itt_s1, newdata = dat.long.boot.itt)
 
 # fit stage 2
-prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                              # demographic
                              sex_admin + age_years + bmi + race + charlson_cat_fac +
                              # other
@@ -122,7 +122,7 @@ prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatme
                            family=binomial())
 
 # fit observed data model
-prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                               # demographic
                               sex_admin + age_years + bmi + race + charlson_cat_fac +
                               # other
