@@ -1,7 +1,7 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
 ##----- Standard Analysis
-##----- last updated 2026-07-08
+##----- last updated 2026-07-09
 
 # Packages ----------------------------------------------------------------
 
@@ -31,7 +31,7 @@ data_Y3 <- data_Y3 |>
   mutate(Y3_itt_factor = factor(Y3_itt_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_itt/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/"
 
 
 # Cox Model ---------------------------------------------------------------
