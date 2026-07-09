@@ -4,7 +4,7 @@
 #SBATCH -e logs/eqc_itt_boot_%j.err
 #SBATCH -p shared
 #SBATCH -c 1
-#SBATCH -t 0-24:00
+#SBATCH -t 0-26:00
 #SBATCH --mem=64000 # in Mb
 
 # RStudio Server container + package library
@@ -15,7 +15,7 @@ singularity exec \
 	--cleanenv \
 	--env R_LIBS_USER=${R_LIB} \
 	${RSTUDIO_IMG} \
-	Rscript scripts/equi_confounding_pooled_itt_boot.R
+	Rscript scripts/itt_scripts/equi_confounding_pooled_itt_boot.R
 
 # run with
-# sbatch slurm/eqc_itt_boot.sbatch
+# sbatch slurm/eqc_itt_pooled_boot.sbatch
