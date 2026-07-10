@@ -86,7 +86,8 @@ prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*(
                              # NEC
                              flu_vax),
                            data=dat.long.itt,
-                           family=binomial())
+                           family=binomial(),
+                           sparse = FALSE)
 saveRDS(prox_pooled_itt_s1, paste0(res_path,"prox_pooled_itt_s1.rds"))
 
 dat.long.itt$p_itt <- predict(prox_pooled_itt_s1, newdata = dat.long.itt)
@@ -100,7 +101,8 @@ prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*t
                             p_itt,
                             # no NEC
                           data=dat.long.itt,
-                          family=binomial())
+                          family=binomial(),
+                          sparse = FALSE)
 saveRDS(prox_pooled_itt_s2, paste0(res_path,"prox_pooled_itt_s2.rds"))
 
 prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
@@ -111,7 +113,8 @@ prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*
                              # NEC
                              flu_vax,
                            data=dat.long.itt,
-                           family=binomial())
+                           family=binomial(),
+                           sparse = FALSE)
 saveRDS(prox_pooled_itt_obs, paste0(res_path,"prox_pooled_itt_obs.rds"))
 
 
