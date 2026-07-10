@@ -109,7 +109,7 @@ boot.results <- lapply(1:num.boot, function(i){
       ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
       # NEC
       flu_vax +
-      cluster(subclass),
+      cluster(subclass_boot),
     data = dat.boot
   )
   
@@ -128,7 +128,7 @@ boot.results <- lapply(1:num.boot, function(i){
       # predictions from S1
       p +
       # NO NEC
-      cluster(subclass),
+      cluster(subclass_boot),
     data = dat.boot
   )
   
