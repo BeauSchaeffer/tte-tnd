@@ -12,6 +12,7 @@ library(tidyverse)
 
 
 res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/"
+plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_itt.2/"
 
 # STD Cox
 
@@ -250,40 +251,44 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 
 
 std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
-# saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds")) # 2026-04-06
-# png("figures_draft_wm/std.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
+saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds"))
+# png(paste0(plot_path,"std.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(std.itt.risks.ci, title.main  = "Measured Covariate Adjustment Approach", title.sub = NULL)
-# dev.off() # 2026-06-11
+# dev.off()
 
 
 # EQC ITT draft plot ------------------------------------------------------
 
 
 eqc.itt.HRs.ci <- eqc.cox.boot.ci(eqc.itt.cox.pointest, eqc.itt.cox.boot.long)
-# saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds")) # 2026-04-06
+# saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds"))
 
 eqc.itt.risks.ci <- pooled.boot.ci(point.est = eqc.itt.risk.pointest, boot.long = eqc.itt.boot.long)
-# saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds")) # 2026-04-06
+# saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds"))
 
-# png("figures_draft_wm/eqc.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
+# png(paste0(plot_path,"eqc.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(eqc.itt.risks.ci, title.main  = "Equi-confounding Approach", title.sub = NULL)
-# dev.off() # 2026-06-11
+# dev.off()
 
 
 # PCI ITT draft plot ------------------------------------------------------
 
 pci.itt.HRs.ci <- pci.cox.boot.ci(pci.itt.cox.pointest, pci.itt.cox.boot.long)
-# saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds")) # 2026-04-06
+# saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds"))
 
 pci.itt.risks.ci <- pooled.boot.ci(point.est = pci.itt.risk.pointest, boot.long = pci.itt.boot.long)
-# saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds")) # 2026-04-06
+# saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds"))
 
 # png("figures_draft_wm/pci.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(pci.itt.risks.ci, title.main  = "Proximal inference Approach", title.sub = NULL)
-# dev.off() # 2026-06-11
+# dev.off()
 
 
 # STE and test behavior multipanel plot -----------------------------------
+
+
+# Test behavior draft plot ------------------------------------------------
+
 
 library(tidycmprsk)
 
@@ -302,21 +307,21 @@ eqc_Y3_cif_itt <- cuminc(
   Surv(Y3_itt_t_trunc, Y3_itt_factor) ~ treatment,
   data = data_Y3
 )
-# names(eqc_Y3_cif_itt$tidy)
 
 
 # png("figures_draft_wm/multi.ste.testbehav.plot.png", width = 2400, height=4000, res=300)
-par(mar = c(5.1, 4.1, 4.1, 2.1))
-layout(matrix(1:2, nrow = 2))
+png(paste0(plot_path,"testbehav.plot.png"), width = 2400, height=1800, res=300)
+# par(mar = c(5.1, 4.1, 4.1, 2.1))
+# layout(matrix(1:2, nrow = 2))
 
-## --- Panel 1: test pos risk curves under ste design  ---
-
-plot.risk.with.boot.ci(
-  std.itt.risks.ci,
-  title.main = "Measured Covariate Adjustment Approach",
-  title.sub  = NULL
-)
-mtext("A", side=3, adj=0, line=2, cex=1.5, font=1)
+# ## --- Panel 1: test pos risk curves under ste design  ---
+# 
+# plot.risk.with.boot.ci(
+#   std.itt.risks.ci,
+#   title.main = "Measured Covariate Adjustment Approach",
+#   title.sub  = NULL
+# )
+# mtext("A", side=3, adj=0, line=2, cex=1.5, font=1)
 
 ## --- Panel 2: test negative risk curves ---
 
@@ -370,9 +375,70 @@ lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & 
 #        col = 'black',
 #        lty = c(1,2), lwd = 2, cex=1.2,
 #        bty = "n")
-mtext("B", side=3, adj=0, line=2, cex=1.5, font=1)
-# dev.off() # 2026-06-11
+# mtext("B", side=3, adj=0, line=2, cex=1.5, font=1)
+dev.off()
 
+
+# Forest plot -------------------------------------------------------------
+forest.data <- bind_rows(
+  # 1. Treatment HR on primary outcome
+  std.itt.cox.pointest |>
+    filter(term == "treatment") |>
+    transmute(label = "HR Booster\nTest Positive",
+              hr = estimate, lo = conf.low, hi = conf.high,
+              group = "effect"),
+  
+  # 2. NCE (flu_vax) HR on primary outcome
+  std.itt.cox.pointest |>
+    filter(term == "flu_vax") |>
+    transmute(label = "HR Flu Vax\nTest Negative",
+              hr = estimate, lo = conf.low, hi = conf.high,
+              group = "nc"),
+  
+  # 3. Treatment HR on NCO
+  std.itt.cox.nco.pointest |>
+    filter(term == "treatment") |>
+    transmute(label = "HR Booster\nTest Negative",
+              hr = estimate, lo = conf.low, hi = conf.high,
+              group = "nc")
+) |>
+  mutate(y = rev(seq_along(label)),
+         col = if_else(group == "effect", "#FF6B1A", "#006663"))
+
+# png(paste0(plot_path, "forest.plot.png"), width = 3200, height = 1800, res = 300)
+
+par(mar = c(5.1, 13, 5.1, 2.1))
+
+xlim <- range(c(1, forest.data$lo, forest.data$hi))
+xlim <- xlim + c(-0.15, 0.15) * diff(xlim)   # wider padding, no more edge clipping
+
+plot(NULL,
+     xlim = xlim,
+     ylim = c(0.5, nrow(forest.data) + 0.7),  # extra headroom for text above top row
+     yaxt = "n",
+     xlab = "Hazard Ratio",
+     ylab = "",
+     main = "Main Effect and Negative Controls Estimates",
+     cex.axis = 1.4,
+     cex.lab  = 1.5,
+     cex.main = 1.4,
+     font.main = 1)
+
+axis(2, at = forest.data$y, labels = forest.data$label, las = 1, cex.axis = 1.3)
+
+abline(v = 1, lty = 2, col = "grey50")
+
+segments(x0 = forest.data$lo, x1 = forest.data$hi,
+         y0 = forest.data$y, y1 = forest.data$y,
+         lwd = 2, col = forest.data$col)
+
+points(forest.data$hr, forest.data$y, pch = 15, cex = 1.8, col = forest.data$col)
+
+text(forest.data$hr, forest.data$y + 0.25,
+     labels = sprintf("%.2f (%.2f, %.2f)", forest.data$hr, forest.data$lo, forest.data$hi),
+     cex = 1.0, xpd = NA)
+
+# dev.off()
 
 
 
