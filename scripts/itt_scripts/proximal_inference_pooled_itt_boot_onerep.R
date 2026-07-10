@@ -104,7 +104,8 @@ prox_pooled_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*(
                                                                         # NEC
                                                                         flu_vax),
                            data=dat.long.boot.itt,
-                           family=binomial())
+                           family=binomial(),
+                           sparse = FALSE)
 
 # generate predictions from stage 1
 dat.long.boot.itt$p_itt <- predict(prox_pooled_itt_s1, newdata = dat.long.boot.itt)
@@ -119,7 +120,8 @@ prox_pooled_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*t
                              p_itt,
                            # no NEC
                            data=dat.long.boot.itt,
-                           family=binomial())
+                           family=binomial(),
+                           sparse = FALSE)
 
 # fit observed data model
 prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
@@ -130,7 +132,8 @@ prox_pooled_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*
                               # NEC
                               flu_vax,
                             data=dat.long.boot.itt,
-                            family=binomial())
+                            family=binomial(),
+                            sparse = FALSE)
 
 # g formula setup
 
