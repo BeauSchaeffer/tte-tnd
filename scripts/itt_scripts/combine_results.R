@@ -302,10 +302,10 @@ eqc_Y3_cif_itt <- cuminc(
   Surv(Y3_itt_t_trunc, Y3_itt_factor) ~ treatment,
   data = data_Y3
 )
-names(eqc_Y3_cif_itt$tidy)
+# names(eqc_Y3_cif_itt$tidy)
 
 
-png("figures_draft_wm/multi.ste.testbehav.plot.png", width = 2400, height=4000, res=300)
+# png("figures_draft_wm/multi.ste.testbehav.plot.png", width = 2400, height=4000, res=300)
 par(mar = c(5.1, 4.1, 4.1, 2.1))
 layout(matrix(1:2, nrow = 2))
 
@@ -371,7 +371,7 @@ lines(c(eqc_Y3_cif_itt$tidy$time[eqc_Y3_cif_itt$tidy$outcome=="Test Negative" & 
 #        lty = c(1,2), lwd = 2, cex=1.2,
 #        bty = "n")
 mtext("B", side=3, adj=0, line=2, cex=1.5, font=1)
-dev.off() # 2026-06-11
+# dev.off() # 2026-06-11
 
 
 
