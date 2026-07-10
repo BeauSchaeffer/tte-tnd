@@ -1,3 +1,3 @@
 rsync -avh --progress \
-  bschaeffer@login.rc.fas.harvard.edu:/n/netscratch/hanage_lab/Lab/bschaeffer/tte-tnd/figures_draft_wm/ \
-  /Users/beauschaeffer/Desktop/Research/tte-tnd/figures_draft_wm/
+  bschaeffer@login.rc.fas.harvard.edu:/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_itt.2/ \
+  /Users/beauschaeffer/Desktop/Research/tte-tnd/plots_itt.2/
