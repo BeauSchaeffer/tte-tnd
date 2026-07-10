@@ -380,6 +380,7 @@ dev.off()
 
 
 # Forest plot -------------------------------------------------------------
+
 forest.data <- bind_rows(
   # 1. Treatment HR on primary outcome
   std.itt.cox.pointest |>
@@ -405,7 +406,7 @@ forest.data <- bind_rows(
   mutate(y = rev(seq_along(label)),
          col = if_else(group == "effect", "#FF6B1A", "#006663"))
 
-# png(paste0(plot_path, "forest.plot.png"), width = 3200, height = 1800, res = 300)
+#png(paste0(plot_path, "forest.plot.png"), width = 3200, height = 1800, res = 300)
 
 par(mar = c(5.1, 13, 5.1, 2.1))
 
@@ -439,6 +440,61 @@ text(forest.data$hr, forest.data$y + 0.25,
      cex = 1.0, xpd = NA)
 
 # dev.off()
+
+
+# STD and Forest Multipanel -----------------------------------------------
+
+png(paste0(plot_path, "std.itt.forest.multi.png"), width = 2400, height = 4000, res = 300)
+
+layout(matrix(1:2, nrow = 2))
+
+## --- Panel A: STD ITT risk curves ---
+
+par(mar = c(5.1, 5.5, 4.1, 2.1))
+plot.risk.with.boot.ci(
+  std.itt.risks.ci,
+  title.main = "Measured Covariate Adjustment Approach",
+  title.sub  = NULL
+)
+mtext("A", side = 3, adj = 0, line = 2, cex = 1.5, font = 1)
+
+## --- Panel B: Forest plot ---
+
+par(mar = c(5.1, 13, 5.1, 2.1))
+
+xlim <- range(c(1, forest.data$lo, forest.data$hi))
+xlim <- xlim + c(-0.15, 0.15) * diff(xlim)
+
+plot(NULL,
+     xlim = xlim,
+     ylim = c(0.5, nrow(forest.data) + 0.7),
+     yaxt = "n",
+     xlab = "Hazard Ratio",
+     ylab = "",
+     main = "Main Effect and Negative Controls Estimates",
+     cex.axis = 1.4,
+     cex.lab  = 1.5,
+     cex.main = 1.4,
+     font.main = 1)
+
+axis(2, at = forest.data$y, labels = forest.data$label, las = 1, cex.axis = 1.3)
+
+abline(v = 1, lty = 2, col = "grey50")
+
+segments(x0 = forest.data$lo, x1 = forest.data$hi,
+         y0 = forest.data$y, y1 = forest.data$y,
+         lwd = 2, col = forest.data$col)
+
+points(forest.data$hr, forest.data$y, pch = 15, cex = 1.8, col = forest.data$col)
+
+text(forest.data$hr, forest.data$y + 0.25,
+     labels = sprintf("%.2f (%.2f, %.2f)", forest.data$hr, forest.data$lo, forest.data$hi),
+     cex = 1.0, xpd = NA)
+
+mtext("B", side = 3, adj = 0, line = 2, cex = 1.5, font = 1)
+
+dev.off()
+
 
 
 
