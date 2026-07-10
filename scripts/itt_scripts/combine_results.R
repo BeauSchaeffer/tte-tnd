@@ -11,21 +11,21 @@ library(tidyverse)
 # Data --------------------------------------------------------------------
 
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/"
 
 # STD Cox
 
   std.itt.cox.pointest <- readRDS(paste0(res_path,"std.itt.cox.pointest.rds"))
+  std.itt.cox.nco.pointest <- readRDS(paste0(res_path,"std.cox.nco.itt.tidy.rds"))
 
 # STD Pooled
 
-  # std_pooled_itt_model <- readRDS(paste0(res_path, "std_pooled_itt_model.rds"))
   std.itt.risk.pointest <- readRDS(paste0(res_path, "std.itt.risk.pointest.rds"))
   std.itt.boot.long <- readRDS(paste0(res_path, "std.itt.boot.long.rds"))
 
 # TND
 
-  tnd.pointest <- readRDS(paste0(res_path,"tnd.pointest.rds"))
+  tnd.pointest <- readRDS(paste0(res_path,"tnd.itt.pointest.rds"))
 
 # EQC Cox
 
