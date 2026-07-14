@@ -46,30 +46,30 @@ plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_i
 # PCI Pooled
   pci.itt.risk.pointest <- readRDS(paste0(res_path, "pci.itt.risk.pointest.rds"))
   
-  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/pci_boot_reps/"
+  # pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/pci_boot_reps"
+  # 
+  # pci_rep_files <- list.files(
+  #   pci_rep_path,
+  #   pattern = "^pci_itt_boot_rep_\\d{3}\\.rds$",
+  #   full.names = TRUE
+  # )
+  # 
+  # pci.itt.boot.long <- pci_rep_files |>
+  #   lapply(readRDS) |>
+  #   lapply(\(m) as.data.frame(m)) |>
+  #   bind_rows() |>
+  #   as_tibble() |>
+  #   mutate(
+  #     sim = as.integer(sim),
+  #     time_end = as.integer(time_end),
+  #     risk0 = as.numeric(risk0),
+  #     risk1 = as.numeric(risk1)
+  #   ) |>
+  #   arrange(sim, time_end)
+  # 
+  # saveRDS(pci.itt.boot.long, file.path(res_path, "pci.itt.boot.long.rds", fsep = ""))
   
-  pci_rep_files <- list.files(
-    pci_rep_path,
-    pattern = "^pci_itt_boot_rep_\\d{3}\\.rds$",
-    full.names = TRUE
-  )
-  
-  pci.itt.boot.long <- pci_rep_files |>
-    lapply(readRDS) |>
-    lapply(\(m) as.data.frame(m)) |>
-    bind_rows() |>
-    as_tibble() |>
-    mutate(
-      sim = as.integer(sim),
-      time_end = as.integer(time_end),
-      risk0 = as.numeric(risk0),
-      risk1 = as.numeric(risk1)
-    ) |>
-    arrange(sim, time_end)
-  
-  # saveRDS(pci.itt.boot.long, file.path(res_path, "pci.itt.boot.long.rds")) # 2026-04-06
-  
-  
+  pci.itt.boot.long <- readRDS(paste0(res_path, "pci.itt.boot.long.rds"))
   
 # Boot CI functions -------------------------------------------------------
 
@@ -251,7 +251,8 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 
 
 std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
-saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds"))
+# saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds"))
+
 # png(paste0(plot_path,"std.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(std.itt.risks.ci, title.main  = "Measured Covariate Adjustment Approach", title.sub = NULL)
 # dev.off()
@@ -274,12 +275,12 @@ plot.risk.with.boot.ci(eqc.itt.risks.ci, title.main  = "Equi-confounding Approac
 # PCI ITT draft plot ------------------------------------------------------
 
 pci.itt.HRs.ci <- pci.cox.boot.ci(pci.itt.cox.pointest, pci.itt.cox.boot.long)
-# saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds"))
+saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds"))
 
 pci.itt.risks.ci <- pooled.boot.ci(point.est = pci.itt.risk.pointest, boot.long = pci.itt.boot.long)
-# saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds"))
+saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds"))
 
-# png("figures_draft_wm/pci.itt.risks.ci.plot.png", width = 2400, height=1800, res=300)
+# png(paste0(plot_path,"pci.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(pci.itt.risks.ci, title.main  = "Proximal inference Approach", title.sub = NULL)
 # dev.off()
 
@@ -404,45 +405,53 @@ forest.data <- bind_rows(
               group = "nc")
 ) |>
   mutate(y = rev(seq_along(label)),
-         col = if_else(group == "effect", "#FF6B1A", "#006663"))
+         # col = if_else(group == "effect", "#FF6B1A", "#006663")
+         col = "black")
 
-#png(paste0(plot_path, "forest.plot.png"), width = 3200, height = 1800, res = 300)
-
-par(mar = c(5.1, 13, 5.1, 2.1))
-
-xlim <- range(c(1, forest.data$lo, forest.data$hi))
-xlim <- xlim + c(-0.15, 0.15) * diff(xlim)   # wider padding, no more edge clipping
-
-plot(NULL,
-     xlim = xlim,
-     ylim = c(0.5, nrow(forest.data) + 0.7),  # extra headroom for text above top row
-     yaxt = "n",
-     xlab = "Hazard Ratio",
-     ylab = "",
-     main = "Main Effect and Negative Controls Estimates",
-     cex.axis = 1.4,
-     cex.lab  = 1.5,
-     cex.main = 1.4,
-     font.main = 1)
-
-axis(2, at = forest.data$y, labels = forest.data$label, las = 1, cex.axis = 1.3)
-
-abline(v = 1, lty = 2, col = "grey50")
-
-segments(x0 = forest.data$lo, x1 = forest.data$hi,
-         y0 = forest.data$y, y1 = forest.data$y,
-         lwd = 2, col = forest.data$col)
-
-points(forest.data$hr, forest.data$y, pch = 15, cex = 1.8, col = forest.data$col)
-
-text(forest.data$hr, forest.data$y + 0.25,
-     labels = sprintf("%.2f (%.2f, %.2f)", forest.data$hr, forest.data$lo, forest.data$hi),
-     cex = 1.0, xpd = NA)
-
+# png(paste0(plot_path, "forest.plot.png"), width = 3200, height = 1800, res = 300)
+# 
+# par(mar = c(5.1, 13, 5.1, 2.1))
+# 
+# xlim <- range(c(1, forest.data$lo, forest.data$hi))
+# xlim <- xlim + c(-0.15, 0.15) * diff(xlim)   # wider padding, no more edge clipping
+# 
+# plot(NULL,
+#      xlim = xlim,
+#      ylim = c(0.5, nrow(forest.data) + 0.7),  # extra headroom for text above top row
+#      yaxt = "n",
+#      xlab = "Hazard Ratio",
+#      ylab = "",
+#      main = "Main Effect and Negative Controls Estimates",
+#      cex.axis = 1.4,
+#      cex.lab  = 1.5,
+#      cex.main = 1.4,
+#      font.main = 1)
+# 
+# axis(2, at = forest.data$y, labels = forest.data$label, las = 1, cex.axis = 1.3)
+# 
+# abline(v = 1, lty = 2, col = "grey50")
+# 
+# segments(x0 = forest.data$lo, x1 = forest.data$hi,
+#          y0 = forest.data$y, y1 = forest.data$y,
+#          lwd = 2, col = forest.data$col)
+# 
+# points(forest.data$hr, forest.data$y, pch = 15, cex = 1.8, col = forest.data$col)
+# 
+# text(forest.data$hr, forest.data$y + 0.25,
+#      labels = sprintf("%.2f (%.2f, %.2f)", forest.data$hr, forest.data$lo, forest.data$hi),
+#      cex = 1.0, xpd = NA)
+# 
 # dev.off()
 
 
 # STD and Forest Multipanel -----------------------------------------------
+
+panel_label <- function(label, x_ndc = 0.02, y_frac = 0.97, ...) {
+  usr <- par("usr")
+  text(x = grconvertX(x_ndc, from = "ndc", to = "user"),
+       y = usr[3] + y_frac * diff(usr[3:4]),
+       labels = label, xpd = NA, adj = c(0, 0), ...)
+}
 
 png(paste0(plot_path, "std.itt.forest.multi.png"), width = 2400, height = 4000, res = 300)
 
@@ -456,7 +465,7 @@ plot.risk.with.boot.ci(
   title.main = "Measured Covariate Adjustment Approach",
   title.sub  = NULL
 )
-mtext("A", side = 3, adj = 0, line = 2, cex = 1.5, font = 1)
+panel_label("A", cex = 1.5, font = 2)
 
 ## --- Panel B: Forest plot ---
 
@@ -491,7 +500,7 @@ text(forest.data$hr, forest.data$y + 0.25,
      labels = sprintf("%.2f (%.2f, %.2f)", forest.data$hr, forest.data$lo, forest.data$hi),
      cex = 1.0, xpd = NA)
 
-mtext("B", side = 3, adj = 0, line = 2, cex = 1.5, font = 1)
+panel_label("B", cex = 1.5, font = 2)
 
 dev.off()
 
