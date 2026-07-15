@@ -12,7 +12,7 @@ library(kableExtra)
 # Data --------------------------------------------------------------------
 
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/"
 
 # STD Cox
 std.itt.cox.pointest <- readRDS(paste0(res_path,"std.itt.cox.pointest.rds"))
@@ -21,7 +21,7 @@ std.itt.cox.pointest <- readRDS(paste0(res_path,"std.itt.cox.pointest.rds"))
 std.itt.risks.ci <- readRDS(paste0(res_path, "std.itt.risks.ci.rds"))
 
 # TND
-tnd.pointest <- readRDS(paste0(res_path,"tnd.pointest.rds"))
+tnd.pointest <- readRDS(paste0(res_path,"tnd.itt.pointest.rds"))
 
 # EQC Cox
 eqc.itt.HRs.ci <- readRDS(paste0(res_path, "eqc.itt.HRs.ci.rds"))
@@ -148,12 +148,12 @@ wide_table |>
   kbl(
     format = "latex",
     caption   = "Cox results",
-    label     = "cox_res",
+    label     = "cox_res_itt",
     booktabs = TRUE,
     align = "lcccc",
     col.names = c("Approach", "HR", "VE (%)", "HR", "VE (%)")
   ) |>
-  add_header_above(c(" " = 1, "Treatment" = 2, "Flu vaccine" = 2)) |>
+  add_header_above(c(" " = 1, "Bivalent Booster" = 2, "Prior year flu vaccine" = 2)) |>
   kable_styling(full_width = FALSE)
 
 
@@ -185,7 +185,7 @@ knitr::kable(
   format = "latex",
   booktabs = TRUE,
   caption = "Pooled logistic results by week (STD)",
-  label = "std_rr_rd",
+  label = "std_rr_rd_itt",
   escape = F
 )
 
@@ -194,7 +194,7 @@ knitr::kable(
   format = "latex",
   booktabs = TRUE,
   caption = "Pooled logistic results by week (EQC)",
-  label = "eqc_rr_rd",
+  label = "eqc_rr_rd_itt",
   escape = F
 )
 
@@ -203,7 +203,7 @@ knitr::kable(
   format = "latex",
   booktabs = TRUE,
   caption = "Pooled logistic results by week (PCI)",
-  label = "pci_rr_rd",
+  label = "pci_rr_rd_itt",
   escape = F
 )
 
