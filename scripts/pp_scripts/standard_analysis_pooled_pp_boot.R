@@ -1,7 +1,8 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
-##----- Standard Analysis Pooled Bootstrap
+##----- Standard Analysis Pooled PP Bootstrap
 ##----- Per-protocol, no censoring weights
+##----- last updated 2026-07-16
 
 # Libraries ---------------------------------------------------------------
 
@@ -15,11 +16,11 @@ library(splines)
 data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.rds")
 dat <- data_Y2
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
 
 # Boot --------------------------------------------------------------------
 
-num.boot <- 100
+num.boot <- 50
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
@@ -82,7 +83,7 @@ boot.results <- lapply(1:num.boot, function(i){
   dat.long.boot.pp$Y <- ifelse(dat.long.boot.pp$C==1, NA, dat.long.boot.pp$Y)
   
   # run regression
-  std_pooled_pp <- speedglm(Y ~ ns(time_end, knots = c(10,20,30))*treatment +
+  std_pooled_pp <- speedglm(Y ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                # demographic
                                sex_admin + age_years + bmi + race + charlson_cat_fac +
                                # other
