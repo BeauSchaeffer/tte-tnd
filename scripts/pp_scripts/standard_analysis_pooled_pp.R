@@ -2,6 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Standard Analysis Pooled
 ##----- Per-protocol, no censoring weights
+##----- last updated 2026-07-16
 
 
 # Packages ----------------------------------------------------------------
@@ -20,7 +21,7 @@ library(geepack)
 data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.rds")
 dat <- data_Y2
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
 
 # Downsample --------------------------------------------------------------
 
@@ -67,7 +68,7 @@ dat.long.pp$Y <- ifelse(dat.long.pp$C==1, NA, dat.long.pp$Y)
 # PP Pooled Logistic -----------------------------------------------------
 
 
-std_pooled_pp <- speedglm(Y ~ ns(time_end, knots = c(10,20,30))*treatment +
+std_pooled_pp <- speedglm(Y ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                              # demographic
                              sex_admin + age_years + bmi + race + charlson_cat_fac +
                              # other
@@ -77,14 +78,13 @@ std_pooled_pp <- speedglm(Y ~ ns(time_end, knots = c(10,20,30))*treatment +
                            data=dat.long.pp,
                            family=binomial())
 
-summary(std_pooled_pp)
-# saveRDS(std_pooled_pp, paste0(res_path,"std_pooled_pp_model.rds")) # 2026-06-30
+saveRDS(std_pooled_pp, paste0(res_path,"std_pooled_pp_model.rds"))
 
 ### sanity check
 ### fit same model without interaction terms
 ### coefficients should be equivalent/similar to Cox
 
-# std_pooled_pp_noint <- speedglm(Y ~ ns(time_end, knots = c(10,20,30)) + treatment +
+# std_pooled_pp_noint <- speedglm(Y ~ ns(time_end, knots = c(10,20,30,40,50)) + treatment +
 #                              # demographic
 #                              sex_admin + age_years + bmi + race + charlson_cat_fac +
 #                              # other
@@ -134,8 +134,8 @@ std_pp_A1.long <- std_pp_A1.long[order(std_pp_A1.long$time_end),]
 
 # ### Calculate the cumulative survival by taking the cumulative product
 # ### of (1 - hazard)
-# std_itt_A0$survival <- cumprod(std_itt_A0$pnoevent)
-# std_itt_A1$survival <- cumprod(std_itt_A1$pnoevent)
+# std_pp_A0$survival <- cumprod(std_pp_A0$pnoevent)
+# std_pp_A1$survival <- cumprod(std_pp_A1$pnoevent)
 
 std_pp_A0.long$survival <- ave(std_pp_A0.long$pnoevent, std_pp_A0.long$fake_mrn, FUN=cumprod)
 std_pp_A1.long$survival <- ave(std_pp_A1.long$pnoevent, std_pp_A1.long$fake_mrn, FUN=cumprod)
@@ -157,9 +157,5 @@ std.pp.risk.pointest <- tibble(
   risk1 = std_pp_A1.long$risk
 )
 
-# saveRDS(std.pp.risk.pointest, paste0(res_path, "std.pp.risk.pointest.rds")) # 2026-06-30
-
-
-
-
+saveRDS(std.pp.risk.pointest, paste0(res_path, "std.pp.risk.pointest.rds"))
 
