@@ -2,6 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Equi Confounding Analysis
 ##----- Per-protocol, no censoring weights
+##----- last updated 2026-07-16
 
 # Packages ----------------------------------------------------------------
 
@@ -29,7 +30,7 @@ data_Y3 <- data_Y3 |>
   mutate(Y3_pp_factor = factor(Y3_pp_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
 
 
 # Cox Model ---------------------------------------------------------------
@@ -67,7 +68,7 @@ eqc.pp.cox.pointest <- c(
   fluvaxHR=unname( exp(eqc_pp_fit2$coefficients["flu_vax"]) / exp(eqc_pp_fit1$coefficients["flu_vax"]) )
 )
 
-saveRDS(eqc.pp.cox.pointest, paste0(res_path,"eqc.pp.cox.pointest.rds")) # 2026-07-01
+saveRDS(eqc.pp.cox.pointest, paste0(res_path,"eqc.pp.cox.pointest.rds"))
 
 
 # Bootstrap CIs for PP ---------------------------------------------------
@@ -140,7 +141,4 @@ boot.results <- lapply(1:num.boot, function(i){
 
 boot.long <- bind_rows(lapply(boot.results, tibble::as_tibble_row))
 saveRDS(boot.long, paste0(res_path, "eqc.pp.cox.boot.long.rds"))
-
-
-
 
