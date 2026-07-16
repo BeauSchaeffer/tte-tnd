@@ -18,4 +18,4 @@ singularity exec \
 	Rscript scripts/itt_scripts/equi_confounding_pooled_itt_boot.R
 
 # run with
-# sbatch slurm/eqc_itt_pooled_boot.sbatch
+# sbatch slurm/itt_slurm/eqc_itt_pooled_boot.sbatch

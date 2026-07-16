@@ -18,4 +18,4 @@ singularity exec \
 	Rscript scripts/itt_scripts/proximal_inference_pooled_itt.R
 
 # run with
-# sbatch slurm/pci_itt_pooled.sbatch
+# sbatch slurm/itt_slurm/pci_itt_pooled.sbatch

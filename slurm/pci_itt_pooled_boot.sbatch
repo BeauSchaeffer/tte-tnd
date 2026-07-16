@@ -21,4 +21,4 @@ singularity exec \
   Rscript scripts/itt_scripts/proximal_inference_pooled_itt_boot_onerep.R ${SLURM_ARRAY_TASK_ID}
 
 # run with
-# sbatch slurm/pci_itt_pooled_boot.sbatch
+# sbatch slurm/itt_slurm/pci_itt_pooled_boot.sbatch

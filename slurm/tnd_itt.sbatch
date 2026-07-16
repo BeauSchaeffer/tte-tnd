@@ -18,4 +18,4 @@ singularity exec \
 	Rscript scripts/itt_scripts/tnd_analysis_itt.R
 
 # run with
-# sbatch slurm/tnd_itt.sbatch
+# sbatch slurm/itt_slurm/tnd_itt.sbatch

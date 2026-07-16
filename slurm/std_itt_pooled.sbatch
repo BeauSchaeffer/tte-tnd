@@ -18,4 +18,4 @@ singularity exec \
 	Rscript scripts/itt_scripts/standard_analysis_pooled_itt.R
 
 # run with
-# sbatch slurm/std_itt_pooled.sbatch
+# sbatch slurm/itt_slurm/std_itt_pooled.sbatch
