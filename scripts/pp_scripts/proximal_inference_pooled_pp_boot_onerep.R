@@ -3,6 +3,7 @@
 ##----- Proximal Inference Analysis Pooled PP Bootstrap
 ##----- Per-protocol, no censoring weights
 ##----- ** SINGLE BOOTSTRAP REPLICATE FOR USE WITH ARRAY **
+##----- last updated 2026-07-17
 
 
 # Packages ----------------------------------------------------------------
@@ -21,7 +22,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/pci_boot_reps"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/pci_boot_reps"
 dir.create(res_path, showWarnings = FALSE, recursive = TRUE)
 
 
@@ -30,7 +31,7 @@ dir.create(res_path, showWarnings = FALSE, recursive = TRUE)
 args <- commandArgs(trailingOnly = TRUE)
 i <- as.integer(args[1])
 
-num.boot <- 100
+num.boot <- 50
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
@@ -97,7 +98,7 @@ dat.long.boot.pp$Y_pos <- ifelse(dat.long.boot.pp$C==1, NA, dat.long.boot.pp$Y_p
 dat.long.boot.pp$Y_neg <- ifelse(dat.long.boot.pp$C==1, NA, dat.long.boot.pp$Y_neg)
 
 # fit stage 1
-prox_pooled_pp_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatment +
+prox_pooled_pp_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*(treatment +
                                                                             # demographic
                                                                             sex_admin + age_years + bmi + race + charlson_cat_fac +
                                                                             # other
@@ -105,13 +106,14 @@ prox_pooled_pp_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatme
                                                                             # NEC
                                                                             flu_vax),
                                data=dat.long.boot.pp,
-                               family=binomial())
+                               family=binomial(),
+                              sparse = FALSE)
 
 # generate predictions from stage 1
 dat.long.boot.pp$p_pp <- predict(prox_pooled_pp_s1, newdata = dat.long.boot.pp)
 
 # fit stage 2
-prox_pooled_pp_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_pp_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                  # demographic
                                  sex_admin + age_years + bmi + race + charlson_cat_fac +
                                  # other
@@ -120,10 +122,11 @@ prox_pooled_pp_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatmen
                                  p_pp,
                                # no NEC
                                data=dat.long.boot.pp,
-                               family=binomial())
+                               family=binomial(),
+                              sparse = FALSE)
 
 # fit observed data model
-prox_pooled_pp_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_pp_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                   # demographic
                                   sex_admin + age_years + bmi + race + charlson_cat_fac +
                                   # other
@@ -131,7 +134,8 @@ prox_pooled_pp_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatme
                                   # NEC
                                   flu_vax,
                                 data=dat.long.boot.pp,
-                                family=binomial())
+                                family=binomial(),
+                               sparse = FALSE)
 
 # g formula setup
 
@@ -276,3 +280,4 @@ saveRDS(
         risk1 = prox_pp_A1.long.res$risk_pos),
   file.path(res_path, sprintf("pci_pp_boot_rep_%03d.rds", i))
 )
+
