@@ -2,6 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Equi-Confounding Analysis Pooled
 ##----- Per-protocol, no censoring weights
+##----- last updated 2026-07-17
 
 
 # Packages ----------------------------------------------------------------
@@ -20,7 +21,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
 
 
 # Downsample --------------------------------------------------------------
@@ -76,7 +77,7 @@ dat.long.pp$Y_neg <- ifelse(dat.long.pp$C==1, NA, dat.long.pp$Y_neg)
 # PP Pooled Logistic -----------------------------------------------------
 
 
-eqc_pooled_pp_fit1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*treatment +
+eqc_pooled_pp_fit1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                   # demographic
                                   sex_admin + age_years + bmi + race + charlson_cat_fac +
                                   # other
@@ -86,11 +87,11 @@ eqc_pooled_pp_fit1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*treatme
                                 data=dat.long.pp,
                                 family=binomial())
 
-saveRDS(eqc_pooled_pp_fit1, paste0(res_path,"eqc_pooled_pp_fit1.rds")) # 2026-07-01
+saveRDS(eqc_pooled_pp_fit1, paste0(res_path,"eqc_pooled_pp_fit1.rds"))
 
 
 
-eqc_pooled_pp_fit2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+eqc_pooled_pp_fit2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                   # demographic
                                   sex_admin + age_years + bmi + race + charlson_cat_fac +
                                   # other
@@ -100,7 +101,7 @@ eqc_pooled_pp_fit2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatme
                                 data=dat.long.pp,
                                 family=binomial())
 
-saveRDS(eqc_pooled_pp_fit2, paste0(res_path,"eqc_pooled_pp_fit2.rds")) # 2026-07-01
+saveRDS(eqc_pooled_pp_fit2, paste0(res_path,"eqc_pooled_pp_fit2.rds")) 
 
 
 # PP Survival and Risk ---------------------------------------------------
@@ -201,8 +202,5 @@ eqc.pp.risk.pointest <- tibble(
   risk1 = eqc_pp_A1.long.res$risk_pos
 )
 
-saveRDS(eqc.pp.risk.pointest, paste0(res_path, "eqc.pp.risk.pointest.rds")) # 2026-07-01
-
-
-
+saveRDS(eqc.pp.risk.pointest, paste0(res_path, "eqc.pp.risk.pointest.rds"))
 
