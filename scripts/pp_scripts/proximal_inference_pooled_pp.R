@@ -2,6 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Proximal Inference Analysis Pooled
 ##----- Per-protocol, no censoring weights
+##----- last updated 2026-07-17
 
 
 # Packages ----------------------------------------------------------------
@@ -20,7 +21,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
 
 
 # Downsample --------------------------------------------------------------
@@ -79,7 +80,7 @@ dat.long.pp$Y_neg <- ifelse(dat.long.pp$C==1, NA, dat.long.pp$Y_neg)
 ### mem pressure peaks around 75 GB
 ### 100 GB with speedglm - works in a few mins
 
-prox_pooled_pp_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatment +
+prox_pooled_pp_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*(treatment +
                                                                             # demographic
                                                                             sex_admin + age_years + bmi + race + charlson_cat_fac +
                                                                             # other
@@ -87,12 +88,13 @@ prox_pooled_pp_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30))*(treatme
                                                                             # NEC
                                                                             flu_vax),
                                data=dat.long.pp,
-                               family=binomial())
-saveRDS(prox_pooled_pp_s1, paste0(res_path,"prox_pooled_pp_s1.rds")) # 2026-07-01
+                               family=binomial(),
+                              sparse = FALSE)
+saveRDS(prox_pooled_pp_s1, paste0(res_path,"prox_pooled_pp_s1.rds"))
 
 dat.long.pp$p_pp <- predict(prox_pooled_pp_s1, newdata = dat.long.pp)
 
-prox_pooled_pp_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_pp_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                  # demographic
                                  sex_admin + age_years + bmi + race + charlson_cat_fac +
                                  # other
@@ -101,10 +103,11 @@ prox_pooled_pp_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatmen
                                  p_pp,
                                # no NEC
                                data=dat.long.pp,
-                               family=binomial())
-saveRDS(prox_pooled_pp_s2, paste0(res_path,"prox_pooled_pp_s2.rds")) # 2026-07-01
+                               family=binomial(),
+                              sparse = FALSE)
+saveRDS(prox_pooled_pp_s2, paste0(res_path,"prox_pooled_pp_s2.rds"))
 
-prox_pooled_pp_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatment +
+prox_pooled_pp_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                   # demographic
                                   sex_admin + age_years + bmi + race + charlson_cat_fac +
                                   # other
@@ -112,8 +115,9 @@ prox_pooled_pp_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30))*treatme
                                   # NEC
                                   flu_vax,
                                 data=dat.long.pp,
-                                family=binomial())
-saveRDS(prox_pooled_pp_obs, paste0(res_path,"prox_pooled_pp_obs.rds")) # 2026-07-01
+                                family=binomial(),
+                               sparse = FALSE)
+saveRDS(prox_pooled_pp_obs, paste0(res_path,"prox_pooled_pp_obs.rds"))
 
 
 # PP Survival and Risk ---------------------------------------------------
@@ -269,8 +273,5 @@ pci.pp.risk.pointest <- tibble(
   risk1 = prox_pp_A1.long.res$risk_pos
 )
 
-saveRDS(pci.pp.risk.pointest, paste0(res_path, "pci.pp.risk.pointest.rds")) # 2026-07-01
-
-
-
+saveRDS(pci.pp.risk.pointest, paste0(res_path, "pci.pp.risk.pointest.rds")) 
 
