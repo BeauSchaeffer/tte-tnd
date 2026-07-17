@@ -2,6 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Test Negative Design Analysis
 ##----- Per-protocol, no censoring weights
+##----- last updated 2026-07-17
 
 # Packages ----------------------------------------------------------------
 
@@ -26,7 +27,7 @@ data_Y3 <- data_Y3 |>
   mutate(Y3_pp_factor = factor(Y3_pp_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
 
 
 # TND ---------------------------------------------------------------------
@@ -62,7 +63,5 @@ tnd.pp.pointest <- data.frame(
   UCL  = c(exp(tnd_treatment_coef + 1.96*tnd_treatment_se),
            exp(tnd_flu_coef + 1.96*tnd_flu_se)))
 
-saveRDS(tnd.pp.pointest, paste0(res_path,"tnd.pp.pointest.rds")) # 2026-07-02
-
-
+saveRDS(tnd.pp.pointest, paste0(res_path,"tnd.pp.pointest.rds"))
 
