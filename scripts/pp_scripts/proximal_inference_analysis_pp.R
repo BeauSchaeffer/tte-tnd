@@ -2,6 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Proximal Inference Analysis
 ##----- Per-protocol, no censoring weights
+##----- last updated 2026-07-17
 
 
 # Packages ----------------------------------------------------------------
@@ -27,7 +28,7 @@ data_Y3 <- data_Y3 |>
   mutate(Y3_pp_factor = factor(Y3_pp_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
 
 
 
@@ -145,8 +146,4 @@ boot.results <- lapply(1:num.boot, function(i){
 
 boot.long <- bind_rows(lapply(boot.results, tibble::as_tibble_row))
 saveRDS(boot.long, paste0(res_path, "pci.pp.cox.boot.long.rds"))
-
-
-
-
 
