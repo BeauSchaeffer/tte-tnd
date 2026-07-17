@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J pci_itt_boot
-#SBATCH -o logs/pci_itt_boot_%A_%a.out
-#SBATCH -e logs/pci_itt_boot_%A_%a.err
+#SBATCH -J pci_pp_boot
+#SBATCH -o logs/pci_pp_boot_%A_%a.out
+#SBATCH -e logs/pci_pp_boot_%A_%a.err
 #SBATCH -p shared
 #SBATCH -c 1
 #SBATCH -t 0-00:45
@@ -18,7 +18,7 @@ singularity exec \
   --cleanenv \
   --env R_LIBS_USER=${R_LIB} \
   ${RSTUDIO_IMG} \
-  Rscript scripts/itt_scripts/proximal_inference_pooled_itt_boot_onerep.R ${SLURM_ARRAY_TASK_ID}
+  Rscript scripts/pp_scripts/proximal_inference_pooled_pp_boot_onerep.R ${SLURM_ARRAY_TASK_ID}
 
 # run with
-# sbatch slurm/itt_slurm/pci_itt_pooled_boot.sbatch
+# sbatch slurm/pp_slurm/pci_pp_pooled_boot.sbatch
