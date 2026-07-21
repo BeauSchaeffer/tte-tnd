@@ -12,62 +12,63 @@ library(tidyverse)
 # Data --------------------------------------------------------------------
 
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
+plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_pp.2/"
 
 # STD Cox
 
-std.pp.cox.pointest <- readRDS(paste0(res_path,"std.pp.cox.pointest.rds"))
+  std.pp.cox.pointest <- readRDS(paste0(res_path,"std.pp.cox.pointest.rds"))
+  std.pp.cox.nco.pointest <- readRDS(paste0(res_path,"std.cox.nco.pp.tidy.rds"))
 
 # STD Pooled
 
-# std_pooled_pp_model <- readRDS(paste0(res_path, "std_pooled_pp_model.rds"))
-std.pp.risk.pointest <- readRDS(paste0(res_path, "std.pp.risk.pointest.rds"))
-std.pp.boot.long <- readRDS(paste0(res_path, "std.pp.boot.long.rds")) ##### still running
+  std.pp.risk.pointest <- readRDS(paste0(res_path, "std.pp.risk.pointest.rds"))
+  std.pp.boot.long <- readRDS(paste0(res_path, "std.pp.boot.long.rds"))
 
 # TND
 
-tnd.pp.pointest <- readRDS(paste0(res_path,"tnd.pp.pointest.rds"))
+  tnd.pp.pointest <- readRDS(paste0(res_path,"tnd.pp.pointest.rds"))
 
 # EQC Cox
 
-eqc.pp.cox.pointest <- readRDS(paste0(res_path, "eqc.pp.cox.pointest.rds"))
-eqc.pp.cox.boot.long <- readRDS(paste0(res_path, "eqc.pp.cox.boot.long.rds"))
+  eqc.pp.cox.pointest <- readRDS(paste0(res_path, "eqc.pp.cox.pointest.rds"))
+  eqc.pp.cox.boot.long <- readRDS(paste0(res_path, "eqc.pp.cox.boot.long.rds"))
 
 # EQC Pooled
 
-eqc.pp.risk.pointest <- readRDS(paste0(res_path, "eqc.pp.risk.pointest.rds"))
-eqc.pp.boot.long <- readRDS(paste0(res_path, "eqc.pp.boot.long.rds"))
+  eqc.pp.risk.pointest <- readRDS(paste0(res_path, "eqc.pp.risk.pointest.rds"))
+  eqc.pp.boot.long <- readRDS(paste0(res_path, "eqc.pp.boot.long.rds"))
 
 # PCI Cox
 
-pci.pp.cox.pointest <- readRDS(paste0(res_path, "pci.pp.cox.pointest.rds"))
-pci.pp.cox.boot.long <- readRDS(paste0(res_path, "pci.pp.cox.boot.long.rds"))
+  pci.pp.cox.pointest <- readRDS(paste0(res_path, "pci.pp.cox.pointest.rds"))
+  pci.pp.cox.boot.long <- readRDS(paste0(res_path, "pci.pp.cox.boot.long.rds"))
 
 # PCI Pooled
-pci.pp.risk.pointest <- readRDS(paste0(res_path, "pci.pp.risk.pointest.rds"))
+  pci.pp.risk.pointest <- readRDS(paste0(res_path, "pci.pp.risk.pointest.rds"))
 
-# pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/pci_boot_reps/"
-# 
-# pci_rep_files <- list.files(
-#   pci_rep_path,
-#   pattern = "^pci_pp_boot_rep_\\d{3}\\.rds$",
-#   full.names = TRUE
-# )
-# 
-# pci.pp.boot.long <- pci_rep_files |>
-#   lapply(readRDS) |>
-#   lapply(\(m) as.data.frame(m)) |>
-#   bind_rows() |>
-#   as_tibble() |>
-#   mutate(
-#     sim = as.integer(sim),
-#     time_end = as.integer(time_end),
-#     risk0 = as.numeric(risk0),
-#     risk1 = as.numeric(risk1)
-#   ) |>
-#   arrange(sim, time_end)
-
-# saveRDS(pci.pp.boot.long, file.path(res_path, "pci.pp.boot.long.rds")) # 2026-07-02
+  # pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/pci_boot_reps"
+  # 
+  # pci_rep_files <- list.files(
+  #   pci_rep_path,
+  #   pattern = "^pci_pp_boot_rep_\\d{3}\\.rds$",
+  #   full.names = TRUE
+  # )
+  # 
+  # pci.pp.boot.long <- pci_rep_files |>
+  #   lapply(readRDS) |>
+  #   lapply(\(m) as.data.frame(m)) |>
+  #   bind_rows() |>
+  #   as_tibble() |>
+  #   mutate(
+  #     sim = as.integer(sim),
+  #     time_end = as.integer(time_end),
+  #     risk0 = as.numeric(risk0),
+  #     risk1 = as.numeric(risk1)
+  #   ) |>
+  #   arrange(sim, time_end)
+  # 
+  # saveRDS(pci.pp.boot.long, file.path(res_path, "pci.pp.boot.long.rds"))
 
 pci.pp.boot.long <- readRDS(paste0(res_path, "pci.pp.boot.long.rds"))
 
@@ -252,10 +253,11 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 
 
 std.pp.risks.ci <- pooled.boot.ci(point.est = std.pp.risk.pointest, boot.long = std.pp.boot.long)
-# saveRDS(std.pp.risks.ci, paste0(res_path, "std.pp.risks.ci.rds")) # 2026-07-05
-# png("figures_draft_wm/std.pp.risks.ci.plot.png", width = 2400, height=1800, res=300)
-plot.risk.with.boot.ci(std.pp.risks.ci, title.main  = "Measured Covariate Adjustment Approach", title.sub = NULL)
-# dev.off() # 2026-07-05
+saveRDS(std.pp.risks.ci, paste0(res_path, "std.pp.risks.ci.rds"))
+
+png(paste0(plot_path,"std.pp.risks.ci.plot.png"), width = 2400, height=1800, res=300)
+plot.risk.with.boot.ci(std.pp.risks.ci, title.main = "Measured Covariate Adjustment Approach", title.sub = NULL)
+dev.off()
 
 
 # EQC PP draft plot ------------------------------------------------------
