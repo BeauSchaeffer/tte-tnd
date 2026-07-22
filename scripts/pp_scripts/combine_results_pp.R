@@ -70,7 +70,7 @@ plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_p
   # 
   # saveRDS(pci.pp.boot.long, file.path(res_path, "pci.pp.boot.long.rds"))
 
-pci.pp.boot.long <- readRDS(paste0(res_path, "pci.pp.boot.long.rds"))
+  pci.pp.boot.long <- readRDS(paste0(res_path, "pci.pp.boot.long.rds"))
 
 
 # Boot CI functions -------------------------------------------------------
@@ -264,30 +264,34 @@ dev.off()
 
 
 eqc.pp.HRs.ci <- eqc.cox.boot.ci(eqc.pp.cox.pointest, eqc.pp.cox.boot.long)
-# saveRDS(eqc.pp.HRs.ci, paste0(res_path, "eqc.pp.HRs.ci.rds")) # 2026-07-02
+saveRDS(eqc.pp.HRs.ci, paste0(res_path, "eqc.pp.HRs.ci.rds"))
 
 eqc.pp.risks.ci <- pooled.boot.ci(point.est = eqc.pp.risk.pointest, boot.long = eqc.pp.boot.long)
-# saveRDS(eqc.pp.risks.ci, paste0(res_path, "eqc.pp.risks.ci.rds")) # 2026-07-02
+saveRDS(eqc.pp.risks.ci, paste0(res_path, "eqc.pp.risks.ci.rds"))
 
-# png("figures_draft_wm/eqc.pp.risks.ci.plot.png", width = 2400, height=1800, res=300)
+png(paste0(plot_path,"eqc.pp.risks.ci.plot.png"), width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(eqc.pp.risks.ci, title.main  = "Equi-confounding Approach", title.sub = NULL)
-# dev.off() # 2026-07-02
+dev.off()
 
 
 # PCI PP draft plot ------------------------------------------------------
 
 pci.pp.HRs.ci <- pci.cox.boot.ci(pci.pp.cox.pointest, pci.pp.cox.boot.long)
-# saveRDS(pci.pp.HRs.ci, paste0(res_path, "pci.pp.HRs.ci.rds")) # 2026-07-02
+saveRDS(pci.pp.HRs.ci, paste0(res_path, "pci.pp.HRs.ci.rds"))
 
 pci.pp.risks.ci <- pooled.boot.ci(point.est = pci.pp.risk.pointest, boot.long = pci.pp.boot.long)
-# saveRDS(pci.pp.risks.ci, paste0(res_path, "pci.pp.risks.ci.rds")) # 2026-07-02
+saveRDS(pci.pp.risks.ci, paste0(res_path, "pci.pp.risks.ci.rds"))
 
-# png("figures_draft_wm/pci.pp.risks.ci.plot.png", width = 2400, height=1800, res=300)
+png(paste0(plot_path,"pci.pp.risks.ci.plot.png"), width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(pci.pp.risks.ci, title.main  = "Proximal inference Approach", title.sub = NULL)
-# dev.off() # 2026-07-02
+dev.off()
 
 
 # STE and test behavior multipanel plot -----------------------------------
+
+
+# Test behavior draft plot ------------------------------------------------
+
 
 library(tidycmprsk)
 
@@ -306,21 +310,20 @@ eqc_Y3_cif_pp <- cuminc(
   Surv(Y3_pp_t_trunc, Y3_pp_factor) ~ treatment,
   data = data_Y3
 )
-names(eqc_Y3_cif_pp$tidy)
 
+# png("figures_draft_wm/multi.ste.testbehav.plot.png", width = 2400, height=4000, res=300)
+png(paste0(plot_path,"testbehav.plot.png"), width = 2400, height=1800, res=300)
+# par(mar = c(5.1, 4.1, 4.1, 2.1))
+# layout(matrix(1:2, nrow = 2))
 
-png("figures_draft_wm/multi.ste.pp.testbehav.plot.png", width = 2400, height=4000, res=300)
-par(mar = c(5.1, 4.1, 4.1, 2.1))
-layout(matrix(1:2, nrow = 2))
-
-## --- Panel 1: test pos risk curves under ste design  ---
-
-plot.risk.with.boot.ci(
-  std.pp.risks.ci,
-  title.main = "Measured Covariate Adjustment Approach",
-  title.sub  = NULL
-)
-mtext("A", side=3, adj=0, line=2, cex=1.5, font=1)
+# ## --- Panel 1: test pos risk curves under ste design  ---
+# 
+# plot.risk.with.boot.ci(
+#   std.pp.risks.ci,
+#   title.main = "Measured Covariate Adjustment Approach",
+#   title.sub  = NULL
+# )
+# mtext("A", side=3, adj=0, line=2, cex=1.5, font=1)
 
 ## --- Panel 2: test negative risk curves ---
 
@@ -374,9 +377,133 @@ lines(c(eqc_Y3_cif_pp$tidy$time[eqc_Y3_cif_pp$tidy$outcome=="Test Negative" & eq
 #        col = 'black',
 #        lty = c(1,2), lwd = 2, cex=1.2,
 #        bty = "n")
-mtext("B", side=3, adj=0, line=2, cex=1.5, font=1)
-dev.off() # 2026-07-05
+# mtext("B", side=3, adj=0, line=2, cex=1.5, font=1)
+dev.off()
 
+
+# Forest plot -------------------------------------------------------------
+
+
+forest.data <- bind_rows(
+  # 1. Treatment HR on primary outcome
+  std.pp.cox.pointest |>
+    filter(term == "treatment") |>
+    transmute(label = "HR Booster\nTest Positive",
+              hr = estimate, lo = conf.low, hi = conf.high,
+              group = "effect"),
+  
+  # 2. NCE (flu_vax) HR on primary outcome
+  std.pp.cox.pointest |>
+    filter(term == "flu_vax") |>
+    transmute(label = "HR Flu Vax\nTest Negative",
+              hr = estimate, lo = conf.low, hi = conf.high,
+              group = "nc"),
+  
+  # 3. Treatment HR on NCO
+  std.pp.cox.nco.pointest |>
+    filter(term == "treatment") |>
+    transmute(label = "HR Booster\nTest Negative",
+              hr = estimate, lo = conf.low, hi = conf.high,
+              group = "nc")
+) |>
+  mutate(y = rev(seq_along(label)),
+         # col = if_else(group == "effect", "#FF6B1A", "#006663")
+         col = "black")
+
+# png(paste0(plot_path, "forest.plot.png"), width = 3200, height = 1800, res = 300)
+# 
+# par(mar = c(5.1, 13, 5.1, 2.1))
+# 
+# xlim <- range(c(1, forest.data$lo, forest.data$hi))
+# xlim <- xlim + c(-0.15, 0.15) * diff(xlim)   # wider padding, no more edge clipping
+# 
+# plot(NULL,
+#      xlim = xlim,
+#      ylim = c(0.5, nrow(forest.data) + 0.7),  # extra headroom for text above top row
+#      yaxt = "n",
+#      xlab = "Hazard Ratio",
+#      ylab = "",
+#      main = "Main Effect and Negative Controls Estimates",
+#      cex.axis = 1.4,
+#      cex.lab  = 1.5,
+#      cex.main = 1.4,
+#      font.main = 1)
+# 
+# axis(2, at = forest.data$y, labels = forest.data$label, las = 1, cex.axis = 1.3)
+# 
+# abline(v = 1, lty = 2, col = "grey50")
+# 
+# segments(x0 = forest.data$lo, x1 = forest.data$hi,
+#          y0 = forest.data$y, y1 = forest.data$y,
+#          lwd = 2, col = forest.data$col)
+# 
+# points(forest.data$hr, forest.data$y, pch = 15, cex = 1.8, col = forest.data$col)
+# 
+# text(forest.data$hr, forest.data$y + 0.25,
+#      labels = sprintf("%.2f (%.2f, %.2f)", forest.data$hr, forest.data$lo, forest.data$hi),
+#      cex = 1.0, xpd = NA)
+# 
+# dev.off()
+
+
+# STD and Forest Multipanel -----------------------------------------------
+
+panel_label <- function(label, x_ndc = 0.02, y_frac = 0.97, ...) {
+  usr <- par("usr")
+  text(x = grconvertX(x_ndc, from = "ndc", to = "user"),
+       y = usr[3] + y_frac * diff(usr[3:4]),
+       labels = label, xpd = NA, adj = c(0, 0), ...)
+}
+
+png(paste0(plot_path, "std.pp.forest.multi.png"), width = 2400, height = 4000, res = 300)
+
+layout(matrix(1:2, nrow = 2))
+
+# --- Panel A: STD PP risk curves ---
+
+par(mar = c(5.1, 5.5, 4.1, 2.1))
+plot.risk.with.boot.ci(
+  std.pp.risks.ci,
+  title.main = "Measured Covariate Adjustment Approach",
+  title.sub  = NULL
+)
+panel_label("A", cex = 1.5, font = 2)
+
+## --- Panel B: Forest plot ---
+
+par(mar = c(5.1, 13, 5.1, 2.1))
+xlim <- range(c(1, forest.data$lo, forest.data$hi))
+xlim <- xlim + c(-0.15, 0.15) * diff(xlim)
+
+plot(NULL,
+     xlim = xlim,
+     ylim = c(0.5, nrow(forest.data) + 0.7),
+     yaxt = "n",
+     xlab = "Hazard Ratio",
+     ylab = "",
+     main = "Main Effect and Negative Controls Estimates",
+     cex.axis = 1.4,
+     cex.lab  = 1.5,
+     cex.main = 1.4,
+     font.main = 1)
+
+axis(2, at = forest.data$y, labels = forest.data$label, las = 1, cex.axis = 1.3)
+
+abline(v = 1, lty = 2, col = "grey50")
+
+segments(x0 = forest.data$lo, x1 = forest.data$hi,
+         y0 = forest.data$y, y1 = forest.data$y,
+         lwd = 2, col = forest.data$col)
+
+points(forest.data$hr, forest.data$y, pch = 15, cex = 1.8, col = forest.data$col)
+
+text(forest.data$hr, forest.data$y + 0.25,
+     labels = sprintf("%.2f (%.2f, %.2f)", forest.data$hr, forest.data$lo, forest.data$hi),
+     cex = 1.0, xpd = NA)
+
+panel_label("B", cex = 1.5, font = 2)
+
+dev.off()
 
 
 
