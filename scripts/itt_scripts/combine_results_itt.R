@@ -46,28 +46,28 @@ plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_i
 # PCI Pooled
   pci.itt.risk.pointest <- readRDS(paste0(res_path, "pci.itt.risk.pointest.rds"))
   
-  # pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/pci_boot_reps"
-  # 
-  # pci_rep_files <- list.files(
-  #   pci_rep_path,
-  #   pattern = "^pci_itt_boot_rep_\\d{3}\\.rds$",
-  #   full.names = TRUE
-  # )
-  # 
-  # pci.itt.boot.long <- pci_rep_files |>
-  #   lapply(readRDS) |>
-  #   lapply(\(m) as.data.frame(m)) |>
-  #   bind_rows() |>
-  #   as_tibble() |>
-  #   mutate(
-  #     sim = as.integer(sim),
-  #     time_end = as.integer(time_end),
-  #     risk0 = as.numeric(risk0),
-  #     risk1 = as.numeric(risk1)
-  #   ) |>
-  #   arrange(sim, time_end)
-  # 
-  # saveRDS(pci.itt.boot.long, file.path(res_path, "pci.itt.boot.long.rds", fsep = ""))
+  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/pci_boot_reps"
+  
+  pci_rep_files <- list.files(
+    pci_rep_path,
+    pattern = "^pci_itt_boot_rep_\\d{3}\\.rds$",
+    full.names = TRUE
+  )
+  
+  pci.itt.boot.long <- pci_rep_files |>
+    lapply(readRDS) |>
+    lapply(\(m) as.data.frame(m)) |>
+    bind_rows() |>
+    as_tibble() |>
+    mutate(
+      sim = as.integer(sim),
+      time_end = as.integer(time_end),
+      risk0 = as.numeric(risk0),
+      risk1 = as.numeric(risk1)
+    ) |>
+    arrange(sim, time_end)
+  
+  saveRDS(pci.itt.boot.long, file.path(res_path, "pci.itt.boot.long.rds", fsep = ""))
   
   pci.itt.boot.long <- readRDS(paste0(res_path, "pci.itt.boot.long.rds"))
   
@@ -251,25 +251,25 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
 
 
 std.itt.risks.ci <- pooled.boot.ci(point.est = std.itt.risk.pointest, boot.long = std.itt.boot.long)
-# saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds"))
+saveRDS(std.itt.risks.ci, paste0(res_path, "std.itt.risks.ci.rds"))
 
-# png(paste0(plot_path,"std.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
+png(paste0(plot_path,"std.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(std.itt.risks.ci, title.main  = "Measured Covariate Adjustment Approach", title.sub = NULL)
-# dev.off()
+dev.off()
 
 
 # EQC ITT draft plot ------------------------------------------------------
 
 
 eqc.itt.HRs.ci <- eqc.cox.boot.ci(eqc.itt.cox.pointest, eqc.itt.cox.boot.long)
-# saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds"))
+saveRDS(eqc.itt.HRs.ci, paste0(res_path, "eqc.itt.HRs.ci.rds"))
 
 eqc.itt.risks.ci <- pooled.boot.ci(point.est = eqc.itt.risk.pointest, boot.long = eqc.itt.boot.long)
-# saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds"))
+saveRDS(eqc.itt.risks.ci, paste0(res_path, "eqc.itt.risks.ci.rds"))
 
-# png(paste0(plot_path,"eqc.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
+png(paste0(plot_path,"eqc.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(eqc.itt.risks.ci, title.main  = "Equi-confounding Approach", title.sub = NULL)
-# dev.off()
+dev.off()
 
 
 # PCI ITT draft plot ------------------------------------------------------

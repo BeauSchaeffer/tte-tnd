@@ -47,28 +47,28 @@ plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_p
 # PCI Pooled
   pci.pp.risk.pointest <- readRDS(paste0(res_path, "pci.pp.risk.pointest.rds"))
 
-  # pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/pci_boot_reps"
-  # 
-  # pci_rep_files <- list.files(
-  #   pci_rep_path,
-  #   pattern = "^pci_pp_boot_rep_\\d{3}\\.rds$",
-  #   full.names = TRUE
-  # )
-  # 
-  # pci.pp.boot.long <- pci_rep_files |>
-  #   lapply(readRDS) |>
-  #   lapply(\(m) as.data.frame(m)) |>
-  #   bind_rows() |>
-  #   as_tibble() |>
-  #   mutate(
-  #     sim = as.integer(sim),
-  #     time_end = as.integer(time_end),
-  #     risk0 = as.numeric(risk0),
-  #     risk1 = as.numeric(risk1)
-  #   ) |>
-  #   arrange(sim, time_end)
-  # 
-  # saveRDS(pci.pp.boot.long, file.path(res_path, "pci.pp.boot.long.rds"))
+  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/pci_boot_reps"
+  
+  pci_rep_files <- list.files(
+    pci_rep_path,
+    pattern = "^pci_pp_boot_rep_\\d{3}\\.rds$",
+    full.names = TRUE
+  )
+  
+  pci.pp.boot.long <- pci_rep_files |>
+    lapply(readRDS) |>
+    lapply(\(m) as.data.frame(m)) |>
+    bind_rows() |>
+    as_tibble() |>
+    mutate(
+      sim = as.integer(sim),
+      time_end = as.integer(time_end),
+      risk0 = as.numeric(risk0),
+      risk1 = as.numeric(risk1)
+    ) |>
+    arrange(sim, time_end)
+  
+  saveRDS(pci.pp.boot.long, file.path(res_path, "pci.pp.boot.long.rds"))
 
   pci.pp.boot.long <- readRDS(paste0(res_path, "pci.pp.boot.long.rds"))
 
