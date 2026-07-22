@@ -13,7 +13,7 @@ library(kableExtra)
 # Data --------------------------------------------------------------------
 
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_weekmatch_pp/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
 
 # STD Cox
 std.pp.cox.pointest <- readRDS(paste0(res_path,"std.pp.cox.pointest.rds"))
@@ -148,13 +148,13 @@ wide_table
 wide_table |>
   kbl(
     format = "latex",
-    caption   = "Cox results (pp no cw)",
+    caption   = "Cox results",
     label     = "cox_res_pp",
     booktabs = TRUE,
     align = "lcccc",
     col.names = c("Approach", "HR", "VE (%)", "HR", "VE (%)")
   ) |>
-  add_header_above(c(" " = 1, "Treatment" = 2, "Flu vaccine" = 2)) |>
+  add_header_above(c(" " = 1, "Bivalent Booster" = 2, "Prior year flu vaccine" = 2)) |>
   kable_styling(full_width = FALSE)
 
 
@@ -177,16 +177,16 @@ make_pooled_risk_table <- function(df, approach, horizons) {
     )
 }
 
-std_risk_tbl <- make_pooled_risk_table(std.itt.risks.ci, "STD", horizons)
-eqc_risk_tbl <- make_pooled_risk_table(eqc.itt.risks.ci, "EQC", horizons)
-pci_risk_tbl <- make_pooled_risk_table(pci.itt.risks.ci, "PCI", horizons)
+std_risk_tbl <- make_pooled_risk_table(std.pp.risks.ci, "STD", horizons)
+eqc_risk_tbl <- make_pooled_risk_table(eqc.pp.risks.ci, "EQC", horizons)
+pci_risk_tbl <- make_pooled_risk_table(pci.pp.risks.ci, "PCI", horizons)
 
 knitr::kable(
   std_risk_tbl,
   format = "latex",
   booktabs = TRUE,
   caption = "Pooled logistic results by week (STD)",
-  label = "std_rr_rd",
+  label = "std_rr_rd_pp",
   escape = F
 )
 
@@ -195,7 +195,7 @@ knitr::kable(
   format = "latex",
   booktabs = TRUE,
   caption = "Pooled logistic results by week (EQC)",
-  label = "eqc_rr_rd",
+  label = "eqc_rr_rd_pp",
   escape = F
 )
 
@@ -204,14 +204,9 @@ knitr::kable(
   format = "latex",
   booktabs = TRUE,
   caption = "Pooled logistic results by week (PCI)",
-  label = "pci_rr_rd",
+  label = "pci_rr_rd_pp",
   escape = F
 )
-
-
-
-
-
 
 
 
