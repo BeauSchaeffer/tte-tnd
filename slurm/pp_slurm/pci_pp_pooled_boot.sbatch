@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -J pci_pp_boot
-#SBATCH -o logs/pci_pp_boot_%A_%a.out
-#SBATCH -e logs/pci_pp_boot_%A_%a.err
+#SBATCH -o logs/pci_pp_boot_logs/pci_pp_boot_%A_%a.out
+#SBATCH -e logs/pci_pp_boot_logs/pci_pp_boot_%A_%a.err
 #SBATCH -p shared
 #SBATCH -c 1
 #SBATCH -t 0-00:45
