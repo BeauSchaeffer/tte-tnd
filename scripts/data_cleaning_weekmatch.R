@@ -523,7 +523,7 @@ for (t in vax_weeks) {
       treatment ~ age_years + ndi + bmi + tests_count + last_vax_infect_weeks,
       data = match_data_t,
       method = "nearest",
-      exact = ~ sex_admin + race + service_region + flu_vax + prior_inf + charlson_cat_fac
+      exact = ~ sex_admin + race + service_region + prior_inf + charlson_cat_fac # flu_vax removed 2026-07-28
     ),
     error = function(e) {
       cat("  matchit error at week", t, ":", conditionMessage(e), "\n")
@@ -550,7 +550,7 @@ for (t in vax_weeks) {
 
 analysis_data_matched <- bind_rows(matched_pairs)
 
-cat("\nTotal matched pairs:", sum(analysis_data_matched$treatment == 1), "\n") # Total matched pairs: 186928 
+cat("\nTotal matched pairs:", sum(analysis_data_matched$treatment == 1), "\n") # Total matched pairs: 189121 
 
 analysis_data_matched <- analysis_data_matched |>
   mutate(subclass = paste0("w", index_time, "_", subclass))
@@ -613,8 +613,8 @@ analysis_data_matched_adj <- analysis_data_matched |>
 # analysis_data_matched_adj |> filter(Y_THREE_time_pp_adj < 0) |> nrow() # 0
 # 
 # # How many future-vaccinated controls had their events censored?
-# analysis_data_matched_adj |> filter(treatment == 0, Y_TWO != Y_TWO_pp) |> nrow() # 3341
-# analysis_data_matched_adj |> filter(treatment == 0, Y_THREE != Y_THREE_pp) |> nrow() # 10180
+# analysis_data_matched_adj |> filter(treatment == 0, Y_TWO != Y_TWO_pp) |> nrow() # 3161
+# analysis_data_matched_adj |> filter(treatment == 0, Y_THREE != Y_THREE_pp) |> nrow() # 9635
 
 ##* Handle remaining negative/zero adjusted times 
 ##* This should be rare given risk-set eligibility filters.
@@ -697,16 +697,17 @@ data_Y3 <- data_Y3 |>
 
 ### first converting to data.table
 
-# setDT(data_Y2)
-# setDT(data_Y3)
-# 
-# write_csv(data_Y2, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.csv")
-# write_rds(data_Y2, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.rds")
-# write_csv(data_Y3, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.csv")
-# write_rds(data_Y3, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
+setDT(data_Y2)
+setDT(data_Y3)
+
+write_csv(data_Y2, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_Y2_weekmatch.csv")
+write_rds(data_Y2, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_Y2_weekmatch.rds")
+write_csv(data_Y3, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_Y3_weekmatch.csv")
+write_rds(data_Y3, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_Y3_weekmatch.rds")
 
 ### last written 2026-03-02 at 1501 (new week match procedure)
 ### last written 2026-06-29 at 1704 (small pp bug)
+### last written 2026-07-28 at 1228 (remove NEC from matching)
 
 
 # Clean Up Environment ----------------------------------------------------
