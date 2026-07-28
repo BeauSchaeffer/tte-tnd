@@ -2,7 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Standard Analysis
 ##----- Per-protocol, no censoring weights
-##----- last updated 2026-07-16
+##----- last updated 2026-07-28
 
 # Packages ----------------------------------------------------------------
 
@@ -18,9 +18,9 @@ library(data.table)
 # Data --------------------------------------------------------------------
 
 
-data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.rds")
+data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_Y2_weekmatch.rds")
 
-data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
+data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_Y3_weekmatch.rds")
 
 data_Y3 <- data_Y3 |> 
   mutate(Y3_pp_factor = case_when(
@@ -31,7 +31,7 @@ data_Y3 <- data_Y3 |>
   mutate(Y3_pp_factor = factor(Y3_pp_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.2/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.3/"
 
 
 # Cox Model ---------------------------------------------------------------
