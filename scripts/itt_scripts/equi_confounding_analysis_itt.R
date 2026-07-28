@@ -18,7 +18,7 @@ library(data.table)
 # Data --------------------------------------------------------------------
 
 
-data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
+data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_Y3_weekmatch.rds")
 
 data_Y3 <- data_Y3 |> 
   mutate(Y3_itt_factor = case_when(
@@ -29,7 +29,7 @@ data_Y3 <- data_Y3 |>
   mutate(Y3_itt_factor = factor(Y3_itt_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.3/"
 
 
 # Cox Model ---------------------------------------------------------------

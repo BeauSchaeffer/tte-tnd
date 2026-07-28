@@ -1,7 +1,7 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
 ##----- Standard Analysis Pooled ITT Bootstrap
-##----- last updated 2026-07-09
+##----- last updated 2026-07-28
 
 # Libraries ---------------------------------------------------------------
 
@@ -12,10 +12,10 @@ library(splines)
 
 # Data --------------------------------------------------------------------
 
-data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y2_weekmatch.rds")
+data_Y2 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_Y2_weekmatch.rds")
 dat <- data_Y2
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.3/"
 
 # Boot --------------------------------------------------------------------
 
