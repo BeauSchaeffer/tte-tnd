@@ -11,8 +11,8 @@ library(tidyverse)
 # Data --------------------------------------------------------------------
 
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/"
-plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_itt.2/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.3/"
+plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_itt.3/"
 
 # STD Cox
 
@@ -46,7 +46,7 @@ plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_i
 # PCI Pooled
   pci.itt.risk.pointest <- readRDS(paste0(res_path, "pci.itt.risk.pointest.rds"))
   
-  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.2/pci_boot_reps"
+  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.3/pci_boot_reps"
   
   pci_rep_files <- list.files(
     pci_rep_path,
@@ -280,9 +280,9 @@ saveRDS(pci.itt.HRs.ci, paste0(res_path, "pci.itt.HRs.ci.rds"))
 pci.itt.risks.ci <- pooled.boot.ci(point.est = pci.itt.risk.pointest, boot.long = pci.itt.boot.long)
 saveRDS(pci.itt.risks.ci, paste0(res_path, "pci.itt.risks.ci.rds"))
 
-# png(paste0(plot_path,"pci.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
+png(paste0(plot_path,"pci.itt.risks.ci.plot.png"), width = 2400, height=1800, res=300)
 plot.risk.with.boot.ci(pci.itt.risks.ci, title.main  = "Proximal inference Approach", title.sub = NULL)
-# dev.off()
+dev.off()
 
 
 # STE and test behavior multipanel plot -----------------------------------
@@ -293,7 +293,7 @@ plot.risk.with.boot.ci(pci.itt.risks.ci, title.main  = "Proximal inference Appro
 
 library(tidycmprsk)
 
-data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch/data_Y3_weekmatch.rds")
+data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_Y3_weekmatch.rds")
 
 data_Y3 <- data_Y3 |> 
   mutate(Y3_itt_factor = case_when(
