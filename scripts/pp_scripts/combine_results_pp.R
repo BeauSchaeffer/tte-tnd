@@ -395,14 +395,14 @@ forest.data <- bind_rows(
   # 2. NCE (flu_vax) HR on primary outcome
   std.pp.cox.pointest |>
     filter(term == "flu_vax") |>
-    transmute(label = "HR Flu Vax\nTest Negative",
+    transmute(label = "HR Flu Vax\nTest Positive\n(Possible NCE)",
               hr = estimate, lo = conf.low, hi = conf.high,
               group = "nc"),
   
   # 3. Treatment HR on NCO
   std.pp.cox.nco.pointest |>
     filter(term == "treatment") |>
-    transmute(label = "HR Booster\nTest Negative",
+    transmute(label = "HR Booster\nTest Negative\n(Possible NCO)",
               hr = estimate, lo = conf.low, hi = conf.high,
               group = "nc")
 ) |>
