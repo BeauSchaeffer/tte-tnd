@@ -4,7 +4,7 @@
 #SBATCH -e logs/pci_pp_cox_with_boot_%j.err
 #SBATCH -p shared
 #SBATCH -c 1
-#SBATCH -t 0-1:00
+#SBATCH -t 0-1:30
 #SBATCH --mem=64000 # in Mb
 
 # RStudio Server container + package library

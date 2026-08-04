@@ -4,7 +4,7 @@
 #SBATCH -e logs/eqc_pp_boot_%j.err
 #SBATCH -p shared
 #SBATCH -c 1
-#SBATCH -t 0-26:00
+#SBATCH -t 1-14:00
 #SBATCH --mem=64000 # in Mb
 
 # RStudio Server container + package library
