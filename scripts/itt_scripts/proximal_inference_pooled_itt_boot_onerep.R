@@ -2,7 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Proximal Inference Analysis Pooled ITT Bootstrap
 ##----- ** SINGLE BOOTSTRAP REPLICATE FOR USE WITH ARRAY **
-##----- last updated 2026-07-28
+##----- last updated 2026-08-04
 
 
 # Packages ----------------------------------------------------------------
@@ -21,7 +21,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.3/pci_boot_reps"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.4/pci_boot_reps"
 dir.create(res_path, showWarnings = FALSE, recursive = TRUE)
 
 
@@ -30,7 +30,7 @@ dir.create(res_path, showWarnings = FALSE, recursive = TRUE)
 args <- commandArgs(trailingOnly = TRUE)
 i <- as.integer(args[1])
 
-num.boot <- 50
+num.boot <- 200
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)

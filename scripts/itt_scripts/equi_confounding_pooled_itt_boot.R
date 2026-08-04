@@ -1,7 +1,7 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
 ##----- Equi Confounding Analysis Pooled ITT Bootstrap
-##----- last updated 2026-07-28
+##----- last updated 2026-08-04
 
 # Libraries ---------------------------------------------------------------
 
@@ -18,12 +18,12 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.3/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.4/"
 
 
 # Boot --------------------------------------------------------------------
 
-num.boot <- 50
+num.boot <- 200
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)

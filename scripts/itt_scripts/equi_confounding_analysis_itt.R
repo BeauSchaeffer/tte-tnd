@@ -1,7 +1,7 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
 ##----- Equi Confounding Analysis ITT
-##----- last updated 2026-07-28
+##----- last updated 2026-08-04
 
 # Packages ----------------------------------------------------------------
 
@@ -29,7 +29,7 @@ data_Y3 <- data_Y3 |>
   mutate(Y3_itt_factor = factor(Y3_itt_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.3/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.4/"
 
 
 # Cox Model ---------------------------------------------------------------
@@ -73,7 +73,7 @@ saveRDS(eqc.itt.cox.pointest, paste0(res_path,"eqc.itt.cox.pointest.rds"))
 # Bootstrap CIs for ITT ---------------------------------------------------
 
 
-num.boot <- 100
+num.boot <- 200
 
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)

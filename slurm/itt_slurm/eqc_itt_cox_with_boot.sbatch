@@ -18,4 +18,4 @@ singularity exec \
 	Rscript scripts/itt_scripts/equi_confounding_analysis_itt.R
 
 # run with
-# sbatch slurm/itt_slurm/eqc_itt_cox_with_boot.sbatch
+# sbatch slurm/itt_slurm/eqc_itt_cox_with_boot.sbatch 
