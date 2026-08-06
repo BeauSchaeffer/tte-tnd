@@ -1,6 +1,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Results Table
 ##----- Per-protocol, no censoring weights
+##----- Last updated 2026-08-06
 
 
 # Packages ----------------------------------------------------------------
@@ -13,7 +14,7 @@ library(kableExtra)
 # Data --------------------------------------------------------------------
 
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.3/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.4/"
 
 # STD Cox
 std.pp.cox.pointest <- readRDS(paste0(res_path,"std.pp.cox.pointest.rds"))
