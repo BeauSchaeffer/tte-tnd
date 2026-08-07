@@ -159,11 +159,15 @@ prox_pp_A1.long$treatment <- 1
 prox_pp_A0.long$p_pp <- predict(prox_pooled_pp_s1, newdata=prox_pp_A0.long, type="link") 
 prox_pp_A1.long$p_pp <- predict(prox_pooled_pp_s1, newdata=prox_pp_A1.long, type="link") 
 
-### predicted hazards testing NEGATIVE from stage 1 model under each intervention
+### Evaluate BOTH anchor hazards at the observed treatment: treatment has no causal
+### effect on the test-negative event (NCO), and the test-positive counterfactual is
+### applied via the switching function below; anchoring at the intervention value
+### would double-count the treatment effect in that step.
+prox_pp_A0.long$treatment <- prox_pp_A0.long$treatment_obs
+prox_pp_A1.long$treatment <- prox_pp_A1.long$treatment_obs
 prox_pp_A0.long$hazard_neg <- predict(prox_pooled_pp_s1, newdata=prox_pp_A0.long, type="response") 
 prox_pp_A1.long$hazard_neg <- predict(prox_pooled_pp_s1, newdata=prox_pp_A1.long, type="response")
-
-### predicted hazards testing POSITIVE from observed model under each intervention
+### predicted hazards testing POSITIVE from observed model (at observed treatment)
 prox_pp_A0.long$hazard_pos_obs <- predict(prox_pooled_pp_obs, newdata=prox_pp_A0.long, type="response")
 prox_pp_A1.long$hazard_pos_obs <- predict(prox_pooled_pp_obs, newdata=prox_pp_A1.long, type="response")
 

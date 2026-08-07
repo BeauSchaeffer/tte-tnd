@@ -136,6 +136,9 @@ eqc_itt_A0.long$pnoevent_neg <- 1 - eqc_itt_A0.long$hazard_neg
 eqc_itt_A1.long$pnoevent_neg <- 1 - eqc_itt_A1.long$hazard_neg
 ### Corrected (1 - hazard) under no treatment
 eqc_itt_A0.long$pnoevent_pos_c <- 1 - eqc_itt_A0.long$hazard_pos_c
+### corrected curve uses the treated population's test-negative (competing) hazard,
+### invariant to treatment under the NCO assumption (lambda_1 at A=1)
+eqc_itt_A0.long$pnoevent_neg_c <- 1 - eqc_itt_A1.long$hazard_neg
 
 ### Sort the data by ID, time
 eqc_itt_A0.long <- eqc_itt_A0.long[order(eqc_itt_A0.long$fake_mrn, eqc_itt_A0.long$time_end),] 
@@ -162,7 +165,7 @@ eqc_itt_A1.long <- eqc_itt_A1.long |>
 
 eqc_itt_A0.long$surv_prod_lag <- eqc_itt_A0.long$pnoevent_neg * eqc_itt_A0.long$pnoevent_pos_lag
 eqc_itt_A1.long$surv_prod_lag <- eqc_itt_A1.long$pnoevent_neg * eqc_itt_A1.long$pnoevent_pos_lag
-eqc_itt_A0.long$surv_prod_c_lag <- eqc_itt_A0.long$pnoevent_neg * eqc_itt_A0.long$pnoevent_pos_c_lag
+eqc_itt_A0.long$surv_prod_c_lag <- eqc_itt_A0.long$pnoevent_neg_c * eqc_itt_A0.long$pnoevent_pos_c_lag
 
     # cumulative product within individual
 
