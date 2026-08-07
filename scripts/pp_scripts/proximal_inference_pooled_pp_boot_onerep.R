@@ -3,7 +3,7 @@
 ##----- Proximal Inference Analysis Pooled PP Bootstrap
 ##----- Per-protocol, no censoring weights
 ##----- ** SINGLE BOOTSTRAP REPLICATE FOR USE WITH ARRAY **
-##----- last updated 2026-08-04
+##----- last updated 2026-08-07
 
 
 # Packages ----------------------------------------------------------------
@@ -22,7 +22,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.4/pci_boot_reps"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.5/pci_boot_reps"
 dir.create(res_path, showWarnings = FALSE, recursive = TRUE)
 
 

@@ -2,7 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Proximal Inference Analysis Pooled ITT Bootstrap
 ##----- ** SINGLE BOOTSTRAP REPLICATE FOR USE WITH ARRAY **
-##----- last updated 2026-08-04
+##----- last updated 2026-08-07
 
 
 # Packages ----------------------------------------------------------------
@@ -21,7 +21,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.4/pci_boot_reps"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.5/pci_boot_reps"
 dir.create(res_path, showWarnings = FALSE, recursive = TRUE)
 
 
@@ -158,11 +158,16 @@ prox_itt_A1.long$treatment <- 1
 prox_itt_A0.long$p_itt <- predict(prox_pooled_itt_s1, newdata=prox_itt_A0.long, type="link") 
 prox_itt_A1.long$p_itt <- predict(prox_pooled_itt_s1, newdata=prox_itt_A1.long, type="link") 
 
-### predicted hazards testing NEGATIVE from stage 1 model under each intervention
+### Evaluate BOTH anchor hazards at the observed treatment: treatment has no causal
+### effect on the test-negative event (NCO), and the test-positive counterfactual is
+### applied via the switching function below; anchoring at the intervention value
+### would double-count the treatment effect in that step.
+prox_itt_A0.long$treatment <- prox_itt_A0.long$treatment_obs
+prox_itt_A1.long$treatment <- prox_itt_A1.long$treatment_obs
 prox_itt_A0.long$hazard_neg <- predict(prox_pooled_itt_s1, newdata=prox_itt_A0.long, type="response") 
 prox_itt_A1.long$hazard_neg <- predict(prox_pooled_itt_s1, newdata=prox_itt_A1.long, type="response")
 
-### predicted hazards testing POSITIVE from observed model under each intervention
+### predicted hazards testing POSITIVE from observed model (at observed treatment)
 prox_itt_A0.long$hazard_pos_obs <- predict(prox_pooled_itt_obs, newdata=prox_itt_A0.long, type="response")
 prox_itt_A1.long$hazard_pos_obs <- predict(prox_pooled_itt_obs, newdata=prox_itt_A1.long, type="response")
 

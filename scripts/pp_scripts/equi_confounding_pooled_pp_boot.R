@@ -2,7 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Equi Confounding Analysis Pooled PP Bootstrap
 ##----- Per-protocol, no censoring weights
-##----- last updated 2026-08-04
+##----- last updated 2026-08-07
 
 # Libraries ---------------------------------------------------------------
 
@@ -19,7 +19,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.4/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.5/"
 
 
 # Boot --------------------------------------------------------------------

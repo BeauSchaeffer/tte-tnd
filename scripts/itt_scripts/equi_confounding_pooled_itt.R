@@ -1,7 +1,7 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
 ##----- Equi-Confounding Analysis Pooled
-##----- last updated 2026-07-28
+##----- last updated 2026-08-07
 
 # Packages ----------------------------------------------------------------
 
@@ -19,7 +19,7 @@ data_Y3 <- read_rds("/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/
 dat <- data_Y3
 setDT(dat)
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.3/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.5/"
 
 
 # Downsample --------------------------------------------------------------

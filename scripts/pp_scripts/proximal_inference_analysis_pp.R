@@ -2,7 +2,7 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Proximal Inference Analysis
 ##----- Per-protocol, no censoring weights
-##----- last updated 2026-08-04
+##----- last updated 2026-08-07
 
 
 # Packages ----------------------------------------------------------------
@@ -28,7 +28,7 @@ data_Y3 <- data_Y3 |>
   mutate(Y3_pp_factor = factor(Y3_pp_factor, levels = c("Censor", "Test Negative", "Test Positive")),
          subclass=as.character(subclass))
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.4/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.5/"
 
 
 
