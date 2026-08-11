@@ -16,8 +16,8 @@ library(tidyverse)
 # Paths -------------------------------------------------------------------
 
 
-res_path  <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.3/"
-plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_pp.3/"
+res_path  <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_pp.5/"
+plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_pp.5/"
 
 
 # Bootstrap CI helper (additive) ------------------------------------------
