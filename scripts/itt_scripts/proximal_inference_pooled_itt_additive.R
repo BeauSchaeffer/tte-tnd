@@ -52,7 +52,7 @@ prox_add_itt_s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*(tre
                               sex_admin + age_years + bmi + race + charlson_cat_fac +
                               ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
                               flu_vax),
-                            data = dat.long.itt, family = gaussian())
+                            data = dat.long.itt, family = gaussian(), sparse=FALSE)
 saveRDS(prox_add_itt_s1, paste0(res_path, "prox_add_itt_s1.rds"))
 
 ref_week <- data.frame(time_end = seq(1,53,1), treatment = 0,
@@ -74,14 +74,14 @@ prox_add_itt_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*trea
                               sex_admin + age_years + bmi + race + charlson_cat_fac +
                               ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
                               mu,
-                            data = dat.long.itt, family = gaussian())
+                            data = dat.long.itt, family = gaussian(), sparse=FALSE)
 saveRDS(prox_add_itt_s2, paste0(res_path, "prox_add_itt_s2.rds"))
 
 prox_add_itt_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                sex_admin + age_years + bmi + race + charlson_cat_fac +
                                ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
                                flu_vax,
-                             data = dat.long.itt, family = gaussian())
+                             data = dat.long.itt, family = gaussian(), sparse=FALSE)
 saveRDS(prox_add_itt_obs, paste0(res_path, "prox_add_itt_obs.rds"))
 
 

@@ -73,7 +73,7 @@ s1 <- speedglm(Y_neg ~ ns(time_end, knots = c(10,20,30,40,50))*(treatment +
                  sex_admin + age_years + bmi + race + charlson_cat_fac +
                  ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
                  flu_vax),
-               data = dat.long, family = gaussian())
+               data = dat.long, family = gaussian(), sparse=FALSE)
 
 ## bridge = fitted stage-1 hazard minus time baseline (avoids stage-2 collinearity)
 ref_week <- data.frame(time_end = seq(1,53,1), treatment = 0,
@@ -92,12 +92,12 @@ s2  <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                   sex_admin + age_years + bmi + race + charlson_cat_fac +
                   ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
                   mu,
-                data = dat.long, family = gaussian())
+                data = dat.long, family = gaussian(), sparse=FALSE)
 obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                   sex_admin + age_years + bmi + race + charlson_cat_fac +
                   ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
                   flu_vax,
-                data = dat.long, family = gaussian())
+                data = dat.long, family = gaussian(), sparse=FALSE)
 
 ## de-biased additive effect beta_2A(t) from stage-2 treatment contrast (mu = 0)
 df_ref_A1 <- data.frame(time_end = seq(1,53,1), treatment = 1,
