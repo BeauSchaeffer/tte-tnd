@@ -1,15 +1,21 @@
 ##----- Beau Schaeffer
 ##----- Kaiser Causal TTE-TND
-##----- Equi-Confounding Analysis Pooled -- ADDITIVE hazards (exact marginal CIF)
+##----- Equi-Confounding Analysis Pooled -- ADDITIVE hazards
 ##----- Per-protocol, no censoring weights
-##----- last updated 2026-08-07
+##----- last updated 2026-08-12
 ##-----
-##----- Additive analog of equi_confounding_pooled_pp.R.
-##----- Pooled LINEAR (identity-link) cause-specific hazard models replace the
-##----- pooled logistic models: the fitted mean IS the additive discrete-time
-##----- hazard. The intervention enters as an additive shift beta_2A(t)*(a - A),
-##----- which is U-independent and therefore factors out of the survival built as
-##----- exp(-cumulative hazard) -- giving a frailty-exact marginal CIF.
+##----- Additive analog of equi_confounding_pooled_pp.R, kept deliberately
+##----- line-for-line parallel to that script. The ONLY differences are:
+##-----   (1) the two pooled logistic (family=binomial) cause-specific hazard
+##-----       models are replaced by pooled linear (family=gaussian, identity
+##-----       link) models -- the fitted mean IS the additive discrete-time hazard;
+##-----   (2) the multiplicative de-biasing of the test-positive hazard,
+##-----       lambda2(A=0) * lambda1(A=1)/lambda1(A=0), becomes the ADDITIVE
+##-----       de-biasing lambda2(A=0) + [lambda1(A=1) - lambda1(A=0)];
+##-----   (3) identity-link predictions are not range-restricted, so predicted
+##-----       hazards are clamped to [0,1].
+##----- Everything else (g-formula frames, discrete product-form survival,
+##----- Aalen-Johansen CIF, risk0/risk0corr/risk1 outputs) is identical.
 
 
 # Packages ----------------------------------------------------------------
@@ -72,76 +78,111 @@ saveRDS(eqc_add_pp_fit1, paste0(res_path, "eqc_add_pp_fit1.rds"))
 saveRDS(eqc_add_pp_fit2, paste0(res_path, "eqc_add_pp_fit2.rds"))
 
 
-# De-biased additive causal effect beta_2A(t) -----------------------------
+# PP Survival and Risk (parallel to multiplicative; ADDITIVE de-biasing) --
 
-## Equi-confounding subtraction on the identity (hazard-difference) scale:
-##   beta_2A(t) = [lambda2(A=1)-lambda2(A=0)] - [lambda1(A=1)-lambda1(A=0)]
-## evaluated at reference covariates as a function of time. Non-treatment
-## covariates cancel in each within-model difference.
-
-ref_A1 <- data.frame(time_end = seq(1,53,1), treatment = 1,
-                     sex_admin = factor("F"), age_years = 0, bmi = 0,
-                     race = factor("White"), charlson_cat_fac = factor("0"),
-                     ndi = 0, prior_inf = 0, tests_count = 0,
-                     service_region = factor("Central valley"),
-                     last_vax_infect_weeks = 0, flu_vax = 0)
-ref_A0 <- ref_A1; ref_A0$treatment <- 0
-
-delta1 <- predict(eqc_add_pp_fit1, newdata = ref_A1) - predict(eqc_add_pp_fit1, newdata = ref_A0)  # NCO (confounding) diff
-delta2 <- predict(eqc_add_pp_fit2, newdata = ref_A1) - predict(eqc_add_pp_fit2, newdata = ref_A0)  # observed test-pos diff
-
-time_df <- data.frame(time_end = seq(1,53,1), beta2A = delta2 - delta1)
-
-
-# PP Survival and Risk (exact additive marginal CIF) ----------------------
 
 dat$gmaxt <- 53
 
-## single g-formula frame; observed cause-specific hazards are evaluated at the
-## OBSERVED treatment, and the intervention enters only through the additive switch.
-g <- dat[rep(1:nrow(dat), dat$gmaxt),]
-g$time_start <- ave(g$fake_mrn, g$fake_mrn, FUN=seq_along)
-g$time_start <- (g$time_start-1)*time_unit
-g$time_end   <- g$time_start + time_unit
-g$treatment_obs <- g$treatment
+### G formula data setup A=0
+eqc_pp_A0.long <- dat[rep(1:nrow(dat), dat$gmaxt),]
+eqc_pp_A0.long$time_start <- ave(eqc_pp_A0.long$fake_mrn, eqc_pp_A0.long$fake_mrn, FUN=seq_along)
+eqc_pp_A0.long$time_start <- (eqc_pp_A0.long$time_start-1)*time_unit
+eqc_pp_A0.long$time_end <- eqc_pp_A0.long$time_start+time_unit
+eqc_pp_A0.long$treatment <- 0
 
-g$lambda1 <- predict(eqc_add_pp_fit1, newdata = g)   # test-negative (competing / NCO)
-g$lambda2 <- predict(eqc_add_pp_fit2, newdata = g)   # test-positive (primary), observed
+### G formula data setup A=1
+eqc_pp_A1.long <- dat[rep(1:nrow(dat), dat$gmaxt),]
+eqc_pp_A1.long$time_start <- ave(eqc_pp_A1.long$fake_mrn, eqc_pp_A1.long$fake_mrn, FUN=seq_along)
+eqc_pp_A1.long$time_start <- (eqc_pp_A1.long$time_start-1)*time_unit
+eqc_pp_A1.long$time_end <- eqc_pp_A1.long$time_start+time_unit
+eqc_pp_A1.long$treatment <- 1
 
-## additive linear-probability hazards can fall outside [0,1]; clamp
-g$lambda1 <- pmin(pmax(g$lambda1, 0), 1)
-g$lambda2 <- pmin(pmax(g$lambda2, 0), 1)
+### Calculate predicted hazards (identity link -> additive discrete-time hazard):
+eqc_pp_A0.long$hazard_pos <- predict(eqc_add_pp_fit2, newdata=eqc_pp_A0.long)
+eqc_pp_A1.long$hazard_pos <- predict(eqc_add_pp_fit2, newdata=eqc_pp_A1.long)
+eqc_pp_A0.long$hazard_neg <- predict(eqc_add_pp_fit1, newdata=eqc_pp_A0.long)
+eqc_pp_A1.long$hazard_neg <- predict(eqc_add_pp_fit1, newdata=eqc_pp_A1.long)
+### identity-link hazards are not range-restricted; clamp to [0,1]
+eqc_pp_A0.long$hazard_pos <- pmin(pmax(eqc_pp_A0.long$hazard_pos, 0), 1)
+eqc_pp_A1.long$hazard_pos <- pmin(pmax(eqc_pp_A1.long$hazard_pos, 0), 1)
+eqc_pp_A0.long$hazard_neg <- pmin(pmax(eqc_pp_A0.long$hazard_neg, 0), 1)
+eqc_pp_A1.long$hazard_neg <- pmin(pmax(eqc_pp_A1.long$hazard_neg, 0), 1)
+### Corrected hazards under no treatment -- ADDITIVE de-biasing (cf. multiplicative ratio):
+### lambda2(A=0) + [lambda1(A=1) - lambda1(A=0)]
+eqc_pp_A0.long$hazard_pos_c <- eqc_pp_A0.long$hazard_pos + (eqc_pp_A1.long$hazard_neg - eqc_pp_A0.long$hazard_neg)
+eqc_pp_A0.long$hazard_pos_c <- pmin(pmax(eqc_pp_A0.long$hazard_pos_c, 0), 1)
 
-g <- left_join(g, time_df, by = "time_end")
+### Calculate (1 - hazard)
+eqc_pp_A0.long$pnoevent_pos <- 1 - eqc_pp_A0.long$hazard_pos
+eqc_pp_A1.long$pnoevent_pos <- 1 - eqc_pp_A1.long$hazard_pos
+eqc_pp_A0.long$pnoevent_neg <- 1 - eqc_pp_A0.long$hazard_neg
+eqc_pp_A1.long$pnoevent_neg <- 1 - eqc_pp_A1.long$hazard_neg
+### Corrected (1 - hazard) under no treatment
+eqc_pp_A0.long$pnoevent_pos_c <- 1 - eqc_pp_A0.long$hazard_pos_c
+### corrected curve uses the treated population's test-negative (competing) hazard,
+### invariant to treatment under the NCO assumption (lambda_1 at A=1)
+eqc_pp_A0.long$pnoevent_neg_c <- 1 - eqc_pp_A1.long$hazard_neg
 
-## counterfactual curves under a=0 and a=1 via additive switch + exp-form survival
-g <- g |>
+### Sort the data by ID, time
+eqc_pp_A0.long <- eqc_pp_A0.long[order(eqc_pp_A0.long$fake_mrn, eqc_pp_A0.long$time_end),]
+eqc_pp_A1.long <- eqc_pp_A1.long[order(eqc_pp_A1.long$fake_mrn, eqc_pp_A1.long$time_end),]
+
+### Calculate the cumulative survival
+
+# lag P(no event pos)
+
+eqc_pp_A0.long <- eqc_pp_A0.long |>
   arrange(fake_mrn, time_end) |>
   group_by(fake_mrn) |>
-  mutate(
-    ## additive switch on the primary (test-positive) hazard: lambda2 + beta2A*(a - A)
-    hz0 = pmin(pmax(lambda2 + beta2A * (0 - treatment_obs), 0), 1),
-    hz1 = pmin(pmax(lambda2 + beta2A * (1 - treatment_obs), 0), 1),
-    ## all-cause hazard (competing risk lambda1 is unaffected by treatment)
-    ## exp-form survival makes the additive shift factor out (frailty-exact)
-    surv0 = exp(-cumsum(pmin(pmax(lambda1 + hz0, 0), 1))),
-    surv1 = exp(-cumsum(pmin(pmax(lambda1 + hz1, 0), 1))),
-    ## Aalen-Johansen sub-density: hazard * survival to start of the interval
-    risk0 = cumsum(hz0 * lag(surv0, default = 1)),
-    risk1 = cumsum(hz1 * lag(surv1, default = 1))
-  ) |>
+  mutate(pnoevent_pos_lag = lag(pnoevent_pos, n=1, default=1),
+         pnoevent_pos_c_lag = lag(pnoevent_pos_c, n=1, default=1)) |>
   ungroup()
 
-## standardize (average) over the observed covariate/treatment distribution
-eqc.add.res <- g |>
-  group_by(time_end) |>
-  summarise(risk0 = mean(risk0), risk1 = mean(risk1), .groups = "drop")
+eqc_pp_A1.long <- eqc_pp_A1.long |>
+  arrange(fake_mrn, time_end) |>
+  group_by(fake_mrn) |>
+  mutate(pnoevent_pos_lag = lag(pnoevent_pos, n=1, default=1)) |>
+  ungroup()
 
+# product at each time (P(no event neg) * lag P(no event pos))
+
+eqc_pp_A0.long$surv_prod_lag <- eqc_pp_A0.long$pnoevent_neg * eqc_pp_A0.long$pnoevent_pos_lag
+eqc_pp_A1.long$surv_prod_lag <- eqc_pp_A1.long$pnoevent_neg * eqc_pp_A1.long$pnoevent_pos_lag
+eqc_pp_A0.long$surv_prod_c_lag <- eqc_pp_A0.long$pnoevent_neg_c * eqc_pp_A0.long$pnoevent_pos_c_lag
+
+# cumulative product within individual
+
+eqc_pp_A0.long$survival_pos <- ave(eqc_pp_A0.long$surv_prod_lag, eqc_pp_A0.long$fake_mrn, FUN=cumprod)
+eqc_pp_A1.long$survival_pos <- ave(eqc_pp_A1.long$surv_prod_lag, eqc_pp_A1.long$fake_mrn, FUN=cumprod)
+eqc_pp_A0.long$survival_pos_c <- ave(eqc_pp_A0.long$surv_prod_c_lag, eqc_pp_A0.long$fake_mrn, FUN=cumprod)
+
+### Calculate risk using CIF estimator
+
+# product at each time (haz pos * surv pos)
+
+eqc_pp_A0.long$risk_prod_pos <- eqc_pp_A0.long$hazard_pos * eqc_pp_A0.long$survival_pos
+eqc_pp_A1.long$risk_prod_pos <- eqc_pp_A1.long$hazard_pos * eqc_pp_A1.long$survival_pos
+eqc_pp_A0.long$risk_prod_pos_c <- eqc_pp_A0.long$hazard_pos_c * eqc_pp_A0.long$survival_pos_c
+
+# cumulative sum within individual
+
+eqc_pp_A0.long$risk_pos <- ave(eqc_pp_A0.long$risk_prod_pos, eqc_pp_A0.long$fake_mrn, FUN=cumsum)
+eqc_pp_A1.long$risk_pos <- ave(eqc_pp_A1.long$risk_prod_pos, eqc_pp_A1.long$fake_mrn, FUN=cumsum)
+eqc_pp_A0.long$risk_pos_c <- ave(eqc_pp_A0.long$risk_prod_pos_c, eqc_pp_A0.long$fake_mrn, FUN=cumsum)
+
+# Calculate the average risk at each time point
+
+eqc_pp_A0.long.res <- aggregate(risk_pos ~ time_end, data=eqc_pp_A0.long, FUN=mean)
+eqc_pp_A1.long.res <- aggregate(risk_pos ~ time_end, data=eqc_pp_A1.long, FUN=mean)
+eqc_pp_A0.long.res.c <- aggregate(risk_pos_c ~ time_end, data=eqc_pp_A0.long, FUN=mean)
+
+# save point estimate risk curves in bootstrap-compatible format
 eqc.add.pp.risk.pointest <- tibble(
-  sim = 0L,
-  time_end = eqc.add.res$time_end,
-  risk0 = eqc.add.res$risk0,   # marginal CIF under no booster
-  risk1 = eqc.add.res$risk1    # marginal CIF under booster
+  sim = 0L,  # 0 = main analysis (bootstraps are 1..B)
+  time_end = eqc_pp_A0.long.res$time_end,
+  risk0 = eqc_pp_A0.long.res$risk_pos,
+  risk0corr = eqc_pp_A0.long.res.c$risk_pos_c,
+  risk1 = eqc_pp_A1.long.res$risk_pos
 )
 
 saveRDS(eqc.add.pp.risk.pointest, paste0(res_path, "eqc.add.pp.risk.pointest.rds"))
