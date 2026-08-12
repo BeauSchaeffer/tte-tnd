@@ -107,6 +107,22 @@ prox_pooled_pp_s2 <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*tr
                               sparse = FALSE)
 saveRDS(prox_pooled_pp_s2, paste0(res_path,"prox_pooled_pp_s2.rds"))
 
+# # sanity check against cox model
+# # stage 2 with no tx interaction
+# prox_pooled_pp_s2_noint <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50)) + treatment +
+#                                 # demographic
+#                                 sex_admin + age_years + bmi + race + charlson_cat_fac +
+#                                 # other
+#                                 ndi + prior_inf + tests_count + service_region + last_vax_infect_weeks +
+#                                 # predictions from stage 1
+#                                 p_pp,
+#                               # no NEC
+#                               data=dat.long.pp,
+#                               family=binomial(),
+#                               sparse = FALSE)
+# saveRDS(prox_pooled_pp_s2_noint, paste0(res_path,"prox_pooled_pp_s2_noint.rds"))
+# exp(prox_pooled_pp_s2_noint$coefficients["treatment"])
+
 prox_pooled_pp_obs <- speedglm(Y_pos ~ ns(time_end, knots = c(10,20,30,40,50))*treatment +
                                   # demographic
                                   sex_admin + age_years + bmi + race + charlson_cat_fac +
