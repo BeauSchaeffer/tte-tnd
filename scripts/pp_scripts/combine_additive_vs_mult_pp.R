@@ -24,22 +24,25 @@ plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_p
 
 
 add.boot.ci <- function(point.est, boot.long, alpha = 0.05){
+  # use the corrected curve as risk0 when present (EQC), else the naive risk0 (PCI)
+  risk0_var <- if ("risk0corr" %in% names(boot.long)) "risk0corr" else "risk0"
   ci <- boot.long |>
     group_by(time_end) |>
     summarise(
-      risk0_lo = quantile(risk0, alpha/2,     na.rm = TRUE),
-      risk0_hi = quantile(risk0, 1 - alpha/2, na.rm = TRUE),
+      risk0_lo = quantile(.data[[risk0_var]], alpha/2,     na.rm = TRUE),
+      risk0_hi = quantile(.data[[risk0_var]], 1 - alpha/2, na.rm = TRUE),
       risk1_lo = quantile(risk1, alpha/2,     na.rm = TRUE),
       risk1_hi = quantile(risk1, 1 - alpha/2, na.rm = TRUE),
-      rd_lo    = quantile(risk1 - risk0, alpha/2,     na.rm = TRUE),
-      rd_hi    = quantile(risk1 - risk0, 1 - alpha/2, na.rm = TRUE),
-      rr_lo    = quantile(risk1 / risk0, alpha/2,     na.rm = TRUE),
-      rr_hi    = quantile(risk1 / risk0, 1 - alpha/2, na.rm = TRUE),
+      rd_lo    = quantile(risk1 - .data[[risk0_var]], alpha/2,     na.rm = TRUE),
+      rd_hi    = quantile(risk1 - .data[[risk0_var]], 1 - alpha/2, na.rm = TRUE),
+      rr_lo    = quantile(risk1 / .data[[risk0_var]], alpha/2,     na.rm = TRUE),
+      rr_hi    = quantile(risk1 / .data[[risk0_var]], 1 - alpha/2, na.rm = TRUE),
       .groups = "drop"
     )
   point.est |>
-    mutate(rd = risk1 - risk0, rr = risk1 / risk0) |>
-    dplyr::select(-dplyr::any_of("sim")) |>
+    mutate(risk0 = if (risk0_var == "risk0corr") risk0corr else risk0,
+           rd = risk1 - risk0, rr = risk1 / risk0) |>
+    dplyr::select(-dplyr::any_of(c("sim", "risk0corr"))) |>
     left_join(ci, by = "time_end")
 }
 

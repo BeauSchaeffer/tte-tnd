@@ -2,9 +2,10 @@
 ##----- Kaiser Causal TTE-TND
 ##----- Equi-Confounding Pooled ADDITIVE ITT Bootstrap
 ##----- Intention-to-treat
-##----- last updated 2026-08-07
+##----- last updated 2026-08-12
 ##-----
-##----- ITT twin of equi_confounding_pooled_pp_additive_boot.R.
+##----- ITT twin of equi_confounding_pooled_pp_additive_boot.R, kept line-for-line
+##----- parallel to equi_confounding_pooled_itt.R / _boot.R.
 
 
 # Packages ----------------------------------------------------------------
@@ -37,14 +38,6 @@ seed <- floor(runif(num.boot)*10^8)
 setkey(dat, subclass)
 subclasses <- dat[, unique(subclass)]
 n_sub <- length(subclasses)
-
-ref_A1 <- data.frame(time_end = seq(1,53,1), treatment = 1,
-                     sex_admin = factor("F"), age_years = 0, bmi = 0,
-                     race = factor("White"), charlson_cat_fac = factor("0"),
-                     ndi = 0, prior_inf = 0, tests_count = 0,
-                     service_region = factor("Central valley"),
-                     last_vax_infect_weeks = 0, flu_vax = 0)
-ref_A0 <- ref_A1; ref_A0$treatment <- 0
 
 time_unit <- 1
 
@@ -87,41 +80,108 @@ boot.results <- lapply(1:num.boot, function(i){
                      flu_vax,
                    data = dat.long, family = gaussian())
 
-  ## de-biased additive effect: beta_2A(t) = delta2(t) - delta1(t)
-  delta1 <- predict(fit1, newdata = ref_A1) - predict(fit1, newdata = ref_A0)
-  delta2 <- predict(fit2, newdata = ref_A1) - predict(fit2, newdata = ref_A0)
-  time_df <- data.frame(time_end = seq(1,53,1), beta2A = delta2 - delta1)
-
-  ## g-computation frame
+  ## g formula setup
   dat.boot$gmaxt <- 53
-  g <- dat.boot[rep(1:nrow(dat.boot), dat.boot$gmaxt),]
-  g$time_start <- ave(g$bootid_mrn, g$bootid_mrn, FUN=seq_along)
-  g$time_start <- (g$time_start-1)*time_unit
-  g$time_end   <- g$time_start + time_unit
-  g$treatment_obs <- g$treatment
-  g$lambda1 <- pmin(pmax(predict(fit1, newdata = g), 0), 1)
-  g$lambda2 <- pmin(pmax(predict(fit2, newdata = g), 0), 1)
-  g <- left_join(g, time_df, by = "time_end")
 
-  g <- g |>
+  eqc_itt_A0.long <- dat.boot[rep(1:nrow(dat.boot), dat.boot$gmaxt),]
+  eqc_itt_A0.long$time_start <- ave(eqc_itt_A0.long$bootid_mrn, eqc_itt_A0.long$bootid_mrn, FUN=seq_along)
+  eqc_itt_A0.long$time_start <- (eqc_itt_A0.long$time_start-1)*time_unit
+  eqc_itt_A0.long$time_end <- eqc_itt_A0.long$time_start+time_unit
+  eqc_itt_A0.long$treatment <- 0
+
+  eqc_itt_A1.long <- dat.boot[rep(1:nrow(dat.boot), dat.boot$gmaxt),]
+  eqc_itt_A1.long$time_start <- ave(eqc_itt_A1.long$bootid_mrn, eqc_itt_A1.long$bootid_mrn, FUN=seq_along)
+  eqc_itt_A1.long$time_start <- (eqc_itt_A1.long$time_start-1)*time_unit
+  eqc_itt_A1.long$time_end <- eqc_itt_A1.long$time_start+time_unit
+  eqc_itt_A1.long$treatment <- 1
+
+  ### Calculate predicted hazards (identity link -> additive discrete-time hazard):
+  eqc_itt_A0.long$hazard_pos <- predict(fit2, newdata=eqc_itt_A0.long)
+  eqc_itt_A1.long$hazard_pos <- predict(fit2, newdata=eqc_itt_A1.long)
+  eqc_itt_A0.long$hazard_neg <- predict(fit1, newdata=eqc_itt_A0.long)
+  eqc_itt_A1.long$hazard_neg <- predict(fit1, newdata=eqc_itt_A1.long)
+  ### identity-link hazards are not range-restricted; clamp to [0,1]
+  eqc_itt_A0.long$hazard_pos <- pmin(pmax(eqc_itt_A0.long$hazard_pos, 0), 1)
+  eqc_itt_A1.long$hazard_pos <- pmin(pmax(eqc_itt_A1.long$hazard_pos, 0), 1)
+  eqc_itt_A0.long$hazard_neg <- pmin(pmax(eqc_itt_A0.long$hazard_neg, 0), 1)
+  eqc_itt_A1.long$hazard_neg <- pmin(pmax(eqc_itt_A1.long$hazard_neg, 0), 1)
+  ### Corrected hazards under no treatment -- ADDITIVE de-biasing:
+  ### lambda2(A=0) + [lambda1(A=1) - lambda1(A=0)]
+  eqc_itt_A0.long$hazard_pos_c <- eqc_itt_A0.long$hazard_pos + (eqc_itt_A1.long$hazard_neg - eqc_itt_A0.long$hazard_neg)
+  eqc_itt_A0.long$hazard_pos_c <- pmin(pmax(eqc_itt_A0.long$hazard_pos_c, 0), 1)
+
+  ### Calculate (1 - hazard)
+  eqc_itt_A0.long$pnoevent_pos <- 1 - eqc_itt_A0.long$hazard_pos
+  eqc_itt_A1.long$pnoevent_pos <- 1 - eqc_itt_A1.long$hazard_pos
+  eqc_itt_A0.long$pnoevent_neg <- 1 - eqc_itt_A0.long$hazard_neg
+  eqc_itt_A1.long$pnoevent_neg <- 1 - eqc_itt_A1.long$hazard_neg
+  ### Corrected (1 - hazard) under no treatment
+  eqc_itt_A0.long$pnoevent_pos_c <- 1 - eqc_itt_A0.long$hazard_pos_c
+  ### corrected curve uses the treated population's test-negative (competing) hazard,
+  ### invariant to treatment under the NCO assumption (lambda_1 at A=1)
+  eqc_itt_A0.long$pnoevent_neg_c <- 1 - eqc_itt_A1.long$hazard_neg
+
+  ### Sort the data by ID, time
+  eqc_itt_A0.long <- eqc_itt_A0.long[order(eqc_itt_A0.long$bootid_mrn, eqc_itt_A0.long$time_end),]
+  eqc_itt_A1.long <- eqc_itt_A1.long[order(eqc_itt_A1.long$bootid_mrn, eqc_itt_A1.long$time_end),]
+
+  ### Calculate the cumulative survival
+
+  # lag P(no event pos)
+
+  eqc_itt_A0.long <- eqc_itt_A0.long |>
     arrange(bootid_mrn, time_end) |>
     group_by(bootid_mrn) |>
-    mutate(
-      hz0 = pmin(pmax(lambda2 + beta2A * (0 - treatment_obs), 0), 1),
-      hz1 = pmin(pmax(lambda2 + beta2A * (1 - treatment_obs), 0), 1),
-      surv0 = exp(-cumsum(pmin(pmax(lambda1 + hz0, 0), 1))),
-      surv1 = exp(-cumsum(pmin(pmax(lambda1 + hz1, 0), 1))),
-      risk0 = cumsum(hz0 * lag(surv0, default = 1)),
-      risk1 = cumsum(hz1 * lag(surv1, default = 1))
-    ) |>
+    mutate(pnoevent_pos_lag = lag(pnoevent_pos, n=1, default=1),
+           pnoevent_pos_c_lag = lag(pnoevent_pos_c, n=1, default=1)) |>
     ungroup()
 
-  res <- g |> group_by(time_end) |> summarise(risk0 = mean(risk0), risk1 = mean(risk1), .groups = "drop")
+  eqc_itt_A1.long <- eqc_itt_A1.long |>
+    arrange(bootid_mrn, time_end) |>
+    group_by(bootid_mrn) |>
+    mutate(pnoevent_pos_lag = lag(pnoevent_pos, n=1, default=1)) |>
+    ungroup()
+
+  # product at each time (P(no event neg) * lag P(no event pos))
+
+  eqc_itt_A0.long$surv_prod_lag <- eqc_itt_A0.long$pnoevent_neg * eqc_itt_A0.long$pnoevent_pos_lag
+  eqc_itt_A1.long$surv_prod_lag <- eqc_itt_A1.long$pnoevent_neg * eqc_itt_A1.long$pnoevent_pos_lag
+  eqc_itt_A0.long$surv_prod_c_lag <- eqc_itt_A0.long$pnoevent_neg_c * eqc_itt_A0.long$pnoevent_pos_c_lag
+
+  # cumulative product within individual
+
+  eqc_itt_A0.long$survival_pos <- ave(eqc_itt_A0.long$surv_prod_lag, eqc_itt_A0.long$bootid_mrn, FUN=cumprod)
+  eqc_itt_A1.long$survival_pos <- ave(eqc_itt_A1.long$surv_prod_lag, eqc_itt_A1.long$bootid_mrn, FUN=cumprod)
+  eqc_itt_A0.long$survival_pos_c <- ave(eqc_itt_A0.long$surv_prod_c_lag, eqc_itt_A0.long$bootid_mrn, FUN=cumprod)
+
+  ### Calculate risk using CIF estimator
+
+  # product at each time (haz pos * surv pos)
+
+  eqc_itt_A0.long$risk_prod_pos <- eqc_itt_A0.long$hazard_pos * eqc_itt_A0.long$survival_pos
+  eqc_itt_A1.long$risk_prod_pos <- eqc_itt_A1.long$hazard_pos * eqc_itt_A1.long$survival_pos
+  eqc_itt_A0.long$risk_prod_pos_c <- eqc_itt_A0.long$hazard_pos_c * eqc_itt_A0.long$survival_pos_c
+
+  # cumulative sum within individual
+
+  eqc_itt_A0.long$risk_pos <- ave(eqc_itt_A0.long$risk_prod_pos, eqc_itt_A0.long$bootid_mrn, FUN=cumsum)
+  eqc_itt_A1.long$risk_pos <- ave(eqc_itt_A1.long$risk_prod_pos, eqc_itt_A1.long$bootid_mrn, FUN=cumsum)
+  eqc_itt_A0.long$risk_pos_c <- ave(eqc_itt_A0.long$risk_prod_pos_c, eqc_itt_A0.long$bootid_mrn, FUN=cumsum)
+
+  # Calculate the average risk at each time point
+
+  eqc_itt_A0.long.res <- aggregate(risk_pos ~ time_end, data=eqc_itt_A0.long, FUN=mean)
+  eqc_itt_A1.long.res <- aggregate(risk_pos ~ time_end, data=eqc_itt_A1.long, FUN=mean)
+  eqc_itt_A0.long.res.c <- aggregate(risk_pos_c ~ time_end, data=eqc_itt_A0.long, FUN=mean)
 
   message("Finished bootstrap ", i, " in ",
           round(as.numeric(difftime(Sys.time(), t0, units = "mins")), 2), " minutes")
 
-  cbind(sim = i, time_end = res$time_end, risk0 = res$risk0, risk1 = res$risk1)
+  cbind(sim = i,
+        time_end = eqc_itt_A0.long.res$time_end,
+        risk0 = eqc_itt_A0.long.res$risk_pos,
+        risk0corr = eqc_itt_A0.long.res.c$risk_pos_c,
+        risk1 = eqc_itt_A1.long.res$risk_pos)
 })
 
 boot.long <- bind_rows(lapply(boot.results, as.data.frame))
