@@ -12,8 +12,8 @@ library(tidyverse)
 # Data --------------------------------------------------------------------
 
 
-res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.4/"
-plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_itt.4/"
+res_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.5/"
+plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_itt.5/"
 
 # STD Cox
 
@@ -47,7 +47,7 @@ plot_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/plots_i
 # PCI Pooled
   pci.itt.risk.pointest <- readRDS(paste0(res_path, "pci.itt.risk.pointest.rds"))
   
-  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.4/pci_boot_reps"
+  pci_rep_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/results_itt.5/pci_boot_reps"
   
   pci_rep_files <- list.files(
     pci_rep_path,
@@ -506,7 +506,247 @@ panel_label("B", cex = 1.5, font = 2)
 dev.off()
 
 
+# -------------------------------------------------------------------------
+# -------------------------------------------------------------------------
 
 
+# Additive EQC and PCI plots ----------------------------------------------
 
+# EQC additive
+
+eqc.add.itt.risk.pointest <- readRDS(paste0(res_path, "eqc.add.itt.risk.pointest.rds"))
+eqc.add.itt.boot.long     <- readRDS(paste0(res_path, "eqc.add.itt.boot.long.rds"))
+
+# PCI additive
+
+pci.add.itt.risk.pointest <- readRDS(paste0(res_path, "pci.add.itt.risk.pointest.rds"))
+
+pci_add_rep_path <- paste0(res_path, "pci_add_boot_reps")
+
+pci_add_rep_files <- list.files(
+  pci_add_rep_path,
+  pattern = "^pci_add_itt_boot_rep_\\d{3}\\.rds$",
+  full.names = TRUE
+)
+
+pci.add.itt.boot.long <- pci_add_rep_files |>
+  lapply(readRDS) |>
+  lapply(\(m) as.data.frame(m)) |>
+  bind_rows() |>
+  as_tibble() |>
+  mutate(
+    sim      = as.integer(sim),
+    time_end = as.integer(time_end),
+    risk0    = as.numeric(risk0),
+    risk1    = as.numeric(risk1)
+  ) |>
+  arrange(sim, time_end)
+
+saveRDS(pci.add.itt.boot.long, file.path(res_path, "pci.add.itt.boot.long.rds"))
+
+pci.add.itt.boot.long <- readRDS(paste0(res_path, "pci.add.itt.boot.long.rds"))
+
+
+# EQC additive draft plot -------------------------------------------------
+
+
+eqc.add.itt.risks.ci <- pooled.boot.ci(point.est = eqc.add.itt.risk.pointest,
+                                       boot.long = eqc.add.itt.boot.long)
+saveRDS(eqc.add.itt.risks.ci, paste0(res_path, "eqc.add.itt.risks.ci.rds"))
+
+png(paste0(plot_path, "eqc.add.itt.risks.ci.plot.png"), width = 2400, height = 1800, res = 300)
+plot.risk.with.boot.ci(eqc.add.itt.risks.ci,
+                       title.main = "Equi-confounding Approach",
+                       title.sub  = "Additive cause-specific hazard")
+dev.off()
+
+
+# PCI additive draft plot -------------------------------------------------
+
+
+pci.add.itt.risks.ci <- pooled.boot.ci(point.est = pci.add.itt.risk.pointest,
+                                       boot.long = pci.add.itt.boot.long)
+saveRDS(pci.add.itt.risks.ci, paste0(res_path, "pci.add.itt.risks.ci.rds"))
+
+png(paste0(plot_path, "pci.add.itt.risks.ci.plot.png"), width = 2400, height = 1800, res = 300)
+plot.risk.with.boot.ci(pci.add.itt.risks.ci,
+                       title.main = "Proximal inference Approach",
+                       title.sub  = "Additive cause-specific hazard")
+dev.off()
+
+
+# Additive vs multiplicative overlay plotting function ---------------------
+
+plot.risk.overlay.boot.ci <- function(mult.risks.and.cis,
+                                      add.risks.and.cis,
+                                      title.main = "Risk Curves",
+                                      title.sub  = "Additive vs multiplicative hazard model",
+                                      xlab = "Weeks",
+                                      ylab = "Risk",
+                                      ylim = c(0, 0.075),
+                                      col0 = "#006663",
+                                      col1 = "#FF6B1A",
+                                      mult.ribbon.alpha = 0.18,
+                                      add.ribbon.alpha  = 0.10,
+                                      lwd.lines = 2,
+                                      lwd.legend = 4,
+                                      legend_pos = "topleft",
+                                      add.grid = TRUE,
+                                      mar = c(5.1, 5.5, 4.1, 2.1),
+                                      cex.axis = 1.5,
+                                      cex.lab  = 1.5,
+                                      cex.main = 1.4,
+                                      cex.sub  = 1.2,
+                                      legend.cex = 1.1) {
+  
+  req_cols <- c("time_end",
+                "risk0", "risk0_lo", "risk0_hi",
+                "risk1", "risk1_lo", "risk1_hi")
+  
+  missing.mult <- setdiff(req_cols, names(mult.risks.and.cis))
+  if (length(missing.mult) > 0) {
+    stop("`mult.risks.and.cis` is missing columns: ", paste(missing.mult, collapse = ", "))
+  }
+  
+  missing.add <- setdiff(req_cols, names(add.risks.and.cis))
+  if (length(missing.add) > 0) {
+    stop("`add.risks.and.cis` is missing columns: ", paste(missing.add, collapse = ", "))
+  }
+  
+  mult.risks.and.cis <- mult.risks.and.cis |> arrange(time_end)
+  add.risks.and.cis  <- add.risks.and.cis  |> arrange(time_end)
+  
+  xlim <- range(c(0, mult.risks.and.cis$time_end, add.risks.and.cis$time_end), na.rm = TRUE)
+  
+  par(mar = mar)
+  plot(NULL,
+       xlim = xlim,
+       ylim = ylim,
+       xlab = xlab,
+       ylab = ylab,
+       main = title.main,
+       cex.axis = cex.axis,
+       cex.lab  = cex.lab,
+       cex.main = cex.main,
+       font.main = 1)
+  
+  if (!is.null(title.sub) && nzchar(title.sub)) {
+    mtext(title.sub, side = 3, line = 0.5, font = 3, cex = cex.sub)
+  }
+  if (isTRUE(add.grid)) grid()
+  
+  # multiplicative CI ribbons
+  polygon(
+    x = c(mult.risks.and.cis$time_end, rev(mult.risks.and.cis$time_end)),
+    y = c(mult.risks.and.cis$risk0_lo, rev(mult.risks.and.cis$risk0_hi)),
+    col = adjustcolor(col0, alpha.f = mult.ribbon.alpha),
+    border = NA
+  )
+  
+  polygon(
+    x = c(mult.risks.and.cis$time_end, rev(mult.risks.and.cis$time_end)),
+    y = c(mult.risks.and.cis$risk1_lo, rev(mult.risks.and.cis$risk1_hi)),
+    col = adjustcolor(col1, alpha.f = mult.ribbon.alpha),
+    border = NA
+  )
+  
+  # additive CI ribbons
+  polygon(
+    x = c(add.risks.and.cis$time_end, rev(add.risks.and.cis$time_end)),
+    y = c(add.risks.and.cis$risk0_lo, rev(add.risks.and.cis$risk0_hi)),
+    col = adjustcolor(col0, alpha.f = add.ribbon.alpha),
+    border = NA
+  )
+  
+  polygon(
+    x = c(add.risks.and.cis$time_end, rev(add.risks.and.cis$time_end)),
+    y = c(add.risks.and.cis$risk1_lo, rev(add.risks.and.cis$risk1_hi)),
+    col = adjustcolor(col1, alpha.f = add.ribbon.alpha),
+    border = NA
+  )
+  
+  # multiplicative point estimate lines (solid)
+  lines(c(0, mult.risks.and.cis$time_end),
+        c(0, mult.risks.and.cis$risk0),
+        col = col0, lty = 1, lwd = lwd.lines)
+  
+  lines(c(0, mult.risks.and.cis$time_end),
+        c(0, mult.risks.and.cis$risk1),
+        col = col1, lty = 1, lwd = lwd.lines)
+  
+  # additive point estimate lines (dashed)
+  lines(c(0, add.risks.and.cis$time_end),
+        c(0, add.risks.and.cis$risk0),
+        col = col0, lty = 2, lwd = lwd.lines)
+  
+  lines(c(0, add.risks.and.cis$time_end),
+        c(0, add.risks.and.cis$risk1),
+        col = col1, lty = 2, lwd = lwd.lines)
+  
+  legend(legend_pos,
+         legend = c("No Booster", "Booster", "Multiplicative", "Additive"),
+         col = c(col0, col1, "black", "black"),
+         lty = c(1, 1, 1, 2),
+         lwd = c(lwd.legend, lwd.legend, lwd.lines, lwd.lines),
+         cex = legend.cex,
+         bty = "n")
+  
+  invisible(list(mult = mult.risks.and.cis, add = add.risks.and.cis))
+}
+
+
+# EQC additive vs multiplicative overlay ----------------------------------
+
+
+png(paste0(plot_path, "eqc.add.vs.mult.itt.risks.ci.plot.png"), width = 2400, height = 1800, res = 300)
+plot.risk.overlay.boot.ci(
+  mult.risks.and.cis = eqc.itt.risks.ci,
+  add.risks.and.cis  = eqc.add.itt.risks.ci,
+  title.main = "Equi-confounding Approach",
+  title.sub  = "Additive vs multiplicative hazard model"
+)
+dev.off()
+
+
+# PCI additive vs multiplicative overlay ----------------------------------
+
+
+png(paste0(plot_path, "pci.add.vs.mult.itt.risks.ci.plot.png"), width = 2400, height = 1800, res = 300)
+plot.risk.overlay.boot.ci(
+  mult.risks.and.cis = pci.itt.risks.ci,
+  add.risks.and.cis  = pci.add.itt.risks.ci,
+  title.main = "Proximal inference Approach",
+  title.sub  = "Additive vs multiplicative hazard model"
+)
+dev.off()
+
+
+# Additive vs multiplicative multipanel -----------------------------------
+
+
+png(paste0(plot_path, "add.vs.mult.itt.multi.png"), width = 2400, height = 4000, res = 300)
+
+layout(matrix(1:2, nrow = 2))
+
+## --- Panel A: EQC ---
+
+plot.risk.overlay.boot.ci(
+  mult.risks.and.cis = eqc.itt.risks.ci,
+  add.risks.and.cis  = eqc.add.itt.risks.ci,
+  title.main = "Equi-confounding Approach",
+  title.sub  = "Additive vs multiplicative hazard model"
+)
+panel_label("A", cex = 1.5, font = 2)
+
+## --- Panel B: PCI ---
+
+plot.risk.overlay.boot.ci(
+  mult.risks.and.cis = pci.itt.risks.ci,
+  add.risks.and.cis  = pci.add.itt.risks.ci,
+  title.main = "Proximal inference Approach",
+  title.sub  = "Additive vs multiplicative hazard model"
+)
+panel_label("B", cex = 1.5, font = 2)
+
+dev.off()
 
