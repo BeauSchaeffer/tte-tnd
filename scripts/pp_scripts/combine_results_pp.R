@@ -283,7 +283,7 @@ pci.pp.risks.ci <- pooled.boot.ci(point.est = pci.pp.risk.pointest, boot.long = 
 saveRDS(pci.pp.risks.ci, paste0(res_path, "pci.pp.risks.ci.rds"))
 
 png(paste0(plot_path,"pci.pp.risks.ci.plot.png"), width = 2400, height=1800, res=300)
-plot.risk.with.boot.ci(pci.pp.risks.ci, title.main  = "Proximal inference Approach", title.sub = NULL)
+plot.risk.with.boot.ci(pci.pp.risks.ci, title.main  = "Proximal Inference Approach", title.sub = NULL)
 dev.off()
 
 
@@ -565,7 +565,7 @@ saveRDS(pci.add.pp.risks.ci, paste0(res_path, "pci.add.pp.risks.ci.rds"))
 
 png(paste0(plot_path, "pci.add.pp.risks.ci.plot.png"), width = 2400, height = 1800, res = 300)
 plot.risk.with.boot.ci(pci.add.pp.risks.ci,
-                       title.main = "Proximal inference Approach",
+                       title.main = "Proximal Inference Approach",
                        title.sub  = "Additive cause-specific hazard")
 dev.off()
 
@@ -714,7 +714,7 @@ png(paste0(plot_path, "pci.add.vs.mult.pp.risks.ci.plot.png"), width = 2400, hei
 plot.risk.overlay.boot.ci(
   mult.risks.and.cis = pci.pp.risks.ci,
   add.risks.and.cis  = pci.add.pp.risks.ci,
-  title.main = "Proximal inference Approach",
+  title.main = "Proximal Inference Approach",
   title.sub  = "Additive vs multiplicative hazard model"
 )
 dev.off()
@@ -742,7 +742,7 @@ panel_label("A", cex = 1.5, font = 2)
 plot.risk.overlay.boot.ci(
   mult.risks.and.cis = pci.pp.risks.ci,
   add.risks.and.cis  = pci.add.pp.risks.ci,
-  title.main = "Proximal inference Approach",
+  title.main = "Proximal Inference Approach",
   title.sub  = "Additive vs multiplicative hazard model"
 )
 panel_label("B", cex = 1.5, font = 2)
