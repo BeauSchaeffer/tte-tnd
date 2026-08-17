@@ -449,6 +449,8 @@ analysis_data <- analysis_c_a_y |>
 ##* treatment_time is retained: non-NA for A=1, NA for A=0
 ##* cens_time is retained: needed for risk-set eligibility
 
+write_rds(analysis_data, "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/data_beforematch.rds")
+
 
 # Weekly matching ---------------------------------------------------------
 
