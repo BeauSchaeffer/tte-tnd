@@ -61,7 +61,7 @@ plot(NA, xlim = c(0, max_follow), ylim = c(0, 0.5),
      xlab = "Weeks", ylab = "Cumulative incidence of censoring",
      main = "Treatment Deviation Censoring",
      font.main = 1, cex.lab = 1.2, cex.axis = 1.1, cex.main = 1.3, las = 1)
-
+grid(col = "grey85", lty = 1, lwd = 0.5)
 polygon(c(d0$time, rev(d0$time)), c(d0$conf.low, rev(d0$conf.high)),
         col = adjustcolor("#006663", alpha.f = 0.2), border = NA)
 polygon(c(d1$time, rev(d1$time)), c(d1$conf.low, rev(d1$conf.high)),
@@ -70,7 +70,7 @@ polygon(c(d1$time, rev(d1$time)), c(d1$conf.low, rev(d1$conf.high)),
 points(d0$time, d0$estimate, pch = 16, col = "#006663", cex = 0.6)
 points(d1$time, d1$estimate, pch = 16, col = "#FF6B1A", cex = 0.6)
 
-legend("topright", legend = c("No booster", "Booster"),
+legend("topleft", legend = c("No booster", "Booster"),
        col = c("#006663", "#FF6B1A"), pch = 16, bty = "n", cex = 1.1)
 
 dev.off()

@@ -367,11 +367,11 @@ lines(c(eqc_Y3_cif_pp$tidy$time[eqc_Y3_cif_pp$tidy$outcome=="Test Negative" & eq
 lines(c(eqc_Y3_cif_pp$tidy$time[eqc_Y3_cif_pp$tidy$outcome=="Test Negative" & eqc_Y3_cif_pp$tidy$strata==1]),
       c(eqc_Y3_cif_pp$tidy$estimate[eqc_Y3_cif_pp$tidy$outcome=="Test Negative" & eqc_Y3_cif_pp$tidy$strata==1]),
       col='#FF6B1A', lty=2, lwd=2)
-# legend("topleft",
-#        legend = c("No Booster", "Booster"),
-#        col = c('#006663', '#FF6B1A'),
-#        lty = 1, lwd = 4, cex=1.2,
-#        bty = "n")
+legend("topleft",
+       legend = c("No Booster", "Booster"),
+       col = c('#006663', '#FF6B1A'),
+       lty = 2, lwd = 4, cex=1.2,
+       bty = "n")
 # legend("topright",
 #        legend = c("Test Positive", "Test Negative"),
 #        col = 'black',
@@ -395,14 +395,14 @@ forest.data <- bind_rows(
   # 2. NCE (flu_vax) HR on primary outcome
   std.pp.cox.pointest |>
     filter(term == "flu_vax") |>
-    transmute(label = "HR Flu Vax\nTest Positive\n(Possible NCE)",
+    transmute(label = "HR Prior Year Flu Vax\nTest Positive\n(Candidate NCE)",
               hr = estimate, lo = conf.low, hi = conf.high,
               group = "nc"),
   
   # 3. Treatment HR on NCO
   std.pp.cox.nco.pointest |>
     filter(term == "treatment") |>
-    transmute(label = "HR Booster\nTest Negative\n(Possible NCO)",
+    transmute(label = "HR Booster\nTest Negative\n(Candidate NCO)",
               hr = estimate, lo = conf.low, hi = conf.high,
               group = "nc")
 ) |>
