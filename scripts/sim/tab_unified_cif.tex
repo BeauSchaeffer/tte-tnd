@@ -1,0 +1,17 @@
+\begin{table}
+\centering
+\begin{tabular}{llrrr}
+\toprule
+Scenario & Strategy & Treated risk ($\widehat{F}_1$) & Untreated risk ($\widehat{F}_0$) & Corrected untreated risk \\
+\midrule
+Equi-confounding holds & naive & 0.1115 & 0.1123 & 0.1123 \\
+ & eqc & 0.0877 & 0.0992 & 0.1700 \\
+ & pci & 0.0878 & 0.1865 & 0.1703 \\
+Equi-confounding violated & naive & 0.1416 & 0.1193 & 0.1193 \\
+ & eqc & 0.1162 & 0.1059 & 0.1617 \\
+ & pci & 0.1164 & 0.2403 & 0.2266 \\
+\bottomrule
+\end{tabular}
+\caption{Cumulative incidence among the treated (ATT) at week $53$: the observed treated risk $\widehat{F}_1$, the naive (uncorrected) untreated risk $\widehat{F}_0$, and the de-biased counterfactual untreated risk, by strategy and equi-confounding assumption status. Results based on the competing-risks encoding with the pooled discrete-time logistic model, $200$ replications, $N = 4{,}000$ per replication.}
+\label{tab:unified_cif}
+\end{table}

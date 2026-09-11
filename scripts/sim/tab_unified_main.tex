@@ -1,0 +1,17 @@
+\begin{table}
+\centering
+\begin{tabular}{llrrr}
+\toprule
+Scenario & Strategy & Bias & SE & RMSE \\
+\midrule
+Equi-confounding holds & naive & 0.6894 & 0.1515 & 0.7058 \\
+ & eqc & -0.0134 & 0.1736 & 0.1736 \\
+ & pci & -0.0182 & 0.2130 & 0.2132 \\
+Equi-confounding violated & naive & 0.8899 & 0.1322 & 0.8997 \\
+ & eqc & 0.3522 & 0.1627 & 0.3878 \\
+ & pci & -0.0262 & 0.2586 & 0.2593 \\
+\bottomrule
+\end{tabular}
+\caption{Bias, standard error, and RMSE of the causal log hazard-ratio estimate ($\beta_{2A} = -0.7$) under three de-biasing strategies, by equi-confounding assumption status. All estimates use the pooled discrete-time logistic model on the competing-risks encoding. Results based on 200 replications with $N = 4{,}000$ per replication.}
+\label{tab:unified_main}
+\end{table}
