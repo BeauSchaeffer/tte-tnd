@@ -21,4 +21,4 @@ singularity exec \
   Rscript scripts/net_risk/equi_confounding_pooled_netB_pp_boot_onerep.R ${SLURM_ARRAY_TASK_ID}
 
 # run with
-# sbatch slurm/net_risk_slurm/netB_eqc_pp_boot.sbatch
+# sbatch slurm/net_risk_slurm/netB_eqc_pp_boot_array.sbatch

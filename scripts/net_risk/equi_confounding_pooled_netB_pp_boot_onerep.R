@@ -48,11 +48,11 @@ i <- as.integer(args[1])
 
 num.boot <- 100
 
+stopifnot(!is.na(i), i >= 1, i <= num.boot)
+
 set.seed(1155)
 seed <- floor(runif(num.boot)*10^8)
 set.seed(seed[i])
-
-stopifnot(!is.na(i), i >= 1, i <= num.boot)
 
 setDT(dat)
 setkey(dat, subclass)
