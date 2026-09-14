@@ -44,7 +44,7 @@ mod_vars <- c("treatment",
               "flu_vax")
 
 stopifnot(!anyDuplicated(data_Y2$fake_mrn))
-stopifnot(!anyNA(data_Y2[, mod_vars]))
+stopifnot(!anyNA(data_Y2 |> select(all_of(mod_vars))))
 stopifnot(!anyNA(data_Y2$Y2_pp_t_trunc), !anyNA(data_Y2$Y2_pp_trunc))
 stopifnot(all(data_Y2$Y2_pp_t_trunc > 0))
 stopifnot(all(neg_hist$neg_t > 0))
@@ -112,7 +112,7 @@ ag_pp <- bind_rows(ag_event, ag_tail) |>
 
 stopifnot(all(ag_pp$stop > ag_pp$start))                     # no zero-length intervals
 stopifnot(n_distinct(ag_pp$fake_mrn) == nrow(data_Y2))       # nobody dropped
-stopifnot(!anyNA(ag_pp[, mod_vars]))                         # same completeness as panel P
+stopifnot(!anyNA(ag_pp |> select(all_of(mod_vars))))         # same completeness as panel P
 
 ### Person-time reconciliation. The intervals must tile [0, cap] exactly, with
 ### no gaps or overlaps, so that the negative intensity is fit on precisely the
