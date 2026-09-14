@@ -4,7 +4,7 @@
 #SBATCH -e logs/netB_eqc_pp_boot_logs/netB_eqc_pp_boot_%A_%a.err
 #SBATCH -p shared
 #SBATCH -c 1
-#SBATCH -t 0-01:30
+#SBATCH -t 0-00:30
 #SBATCH --mem=64000
 #SBATCH --array=1-100
 
