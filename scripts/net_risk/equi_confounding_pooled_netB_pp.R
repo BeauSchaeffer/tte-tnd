@@ -43,8 +43,8 @@ mod_vars <- c("treatment",
               "last_vax_infect_weeks",
               "flu_vax")
 
+stopifnot(!anyDuplicated(dat$fake_mrn))
 stopifnot(!anyNA(dat |> dplyr::select(all_of(mod_vars))))
-stopifnot(!anyNA(dat |> select(all_of(mod_vars))))
 stopifnot(!anyNA(dat$Y2_pp_t_trunc), !anyNA(dat$Y2_pp_trunc))
 stopifnot(all(dat$Y2_pp_t_trunc > 0))
 stopifnot(all(neg_hist$fake_mrn %in% dat$fake_mrn))
