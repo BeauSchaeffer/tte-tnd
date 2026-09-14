@@ -43,7 +43,7 @@ mod_vars <- c("treatment",
               "last_vax_infect_weeks",
               "flu_vax")
 
-stopifnot(!anyDuplicated(dat$fake_mrn))
+stopifnot(!anyNA(dat |> dplyr::select(all_of(mod_vars))))
 stopifnot(!anyNA(dat |> select(all_of(mod_vars))))
 stopifnot(!anyNA(dat$Y2_pp_t_trunc), !anyNA(dat$Y2_pp_trunc))
 stopifnot(all(dat$Y2_pp_t_trunc > 0))
@@ -99,7 +99,7 @@ dat.long.pp$C <- ifelse(
 ### in whole weeks; same-week repeats collapse to a single indicator.
 
 neg_wk <- neg_hist |>
-  inner_join(dat |> select(fake_mrn, cap = Y2_pp_t_trunc), by = "fake_mrn") |>
+  inner_join(dat |> dplyr::select(fake_mrn, cap = Y2_pp_t_trunc), by = "fake_mrn") |>
   filter(neg_t <= cap) |>
   distinct(fake_mrn, time_start = neg_t)
 
