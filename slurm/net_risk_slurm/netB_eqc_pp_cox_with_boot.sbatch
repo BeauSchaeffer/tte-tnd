@@ -4,8 +4,8 @@
 #SBATCH -e logs/netB_eqc_pp_cox_with_boot_%j.err
 #SBATCH -p shared
 #SBATCH -c 1
-#SBATCH -t 0-06:00
-#SBATCH --mem=96000 # in Mb
+#SBATCH -t 0-02:00
+#SBATCH --mem=16000 # in Mb
 
 # RStudio Server container + package library
 R_LIB="/n/home07/bschaeffer/R/ifxrstudio/RELEASE_3_20"
