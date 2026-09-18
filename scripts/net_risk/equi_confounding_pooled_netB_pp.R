@@ -24,7 +24,7 @@ library(splines)
 ### Under Option B both models are fit on the same person-week rows, so the
 ### expansion below is built once and carries both outcome columns.
 
-data_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.4/"
+data_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/"
 
 data_Y2  <- read_rds(paste0(data_path, "data_Y2_weekmatch.rds"))
 neg_hist <- read_rds(paste0(data_path, "neg_hist_weekmatch.rds"))

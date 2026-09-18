@@ -342,15 +342,11 @@ dev.off()
 
 # Net risk vs competing risk overlay plotting function ---------------------
 
-### The CR curves come from data_weekmatch.3 and the net risk curves from
-### data_weekmatch.4. These are DIFFERENT COHORTS by design: .3 required no
-### pre-index test of ANY kind (correct for a first-test competing risk
-### outcome), .4 requires only no pre-index POSITIVE (correct for net risk,
-### where negatives do not remove anyone from the risk set). .4 therefore
-### admits ~14.6K people .3 structurally excluded, and because matching is
-### sequential and greedy, a larger weekly pool also shifts which controls get
-### used in later weeks. The overlay compares two designs, not two estimators
-### on one sample.
+### Both sets of curves come from the data_weekmatch.3 cohort: identical
+### matched pairs, identical index weeks. The two differ only in the
+### definition of the risk set -- under competing events a negative test
+### removes an individual from follow-up, under net risk only a positive
+### does. This is the comparison the simulation study characterises.
 
 plot.risk.overlay.boot.ci <- function(cr.risks.and.cis,
                                       net.risks.and.cis,
@@ -534,7 +530,7 @@ dev.off()
 ### anyone from the risk set, so the natural summary is the cumulative mean
 ### number of negative tests per person by arm.
 
-data_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.4/"
+data_path <- "/n/holylfs05/LABS/hanage_lab/Lab/hsphfs1/bschaeffer/kaiser/data_weekmatch.3/"
 
 data_Y2  <- read_rds(paste0(data_path, "data_Y2_weekmatch.rds"))
 neg_hist <- read_rds(paste0(data_path, "neg_hist_weekmatch.rds"))
