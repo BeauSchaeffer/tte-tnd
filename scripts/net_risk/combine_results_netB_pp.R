@@ -86,7 +86,7 @@ dir.create(plot_path, recursive = TRUE, showWarnings = FALSE)
     ) |>
     arrange(sim, time_end)
 
-  saveRDS(netB.pci.pp.boot.long, file.path(res_path, "netB.pci.pp.boot.long.rds"))
+  saveRDS(netB.pci.pp.boot.long, file.path(res_path, "netB.pci.pp.boot.long.rds")) # run again after boots complete
 
   netB.pci.pp.boot.long <- readRDS(paste0(res_path, "netB.pci.pp.boot.long.rds"))
 
@@ -585,3 +585,4 @@ legend("topleft",
        bty = "n")
 
 dev.off()
+
