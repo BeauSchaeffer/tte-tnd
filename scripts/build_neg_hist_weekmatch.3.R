@@ -72,41 +72,6 @@ neg_hist <- neg_hist |>
   filter(neg_t <= max_follow)
 
 
-# Checks ------------------------------------------------------------------
-
-
-stopifnot(all(neg_hist$neg_t > 0))
-stopifnot(all(neg_hist$fake_mrn %in% data_Y2_3$fake_mrn))
-
-message("Cohort (.3): ", nrow(data_Y2_3), " individuals")
-message("Negative tests: ", nrow(neg_hist), " across ",
-        n_distinct(neg_hist$fake_mrn), " individuals (",
-        round(100 * n_distinct(neg_hist$fake_mrn) / nrow(data_Y2_3), 1),
-        "% of cohort)")
-
-### negatives inside the PP risk set, the quantity Option B actually fits
-neg_in_riskset <- neg_hist |>
-  inner_join(data_Y2_3 |> select(fake_mrn, cap = Y2_pp_t_trunc), by = "fake_mrn") |>
-  filter(neg_t <= cap) |>
-  distinct(fake_mrn, neg_t)
-
-message("Negative person-weeks on {T2 > t} (PP): ", nrow(neg_in_riskset))
-
-### does the negative rate decline with index week? .3 excludes anyone who
-### tested before index, and that exclusion has had longer to operate for
-### later enrollment weeks, so selection may induce a downward slope here.
-by_index_week <- data_Y2_3 |>
-  select(fake_mrn, index_time) |>
-  left_join(neg_hist |> count(fake_mrn, name = "n_neg"), by = "fake_mrn") |>
-  mutate(n_neg = coalesce(n_neg, 0L)) |>
-  group_by(index_time) |>
-  summarise(n_people = n(),
-            neg_per_person = mean(n_neg),
-            .groups = "drop")
-
-print(by_index_week, n = Inf)
-
-
 # Write -------------------------------------------------------------------
 
 
