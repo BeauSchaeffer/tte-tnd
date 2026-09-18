@@ -193,7 +193,7 @@ plot.risk.with.boot.ci <- function(risks.and.cis,
                                    col1 = "#FF6B1A",
                                    ribbon.alpha = 0.25,
                                    lwd.lines = 1,
-                                   lty.lines = 2,
+                                   lty.lines = 3,
                                    lwd.legend = 4,
                                    legend_pos = "topleft",
                                    add.grid = TRUE,
@@ -448,16 +448,16 @@ plot.risk.overlay.boot.ci <- function(cr.risks.and.cis,
   # net risk point estimate lines (dashed)
   lines(c(0, net.risks.and.cis$time_end),
         c(0, net.risks.and.cis$risk0),
-        col = col0, lty = 2, lwd = lwd.lines)
+        col = col0, lty = 3, lwd = lwd.lines)
   
   lines(c(0, net.risks.and.cis$time_end),
         c(0, net.risks.and.cis$risk1),
-        col = col1, lty = 2, lwd = lwd.lines)
+        col = col1, lty = 3, lwd = lwd.lines)
   
   legend(legend_pos,
          legend = c("No Booster", "Booster", "Competing risk", "Net risk"),
          col = c(col0, col1, "black", "black"),
-         lty = c(1, 1, 1, 2),
+         lty = c(1, 1, 1, 3),
          lwd = c(lwd.legend, lwd.legend, lwd.lines, lwd.lines),
          cex = legend.cex,
          bty = "n")
@@ -570,14 +570,14 @@ tn0 <- netB_neg_cum[netB_neg_cum$treatment == 0, ]
 tn1 <- netB_neg_cum[netB_neg_cum$treatment == 1, ]
 
 lines(c(0, tn0$time_end), c(0, tn0$cum_neg_per_person),
-      col = '#006663', lty = 2, lwd = 2)
+      col = '#006663', lty = 3, lwd = 2)
 lines(c(0, tn1$time_end), c(0, tn1$cum_neg_per_person),
-      col = '#FF6B1A', lty = 2, lwd = 2)
+      col = '#FF6B1A', lty = 3, lwd = 2)
 
 legend("topleft",
        legend = c("No Booster", "Booster"),
        col = c('#006663', '#FF6B1A'),
-       lty = 2, lwd = 4, cex = 1.2,
+       lty = 3, lwd = 4, cex = 1.2,
        bty = "n")
 
 dev.off()

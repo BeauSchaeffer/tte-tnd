@@ -121,7 +121,7 @@ wide_table |>
 # Pooled estimates table --------------------------------------------------
 
 # horizons <- c(1, 8, 24, 40, 52)
-horizons <- seq(1,52,1)
+horizons <- c(10, 20, 30, 40, 50)
 
 make_pooled_risk_table <- function(df, approach, horizons) {
   df |> 
